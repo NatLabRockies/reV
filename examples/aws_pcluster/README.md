@@ -24,8 +24,8 @@ At the time of writing, reV and HSDS cannot authenticate with temporary credenti
 SSO can be used to provision the cluster, but the specific configurations at [5b) Configure Data Access](#5b-configure-data-access) requires IAM access keys at this time of writing and will break when using SSO or STS.
 
 
-## 2) Install AWS Command Line Interfaces
-Many of the instructions that follow will utilize AWS command line interfaces (CLIs). Full instructions for installing and using AWS CLIs can be found in the official Amazon page here: [https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). To install these programs any user may download the installers from AWS's website [https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), Unix users may use their OS's package manager (i.e., brew, apt, dnf, yum, etc), or you may create a virtual Python environment and install using `pip` or any other Python package manager, e.g.,:
+## 2) Install AWS Command-Line Interfaces
+Many of the instructions that follow will utilize AWS command-line interfaces (CLIs). Full instructions for installing and using AWS CLIs can be found in the official Amazon page here: [https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html). To install these programs any user may download the installers from AWS's site [https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), Unix users may use their OS's package manager (i.e., brew, apt, dnf, yum, etc), or you may create a virtual Python environment and install using `pip` or any other Python package manager, e.g.,:
 
 ```bash
 python3 -m venv ~/envs/aws
@@ -65,7 +65,7 @@ aws_access_key_id = <secret>
 aws_secret_access_key = <secret>
 ```
 
-Moving forward, we need to tell the AWS CLI which profile to use for authentication. You may do this manually for each session by setting the `AWS_PROFILE` environment variable to this name in each command-line session, you may specify the name in a `--profile` option for each CLI command, or you may add the variable to your command-line interpreter's startup script to automate this step, which is what we're suggesting for convenience. Here, we are using a Bash shell so will be editing the `~/.bashrc` script (Linux) or the `~/.bash_profile` (MacOS) to add the following line:
+Moving forward, we need to tell the AWS CLI which profile to use for authentication. You may do this manually for each session by setting the `AWS_PROFILE` environment variable to this name in each command-line session, you may specify the name in a `--profile` option for each CLI command, or you may add the variable to your command-line interpreter's startup script to automate this step, which is what we're suggesting for convenience. Here, we are using a Bash shell so will be editing the `~/.bashrc` script (Linux) or the `~/.bash_profile` (macOS) to add the following line:
 
 ```bash
 export AWS_PROFILE=profile_name
@@ -203,7 +203,7 @@ Now that you have a running cluster and an SSH key pair, you may log in to your 
 pcluster describe-cluster --cluster-name rev-pcluster | grep IpAddress | awk '{print $2}'
 ```
 
-Next, you'll need the username for the server. It is possible to add new user names to your instances (see, [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html)), but since we have not described that step here, you will likely need to use the default user for the OS you chose in the image configuration step. Below are the default user names associated with the three OS groups described in [section 4b](#4b-the-parallel-cluster-configuration-file) but you can find all default names in the "managing users" link above:
+Next, you'll need the username for the server. It is possible to add new usernames to your instances (see, [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html)), but since we have not described that step here, you will likely need to use the default user for the OS you chose in the image configuration step. Below are the default usernames associated with the three OS groups described in [section 4b](#4b-the-parallel-cluster-configuration-file) but you can find all default names in the "managing users" link above:
 
 - **Amazon Linux**: *ec2-user*
 - **RHEL**: *ec2-user* or *root*
@@ -420,7 +420,7 @@ We've tested AWS Lambda functions as the HSDS service for reV workflows and we'v
 
 These instructions are generally copied from the [HSDS Lambda README](https://github.com/HDFGroup/hsds/blob/master/docs/aws_lambda_setup.md) with a few modifications.
 
-It seems you cannot currently use the public ECR container image from the HSDS ECR repo so the first few bullets are instructions on how to set up your own HSDS image and push to a private ECR repo.
+It seems you cannot currently use the public ECR container image from the HSDS ECR repository so the first few bullets are instructions on how to set up your own HSDS image and push to a private ECR repository.
 
 H5pyd cannot currently call a lambda function directly, so the instructions at the end show you how to set up an API gateway that interfaces between h5pyd and the lambda function.
 
@@ -430,9 +430,9 @@ Follow these instructions from your Cloud9 environment. None of this is directly
 
 2. You may need to [resize your EBS volume](https://docs.aws.amazon.com/cloud9/latest/user-guide/move-environment.html#move-environment-resize).
 
-3. In the AWS Management Console, create a new ECR repository called "hslambda". Keep the default private repo settings.
+3. In the AWS Management Console, create a new ECR repository called "hslambda". Keep the default private repository settings.
 
-4. Create an HSDS image and push to your ``hslambda`` ECR repo. This sublist is a combination of commands from the ECR push commands and the HSDS build instructions (make sure you use the actual push commands from your ECR repo with the actual region, repository name, and AWS account ID):
+4. Create an HSDS image and push to your ``hslambda`` ECR repository. This sublist is a combination of commands from the ECR push commands and the HSDS build instructions (make sure you use the actual push commands from your ECR repository with the actual region, repository name, and AWS account ID):
 
     ```bash
     cd hsds
@@ -446,11 +446,11 @@ Follow these instructions from your Cloud9 environment. None of this is directly
     docker push aws_account_id.dkr.ecr.region.amazonaws.com/my-repository:tag
     ```
 
-5. You should now see your new image appear in your ``hslambda`` ECR repo in the AWS Console. Get the URI from this image.
+5. You should now see your new image appear in your ``hslambda`` ECR repository in the AWS Console. Get the URI from this image.
 
 6. In the AWS Management Console, go to the Lambda service interface in your desired region (us-west-2, Oregon).
 
-7. Click "Create Function" -> Choose "Container Image" option, function name is ``hslambda``, use the Container Image URI from the image you just uploaded to your ECR repo, select "Create Function" and wait for the image to load.
+7. Click "Create Function" -> Choose "Container Image" option, function name is ``hslambda``, use the Container Image URI from the image you just uploaded to your ECR repository, select "Create Function" and wait for the image to load.
 
 8. You should see a banner saying you've successfully created the `hslambda` function.
 
@@ -499,7 +499,7 @@ Follow these instructions from your Cloud9 environment. None of this is directly
 - Add integration -> Lambda -> use ``us-west-2``, select your lambda function, use some generic name like ``hslambda-api``
 - Configure routes -> Method is ``ANY``, the Resource path is ``$default``, the integration target is your lambda function
 - Configure stages -> Stage name is ``$default`` and auto-deploy must be enabled
-- Create and get the API's Invoke URL, something like ``https://XXXXXXX.execute-api.us-west-2.amazonaws.com``
+- Create and get the APIs Invoke URL, something like ``https://XXXXXXX.execute-api.us-west-2.amazonaws.com``
 - Make an `.hscfg` file in the home dir (e.g., `/home/ec2-user/`). Make sure you also have this config in your pcluster filesystem. The config file should have these entries:
 
     ```bash

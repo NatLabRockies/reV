@@ -1,0 +1,51 @@
+{
+    "execution_control": {
+        "allocation": "na",
+        "feature": "--exclusive",
+        "option": "awspc",
+        "sites_per_worker": 200,
+        "sh_script": "/scratch/reV-tutorial/tutorial_13_rev_in_cloud/start_hsds.sh",
+        "max_workers": 47,
+        "walltime": 0.25,
+        "qos": "normal",
+        "memory": null,
+        "nodes": 2,
+        "queue": null,
+        "conda_env": null,
+        "module": null,
+        "keep_sh": false,  // This refers the SLURM submission script, not the start HSDS script, don't worry
+        "num_test_nodes": null,
+        "memory_utilization_limit": 0.4,
+        "timeout": 1800,
+        "pool_size": null
+    },
+    "log_directory": "./logs",
+    "log_level": "INFO",
+    "technology": "windpower",
+    "project_points": "./project_points_rhode_island.csv",
+    "sam_files": {
+        "default": "./windpower.json5"
+    },
+    "resource_file": [
+        "/nrel/wtk/conus/wtk_conus_2007.h5",
+        "/nrel/wtk/conus/wtk_conus_2008.h5"
+    ],
+    "low_res_resource_file": null,
+    "output_request": [
+        "cf_mean",
+        "cf_profile",
+        "lcoe_fcr",
+        "ws_mean"
+    ],
+    "site_data": null,
+    "curtailment": null,
+    "gid_map": null,
+    "drop_leap": false,
+    "scale_outputs": true,
+    "write_mapped_gids": false,
+    "bias_correct": null,
+    "analysis_years": [
+        2007,
+        2008
+    ]
+}

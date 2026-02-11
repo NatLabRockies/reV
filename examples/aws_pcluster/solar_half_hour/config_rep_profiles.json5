@@ -1,0 +1,34 @@
+{
+    "execution_control": {
+        "option": "awspc",
+        "allocation": "na",
+        "walltime": 0.25,
+        "qos": "normal",
+        "memory": null,
+        "queue": null,
+        "feature": null,
+        "conda_env": null,
+        "module": null,
+        "sh_script": null,
+        "keep_sh": false,
+        "num_test_nodes": null,
+        "max_workers": null
+    },
+    "log_directory": "./logs",
+    "log_level": "INFO",
+    "gen_fpath": "PIPELINE",
+    "rev_summary": "PIPELINE",
+    "reg_cols": "sc_point_gid",
+    "cf_dset": "cf_profile-{}",
+    "rep_method": "meanoid",
+    "err_method": "rmse",
+    "weight": "gid_counts",
+    "n_profiles": 1,
+    "aggregate_profiles": null,
+    "save_rev_summary": false,
+    "scaled_precision": false,
+    "analysis_years": [
+        2007,
+        2008
+    ]
+}

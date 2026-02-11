@@ -1,0 +1,54 @@
+{
+    "execution_control": {
+        "option": "awspc",
+        "allocation": "na",
+        "walltime": 0.5,
+        "qos": "normal",
+        "memory": null,
+        "queue": null,
+        "feature": null,
+        "conda_env": null,
+        "module": null,
+        "sh_script": "/scratch/reV-tutorial/tutorial_13_rev_in_cloud/start_hsds.sh",
+        "keep_sh": false,
+        "num_test_nodes": null,
+        "max_workers": null,
+        "sites_per_worker": 100
+    },
+    "log_directory": "./logs",
+    "log_level": "INFO",
+    "excl_fpath": "./sample_exclusions.h5",
+    "tm_dset": "techmap_wtk_v1.0.0",
+    "econ_fpath": null,
+    "excl_dict": {
+        "ghs_settlement_layer": {
+            "exclude_values": [3]
+        },
+        "srtm_slope_pct": {
+            "include_range": [0, 20]
+        }
+    },
+    "area_filter_kernel": "queen",
+    "cf_dset": "cf_mean-means",
+    "gen_fpath": "PIPELINE",
+    "lcoe_dset": "lcoe_fcr-means",
+    "min_area": 0.0081,
+    "pre_extract_inclusions": false,
+    "res_class_dset": "ws_mean-means",
+    "res_fpath": "/nrel/wtk/conus/wtk_conus_2007.h5",  // This is for the techmap if it hasn't been written to excl_fpath yet. Any file will do.
+    "resolution": 64,
+    "excl_area": null,
+    "gids": null,
+    "res_class_bins": null,
+    "h5_dsets": null,
+    "data_layers": null,
+    "power_density": 3,
+    "friction_fpath": null,
+    "friction_dset": null,
+    "cap_cost_scale": null,
+    "fixed_cost_scale": null,
+    "var_cost_scale": null,
+    "recalc_lcoe": false,
+    "zones_dset": null,
+    "args": null
+}

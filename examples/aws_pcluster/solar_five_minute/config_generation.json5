@@ -1,0 +1,61 @@
+{
+    "execution_control": {
+        "allocation": "na",
+        "feature": "--exclusive",
+        "option": "awspc",
+        "sites_per_worker": 750,
+        "sh_script": "/scratch/reV-tutorial/tutorial_13_rev_in_cloud/start_hsds.sh --log",
+        "max_workers": 47,
+        "walltime": 10,
+        "qos": "normal",
+        "memory": null,
+        "nodes": 1,
+        "conda_env": null,
+        "keep_sh": true,  // This refers the SLURM submission script, not the start sh_script (HSDS here), don't worry
+        "num_test_nodes": null,
+        "memory_utilization_limit": 0.7,
+        "timeout": 1800,
+        "pool_size": null
+    },
+    "log_directory": "./logs",
+    "log_level": "DEBUG",
+    "technology": "pvwattsv8",
+    "project_points": "./project_points_10pct.csv",
+    "sam_files": {
+        "default": "./pvwattsv8.json5"
+    },
+    "resource_file": [
+        "/nrel/nsrdb/GOES/conus/v4.0.0/nsrdb_conus_2018.h5",
+        "/nrel/nsrdb/GOES/conus/v4.0.0/nsrdb_conus_2019.h5"
+    ],
+    "low_res_resource_file": null,
+    "output_request":  [
+        "cf_profile",
+        "cf_profile_ac",
+        "cf_mean",
+        "cf_mean_ac",
+        "ghi_mean",
+        "lcoe_fcr",
+        "ac",
+        "dc",
+        "clipped_power",
+        "capital_cost",
+        "fixed_operating_cost",
+        "system_capacity",
+        "system_capacity_ac",
+        "fixed_charge_rate",
+        "variable_operating_cost",
+        "dc_ac_ratio"
+    ],
+    "site_data": null,
+    "curtailment": null,
+    "gid_map": null,
+    "drop_leap": false,
+    "scale_outputs": true,
+    "write_mapped_gids": false,
+    "bias_correct": null,
+    "analysis_years": [
+        2018,
+        2019
+    ]
+}

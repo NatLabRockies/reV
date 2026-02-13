@@ -1,0 +1,39 @@
+{
+    "execution_control": {
+        "option": "awspc",
+        "allocation": "na",
+        "walltime": 0.25,
+        "qos": "normal",
+        "memory": null,
+        "queue": null,
+        "feature": null,
+        "conda_env": null,
+        "module": null,
+        "sh_script": null,
+        "keep_sh": false,
+        "num_test_nodes": null
+    },
+    "clobber": true,
+    "log_directory": "./logs",
+    "log_level": "INFO",
+    "groups":  {
+        "none": {
+            "dsets": [
+                "cf_profile",
+                "cf_mean",
+                "ws_mean",
+                "lcoe_fcr",
+            ],
+            "source_dir": "./",
+            "source_files": "PIPELINE",
+            "source_prefix": "",
+            "pass_through_dsets": [
+                "capital_cost",
+                "fixed_operating_cost",
+                "system_capacity",
+                "fixed_charge_rate",
+                "variable_operating_cost",
+            ]
+        }
+    }
+}

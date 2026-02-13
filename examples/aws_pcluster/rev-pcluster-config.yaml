@@ -1,0 +1,68 @@
+# AWS ParallelCluster Documentation:
+# For the most recent AWS parallel cluster docs see: https://docs.aws.amazon.com/parallelcluster/latest/ug/cluster-configuration-file-v3.html
+# See latest config examples: https://github.com/aws/aws-parallelcluster/tree/release-3.0/cli/tests/pcluster/example_configs
+
+Region: us-west-2
+
+Image:
+  Os: ubuntu2404
+
+HeadNode:
+  InstanceType: t3.large
+  Ssh:
+    KeyName: rev-pcluster-edkey  # Replace with your keypair name (Required)
+  Networking:
+    SubnetId: subnet-xxxxxxxxxxxxxxxxx  # Subnet for head node
+  Iam:
+    AdditionalIamPolicies:
+      - Policy: arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: standard
+      Networking:
+        SubnetIds:
+          - subnet-xxxxxxxxxxxxxxxxx  # subnet for compute nodes
+        PlacementGroup:
+          Enabled: true   # v2: placement_group = DYNAMIC
+      ComputeResources:
+        - Name: standard
+          InstanceType: c6a.12xlarge
+          MinCount: 0
+          MaxCount: 10
+          DisableSimultaneousMultithreading: true  # disable hyperthreading
+      Iam:
+        AdditionalIamPolicies:
+          - Policy: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+    - Name: bigmem
+      Networking:
+        SubnetIds:
+          - subnet-xxxxxxxxxxxxxxxxx
+        PlacementGroup:
+          Enabled: true
+      ComputeResources:
+        - Name: bigmem
+          InstanceType: m6a.12xlarge
+          MinCount: 0
+          MaxCount: 10
+          DisableSimultaneousMultithreading: true
+      Iam:
+        AdditionalIamPolicies:
+          - Policy: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+SharedStorage:
+  - Name: rev-lustre
+    StorageType: FsxLustre
+    MountDir: /scratch
+    FsxLustreSettings:
+      StorageCapacity: 1200         # 1200 minimal (1200 minimal for SSD, 1800 minimal for HDD when used with 40 throughput)
+      DeploymentType: SCRATCH_2  # SCRATCH_1 | SCRATCH_2 | PERSISTENT_1
+      StorageType: SSD              # SSD | HDD
+
+Tags:
+  - Key:   org
+    Value: "your_organization"
+  - Key:   billingId
+    Value: "xxxxxx"

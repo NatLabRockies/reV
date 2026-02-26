@@ -128,7 +128,7 @@ pygments_style = 'sphinx'
 tls_verify = False
 
 # Avoid warning about api.rst not in TOC
-suppress_warnings = ["toc.not_included"]
+suppress_warnings = ["toc.not_included", "myst.xref_missing"]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -136,7 +136,6 @@ suppress_warnings = ["toc.not_included"]
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

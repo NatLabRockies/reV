@@ -71,6 +71,7 @@ Moving forward, we need to tell the AWS CLI which profile to use for authenticat
 export AWS_PROFILE=profile_name
 ```
 
+<a id="3-configure-ssh-access"></a>
 ## 3) Configure SSH Access
 
 The most direct way to interact with your parallel cluster is through a Secure Shell (SSH) Protocol connection. This will enable to you to both interact with the operating and file systems and to transfer data to and from the cluster. Because subsequent setup steps will require SSH information, it is best to go ahead and address this one before moving on. To do this, assuming you don't have existing keys stored on your computer, you first need to generate a pair (public and private) of SSH keys. There are a few ways to do this, outlined below.
@@ -78,7 +79,7 @@ The most direct way to interact with your parallel cluster is through a Secure S
 > Note: While the most common of these algorithms (the Rivest–Shamir–Adleman cryptosystem or `RSA`) will work for some operating systems, other images on AWS do not allow it and will require you to use a more up-to-date algorithm. In this case, you may use the newer `Ed25519` option, which is based on the Edwards-curve Digital Signature Algorithm. For more on AWS and SSH, see: [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
 
-#### Method #1: Generate a key-pair on your local machine and copy the public key to AWS's Secrets manager
+### Method #1: Generate a key-pair on your local machine and copy the public key to AWS's Secrets manager
 Users on Unix systems may use the built-in `ssh-keygen` command. Windows users may also use this command, though it will require the installation of an OpenSSH server. There are different algorithms and keysizes that you may specify when running this command and which one will be acceptable for your parallel cluster will depend on the security requirements of the operating system you chose when creating it. Here, given the limitations on some operating systems described above, we will generate a Ed25519 key pair with the following command:
 
 ```
@@ -89,10 +90,10 @@ You will be prompted to enter a file in which to save the key pair. You may ente
 
 Following this step, assuming you used the default location, you will find your private key (`id_ed25519`) and public key (`id_25519.pub`) in the hidden `~/.ssh` directory. Open your EC2 portal (search for this in the search bar on the top of the page to the right on the AWS icon) and under "Network & Security" click the "Key Pairs" option. On the top right of this page, you'll find a blue "Actions" button with a dropdown option, use that to navigate to the "Import key pair" page. Give your key a name and either click the browse button to upload your public  key contents or paste the contents directly into the box below this option. Remember this key name, you'll need it when configuring your cluster. Once this is done, click the orange "Import key pair" to the bottom-right and you're done.
 
-#### Method #2: Generate a key-pair through AWS Key Manager and copy the public key to your local machine
+### Method #2: Generate a key-pair through AWS Key Manager and copy the public key to your local machine
 To use AWS to generate a key pair for you, navigate to the same "Key Pairs" page from your EC2 portal, but click the orange "Create key pair" button instead. You will be asked to give the key pair a name, as before, to choose both the encryption algorithm (RSA or ED25519), and to choose the private key format type. Assuming you are using an OpenSSH server, as described thus far, choose the `.pem` extension and click the orange "Create key pair" button at the bottom right. You will see a download screen pop up. Navigate to the location on your file system where'd you like to store the key file. We would suggest the default `~/.ssh` directory, but be careful not to overwrite any existing keys. Once you've finished this step you are done.
 
-#### Method #3: Generate a key-pair on your local machine and copy the public key to AWS
+### Method #3: Generate a key-pair on your local machine and copy the public key to AWS
 The AWS CLI provides an option to import a key pair directly from your terminal. To do this, follow the steps outlined in `Method #1`, but instead of importing your private key in the browser, run the following command:
 
 ```Bash
@@ -104,7 +105,7 @@ For more information on this method, see
 
 
 ## 4) Setup and Deploy the Parallel Cluster
-An AWS Parallel Cluster provides the user a head node that controls the distribution of computational work to a number of compute nodes, each of which are spun up on demand and shutdown after the work is finished. For reV runs, this also requires a shared file system. Once an AWS account is created, the user is able to choose the type of cluster they want and parameterize its characteristics. The following outlines how to configure and spin up a cluster using the AWS CLI, after which you will have access to the head node and file system until you delete the cluster (as outlined in [step 8](#8-aws-parallel-cluster-updating-and-deleting)).
+An AWS Parallel Cluster provides the user a head node that controls the distribution of computational work to a number of compute nodes, each of which are spun up on demand and shutdown after the work is finished. For reV runs, this also requires a shared file system. Once an AWS account is created, the user is able to choose the type of cluster they want and parameterize its characteristics. The following outlines how to configure and spin up a cluster using the AWS CLI, after which you will have access to the head node and file system until you delete the cluster (as outlined in [step 9](#9-aws-parallel-cluster-updating-and-deleting)).
 
 ### 4a) Differences with an HPC
 At this point, it is worthwhile to point out that there are default behaviors in an AWS Parallel Cluster that may differ from what a user with access to an onsite HPC might expect. This can cause some confusion when configuring a reV job since the model was designed specifically to run on NLR HPC systems.
@@ -115,9 +116,10 @@ AWS, however, uses the default SLURM settings and shares nodes between jobs by d
 
 Alternatively, you can tweak a few settings to turn node sharing off. Without having to spin up a new cluster, you may simply set the `memory` option in the reV `execution_control` block to approximately match the available memory on the target compute node. If you want to change the default behavior to be exclusive, you may add `JobExclusiveAllocation = true` to the target SLURM Queue (e.g., standard or bigmem in the example) in your AWS Parallel Cluster configuration file before spinning up your cluster. You may also specify the exclusive node option using the `feature` option in your `execution_control` block by setting the value to `--exclusive`.
 
-Another subtle difference between NLR's Slurm setting and the default parameters used in AWS involves checking out an interactive node. The `salloc` command allows you to manually check out a compute node of your choosing. This may be useful if you wish to monitor a reV job mid-stream or if you'd like to check something like memory overhead before kicking your jobs off. On NLR's HPC systems, this will put you in a resource queue which can take more or less time to get through depending on how many other users are attempting to connect to the same compute nodes on the system. On high-traffic days, this may take a signficant amount of time depending on your node choice, how long you asked to use the resource, and how many other users are trying to checkout the same type of node. On low-traffic days, you may be instantly granted a compute node allocation and will be SSH'd into that node automatically. On an AWS system with default Slurm settings you will not necessarily have to wait for other users, but it will take some time for the node to spin up since these instances aren't on standby as they are on an HPC system. Then, once the node is ready, you will then have to manually log into that node. In this case, you may use the `squeue` command to see the hostname of the machine you checked out and then you can use the `ssh` command to log into it. Slurm settings such as this may be configured to your liking in the [Job Scheduler Section](docs.aws.amazon.com/parallelcluster/latest/ug/Scheduling-v3.html#yaml-Scheduling-Scheduler) of your Parallel Cluster configuration file.
+Another subtle difference between NLR's Slurm setting and the default parameters used in AWS involves checking out an interactive node. The `salloc` command allows you to manually check out a compute node of your choosing. This may be useful if you wish to monitor a reV job mid-stream or if you'd like to check something like memory overhead before kicking your jobs off. On NLR's HPC systems, this will put you in a resource queue which can take more or less time to get through depending on how many other users are attempting to connect to the same compute nodes on the system. On high-traffic days, this may take a signficant amount of time depending on your node choice, how long you asked to use the resource, and how many other users are trying to checkout the same type of node. On low-traffic days, you may be instantly granted a compute node allocation and will be SSH'd into that node automatically. On an AWS system with default Slurm settings you will not necessarily have to wait for other users, but it will take some time for the node to spin up since these instances aren't on standby as they are on an HPC system. Then, once the node is ready, you will then have to manually log into that node. In this case, you may use the `squeue` command to see the hostname of the machine you checked out and then you can use the `ssh` command to log into it. Slurm settings such as this may be configured to your liking in the [Job Scheduler Section](https://docs.aws.amazon.com/parallelcluster/latest/ug/Scheduling-v3.html#yaml-Scheduling-Scheduler) of your Parallel Cluster configuration file.
 
 
+<a id="4b-the-parallel-cluster-configuration-file"></a>
 ### 4b) The Parallel Cluster Configuration File
 
 The next step is to write a YAML configuration file that specifies the build characteristic of the machines and software you wish to wish to deploy (e.g., operating system, disk, RAM, CPUs, job scheduler, etc.). Here, you may use the AWS CLI for a set of command lines prompts that will guide the build process or you may write your own manually. To use the guided process, use the command below or go to [The AWS Parallel Cluster Configuration page](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3-configuring.html) for more detailed instructions.
@@ -134,7 +136,7 @@ To write your own configuration file, you may start with the [example configurat
 
 2. **Image**:
 
-    This section provides an `Os` option for specifying the operating system (OS) you wish to use. The following Linux operating systems are supported in all regions (see [https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html](https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html)). We chose Ubuntu 24.04 in the example configuration because the `HSDS` package is tested on it, but other options may be more suitable depending on your comfort levels with the different Linux options or your institution's setup. Do note that different operating systems use different package managers, so that will affect the contents of the Bash script used to connect reV to the HSDS-stored resource data as described in [section 5](#5-configuring-rev).
+    This section provides an `Os` option for specifying the operating system (OS) you wish to use. The following Linux operating systems are supported in all regions (see [https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html](https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html)). We chose Ubuntu 24.04 in the example configuration because the `HSDS` package is tested on it, but other options may be more suitable depending on your comfort levels with the different Linux options or your institution's setup. Do note that different operating systems use different package managers, so that will affect the contents of the Bash script used to connect reV to the HSDS-stored resource data as described in [section 6](#6-setup-rev).
 
     - `alinux2`: Amazon Linux 2
     - `alinux2023`: Amazon Linux 2023
@@ -163,7 +165,7 @@ To write your own configuration file, you may start with the [example configurat
 
 5. **SharedStorage**
 
-    The final hardware component in the sample Parallel Cluster configuration file specifies disk and file system settings. reV is highly I/O intensive, relying heavily on the file system to write out temporary chunked files from compute nodes or to read in outputs from previous modules into subsequent modules in the modeling pipeline. Here, we have chosen a solid-state drive (SSD) Lustre file system mounted on `/scratch` with 1.2 TB of storage.  We have found that model performance for large-scale reV runs can be severely hampered by sub-optimal file systems and suggest that you stick with this option, though disk size and mount points will, of course, depend on your use-case. More information on this type of filesystem can be found in [AWS's Fsx for Lustre Documentation Page](aws.amazon.com/fsx/lustre/) and more configuration options for this entry in this configuration file can be found on [AWS's SharedStorage page](https://docs.aws.amazon.com/parallelcluster/latest/ug/SharedStorage-v3.html).
+    The final hardware component in the sample Parallel Cluster configuration file specifies disk and file system settings. reV is highly I/O intensive, relying heavily on the file system to write out temporary chunked files from compute nodes or to read in outputs from previous modules into subsequent modules in the modeling pipeline. Here, we have chosen a solid-state drive (SSD) Lustre file system mounted on `/scratch` with 1.2 TB of storage.  We have found that model performance for large-scale reV runs can be severely hampered by sub-optimal file systems and suggest that you stick with this option, though disk size and mount points will, of course, depend on your use-case. More information on this type of filesystem can be found in [AWS's Fsx for Lustre Documentation Page](https://aws.amazon.com/fsx/lustre/) and more configuration options for this entry in this configuration file can be found on [AWS's SharedStorage page](https://docs.aws.amazon.com/parallelcluster/latest/ug/SharedStorage-v3.html).
 
 6. **Tags**
 
@@ -243,6 +245,7 @@ source ~/.bashrc
 arev
 ```
 
+<a id="5b-configure-data-access"></a>
 ### 5b) Configure Data Access
 1. Create an HSDS Configuration file in your home directory called `~/.hscfg` with just the following content:
     ```
@@ -280,6 +283,7 @@ arev
 
 Now you (and reV) should have access to all the resource files in this bucket. You can explore available datasets using the `hsls` command on the remote files and directories in the remote resource directory. For example, `hsls /nrel/` will list out all top-level resource directories and `hsls /nrel/wtk/conus/wtk_conus_2007.h5` will list out all the datasets and shapes in that file (include the trailing slash on directory names).
 
+<a id="6-setup-rev"></a>
 ## 6) Setup reV
 
 In this repository, you'll find an example reV wind power run for two years in Rhode Island. All of the reV configuration files you'll need for this example run are provided. You should be able to just run the model, but you may need to tweak some configurations if you installed files in a different locations from the defaults or if you need to update some execution parameters to better fit your AWS system.
@@ -385,6 +389,7 @@ So, estimating the cost of your reV run or runs will depend both on how long you
 
 For more details on costs see [https://aws.amazon.com/pcs/pricing/](https://aws.amazon.com/pcs/pricing/).
 
+<a id="9-aws-parallel-cluster-updating-and-deleting"></a>
 ## 9) AWS Parallel Cluster Updating and Deleting
 
 If you wish to adjust your cluster's system configuration after setting everything up, you can do so from your local computer's terminal with the AWS CLI. Pause, update, and restart your cluster with the following commands:

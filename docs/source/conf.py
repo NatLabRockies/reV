@@ -59,6 +59,7 @@ extensions = [
     'sphinx_click.ext',
     "sphinx_tabs.tabs",
     "sphinx_copybutton",
+    "myst_parser",
 ]
 
 intersphinx_mapping = {
@@ -122,6 +123,12 @@ exclude_patterns = [
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
+
+# Avoid errors with self-signed certificates
+tls_verify = False
+
+# Avoid warning about api.rst not in TOC
+suppress_warnings = ["toc.not_included"]
 
 # -- Options for HTML output -------------------------------------------------
 

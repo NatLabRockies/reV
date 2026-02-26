@@ -206,7 +206,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'reV.tex', 'reV Documentation',
-     'Michael Rossol, Grant Buster', 'Paul PInchuk', 'manual'),
+     'Michael Rossol, Grant Buster', 'Paul Pinchuk', 'manual'),
 ]
 
 # -- Options for manual page output ------------------------------------------

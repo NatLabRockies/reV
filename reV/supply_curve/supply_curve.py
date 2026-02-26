@@ -70,7 +70,7 @@ class SupplyCurve:
         permutation of transmission costs between supply curve points
         and transmission grid features should be computed using the
         `reVX Least Cost Transmission Paths
-        <https://github.com/NREL/reVX/tree/main/reVX/least_cost_xmission>`_
+        <https://github.com/NatLabRockies/reVX/tree/main/reVX/least_cost_xmission>`_
         utility.
 
         Parameters
@@ -94,7 +94,7 @@ class SupplyCurve:
             transmission mapping. This can also be a list of
             transmission tables with different line voltage (capacity)
             ratings. See the `reVX Least Cost Transmission Paths
-            <https://github.com/NREL/reVX/tree/main/reVX/least_cost_xmission>`_
+            <https://github.com/NatLabRockies/reVX/tree/main/reVX/least_cost_xmission>`_
             utility to generate these input tables.
         sc_features : str | pandas.DataFrame, optional
             Path to CSV or JSON or DataFrame containing additional

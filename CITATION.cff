@@ -42,7 +42,7 @@ authors:
 identifiers:
   - type: doi
     value: 10.5281/zenodo.4501716
-repository-code: 'https://github.com/NREL/reV'
+repository-code: 'https://github.com/NatLabRockies/reV'
 abstract: >-
   reV is an open-source geospatial techno-economic tool that
   estimates energy technical potential (capacity and generation),

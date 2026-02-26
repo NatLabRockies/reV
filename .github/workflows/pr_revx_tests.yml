@@ -15,7 +15,7 @@ jobs:
     - name: checkout reVX
       uses: actions/checkout@v2
       with:
-        repository: nrel/reVX
+        repository: NatLabRockies/reVX
         fetch-depth: 1
         path: reVX
     - name: Set up Python

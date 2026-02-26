@@ -419,7 +419,7 @@ def test_multi_parallel_trans():
     capacity would become small due to the large capacity and the fixed cost
     per line (least cost path lines were specified at cost per km at a given
     discrete capacity rating). This is documented in
-    https://github.com/NREL/reV/issues/336
+    https://github.com/NatLabRockies/reV/issues/336
     """
 
     columns = (

@@ -1,13 +1,13 @@
 Run reV locally
 ===============
 
-`reV Gen <https://nrel.github.io/reV/_autosummary/reV.generation.generation.Gen.html#reV.generation.generation.Gen>`_
-and `reV Econ <https://nrel.github.io/reV/_autosummary/reV.econ.econ.Econ.html#reV.econ.econ.Econ>`_
+`reV Gen <https://natlabrockies.github.io/reV/_autosummary/reV.generation.generation.Gen.html#reV.generation.generation.Gen>`_
+and `reV Econ <https://natlabrockies.github.io/reV/_autosummary/reV.econ.econ.Econ.html#reV.econ.econ.Econ>`_
 can be run locally using resource .h5 files stored locally.
 
 For users outside of NLR: you can now point reV directly to filepaths on S3! This will stream small amounts of data from S3 directly
 to your computer without having to setup an IO server like HSDS. See the example for reading data directly from S3
-`here <https://nrel.github.io/rex/misc/examples.fsspec.html>`_ and try the example below with resource file paths from S3.
+`here <https://natlabrockies.github.io/rex/misc/examples.fsspec.html>`_ and try the example below with resource file paths from S3.
 
 reV Gen
 -------
@@ -61,7 +61,7 @@ coordinates:
     If you get an error saying the resource or SAM file doesn't exist, then you likely
     installed from PyPi and did not get the test data bundled with your download. To
     fix this, simply download the missing files from our
-    `online repository <https://github.com/NREL/reV/tree/main/tests/data>`_.
+    `online repository <https://github.com/NatLabRockies/reV/tree/main/tests/data>`_.
 
 
 pvwatts
@@ -95,6 +95,6 @@ Compute pvcapacity factors for all resource gids in a Rhode Island:
 Command Line Interface (CLI)
 ----------------------------
 
-`reV-gen <https://nrel.github.io/reV/_cli/reV-gen.html#rev-gen>`_
+`reV-gen <https://natlabrockies.github.io/reV/_cli/reV-gen.html#rev-gen>`_
 can also be run from the command line and will output the results to an .h5
-file that can be read with `rex.resource.Resource <https://nrel.github.io/rex/rex/rex.resource.html#rex.resource.Resource>`_.
+file that can be read with `rex.resource.Resource <https://natlabrockies.github.io/rex/rex/rex.resource.html#rex.resource.Resource>`_.

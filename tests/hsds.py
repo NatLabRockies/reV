@@ -2,7 +2,7 @@
 """
 pytests for HSDS resource handling
 requires installing and configuring h5pyd:
-https://github.com/NREL/hsds-examples
+https://github.com/NatLabRockies/hsds-examples
 """
 from datetime import datetime
 

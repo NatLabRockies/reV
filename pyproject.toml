@@ -6,16 +6,16 @@ requires = [
 build-backend = 'setuptools.build_meta'
 
 [project]
-name="NREL-reV"
+name="NLR-reV"
 dynamic = ["version"]
 description = "National Laboratory of the Rockies' (NLR's) reV model"
 readme = {file = "README.rst", content-type = "text/x-rst"}
 authors = [
-  {name = "Galen Maclaurin", email = "galen.maclaurin@nrel.gov"},
+  {name = "Galen Maclaurin", email = "galen.maclaurin@nlr.gov"},
 ]
 maintainers = [
-  {name = "Grant Buster", email = "gbuster@nrel.gov"},
-  {name = "Paul Pinchuk", email = "ppinchuk@nrel.gov"},
+  {name = "Grant Buster", email = "gbuster@nlr.gov"},
+  {name = "Paul Pinchuk", email = "ppinchuk@nlr.gov"},
 ]
 license = "BSD-3-Clause"
 keywords = ["reV", "NLR"]
@@ -31,10 +31,10 @@ classifiers=[
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "NREL-gaps>=0.8.11",
+  "NLR-GAPs>=0.9.1",
   "NREL-NRWAL>=0.0.11",
   "NREL-PySAM~=7.0.0",
-  "NREL-rex>=0.4.0",
+  "NLR-rex>=0.5.0",
   "numpy>=2.0.2,<3",
   "packaging>=24.2,<25",
   "plotly>=6.0.1,<7",
@@ -61,9 +61,9 @@ build = [
 ]
 
 [project.urls]
-homepage = "https://www2.nrel.gov/gis/renewable-energy-potential"
-documentation = "https://nrel.github.io/reV/"
-repository = "https://github.com/NREL/reV"
+homepage = "https://www.nlr.gov/gis/renewable-energy-potential"
+documentation = "https://natlabrockies.github.io/reV/"
+repository = "https://github.com/NatLabRockies/reV"
 
 [project.scripts]
 reV = "reV.cli:main"

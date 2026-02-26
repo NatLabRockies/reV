@@ -12,7 +12,7 @@ National Laboratory of the Rockies. (2020). High Resolution Ocean Surface
 Wave Hindcast (US Wave) Data [data set].  Retrieved from
 https://dx.doi.org/10.15473/1647329.
 
-`NRWAL Marine Hydrokinetic Energy Cost Models <https://github.com/NREL/NRWAL/tree/main/NRWAL/default_configs/marine_energy>`_
+`NRWAL Marine Hydrokinetic Energy Cost Models <https://github.com/NatLabRockies/NRWAL/tree/main/NRWAL/default_configs/marine_energy>`_
 
 `PySAM MHK Wave Energy Model <https://nrel-pysam.readthedocs.io/en/2.0.2/modules/MhkWave.html>`_
 

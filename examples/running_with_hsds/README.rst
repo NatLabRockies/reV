@@ -11,7 +11,7 @@ You can use the NLR developer API as the HSDS endpoint for small workloads
 or stand up your own HSDS local server (instructions further below) for an
 enhanced parallelized data experience.
 
-For general information on where to get started accessing NLR data from outside of NLR, see the `rex docs <https://natlabrockies.github.io/rex/misc/examples.nrel_data.html#data-location-external-users>`_.
+For general information on where to get started accessing NLR data from outside of NLR, see the `rex docs <https://natlabrockies.github.io/rex/misc/examples.nlr_data.html#data-location-external-users>`_.
 
 You might also be interested in these examples of how to set up your own `local HSDS server <https://natlabrockies.github.io/rex/misc/examples.hsds.html#setting-up-a-local-hsds-server>`_ and how to run reV on an `AWS parallel cluster <https://natlabrockies.github.io/reV/misc/examples.aws_pcluster.html>`_.
 

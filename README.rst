@@ -161,7 +161,7 @@ to assist with data preparation and analysis:
 - `reVRt <https://natlabrockies.github.io/reVRt/>`_ - reV routing tool used to compute transmission costs
 - `NRWAL <https://natlabrockies.github.io/NRWAL/>`_ - Equation Library for detailed cost analysis (offshore, hydrogen, etc.)
 - `reVeal <https://natlabrockies.github.io/reVeal/>`_ - reV extension for load analysis and land characterization
-- `reVReports <https://github.com/NatLabRockies/reVReports>`_ - Tool for generating publication-ready maps of reV supply curve outputs
+- `reVReports <https://natlabrockies.github.io/reVReports/>`_ - Tool for generating publication-ready maps of reV supply curve outputs
 - `reView <https://github.com/NatLabRockies/reView>`_ - Dashboard for interactive visualization of reV supply curve outputs
 - `reV tutorial <https://github.com/NatLabRockies/reV-tutorial>`_ - Collection of tutorials for learning how to use reV
 - `gaps <https://natlabrockies.github.io/gaps/>`_ - Underlying reV pipeline job submission and management system

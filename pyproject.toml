@@ -51,6 +51,15 @@ dev = [
   "pre-commit",
   "pylint",
 ]
+doc = [
+  "ghp-import>=2.1.0,<3",
+  "myst-parser>=5.0.0",
+  "sphinx>=8.2.3,<9",
+  "sphinx-click>=6.0.0,<7",
+  "sphinx-copybutton>=0.5.2,<0.6",
+  "sphinx-tabs>=3.4.1,<4",
+  "sphinx_rtd_theme>=3.1.0,<4",
+]
 hsds = [
   "hsds>=0.8.4,<1",
 ]

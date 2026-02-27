@@ -45,7 +45,7 @@ def trace_run(src, hfun, ntime=1, nsites=2000):
     tracemalloc.start()
     with hfun(src) as ds:
         if hfun.__name__ == "Resource":
-            ghi = ds["ghi", ::ntime, :nsites]    
+            ghi = ds["ghi", ::ntime, :nsites]
         else:
             ghi = ds["ghi"][::ntime, :nsites]
     data_size = sys.getsizeof(ghi)
@@ -64,7 +64,7 @@ def main(remote=True):
     Parameters
     ----------
     remote : bool
-        Attempt to read from NREL's remote HSDS server. Defaults to False,
+        Attempt to read from NLR's remote HSDS server. Defaults to False,
         which will attempt to read from a local file.
     """
     if remote:

@@ -3,7 +3,7 @@
 PyTest file wind generation directly from s3 file
 
 Note that this directly tests the example here:
-    https://nrel.github.io/reV/misc/examples.running_locally.html
+    https://natlabrockies.github.io/reV/misc/examples.running_locally.html
 """
 
 import os

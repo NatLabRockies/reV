@@ -1,7 +1,7 @@
 #!/bin/bash
 # shellcheck disable=SC2155
 #
-# Install and start a local NREL Public Data Service with HSDS.
+# Install and start a local NLR Public Data Service with HSDS.
 # Ubuntu 24.04
 # Online Data Browser:
 #     https://data.openei.org/s3_viewer?bucket=nrel-pds-hsds&prefix=nrel

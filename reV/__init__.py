@@ -19,7 +19,7 @@ from reV.supply_curve import (Aggregation, ExclusionMask,
 from reV.version import __version__
 
 __author__ = """Galen Maclaurin"""
-__email__ = "galen.maclaruin@nrel.gov"
+__email__ = "galen.maclaruin@nlr.gov"
 
 
 REVDIR = os.path.dirname(os.path.realpath(__file__))

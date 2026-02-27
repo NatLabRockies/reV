@@ -11,11 +11,11 @@ You can use the NLR developer API as the HSDS endpoint for small workloads
 or stand up your own HSDS local server (instructions further below) for an
 enhanced parallelized data experience.
 
-For general information on where to get started accessing NLR data from outside of NLR, see the `rex docs <https://nrel.github.io/rex/misc/examples.nrel_data.html#data-location-external-users>`_.
+For general information on where to get started accessing NLR data from outside of NLR, see the `rex docs <https://natlabrockies.github.io/rex/misc/examples.nlr_data.html#data-location-external-users>`_.
 
-You might also be interested in these examples of how to set up your own `local HSDS server <https://nrel.github.io/rex/misc/examples.hsds.html#setting-up-a-local-hsds-server>`_ and how to run reV on an `AWS parallel cluster <https://nrel.github.io/reV/misc/examples.aws_pcluster.html>`_.
+You might also be interested in these examples of how to set up your own `local HSDS server <https://natlabrockies.github.io/rex/misc/examples.hsds.html#setting-up-a-local-hsds-server>`_ and how to run reV on an `AWS parallel cluster <https://natlabrockies.github.io/reV/misc/examples.aws_pcluster.html>`_.
 
-Note that running directly from S3 files will be an easier solution although not as performant. For more details on running directly from S3 files see `running reV locally <https://nrel.github.io/reV/misc/examples.running_locally.html>`_ and the `rex s3 example <https://nrel.github.io/rex/misc/examples.fsspec.html>`_
+Note that running directly from S3 files will be an easier solution although not as performant. For more details on running directly from S3 files see `running reV locally <https://natlabrockies.github.io/reV/misc/examples.running_locally.html>`_ and the `rex s3 example <https://natlabrockies.github.io/rex/misc/examples.fsspec.html>`_
 
 Setting up HSDS
 ---------------
@@ -41,16 +41,16 @@ To get your own API key, visit https://developer.nrel.gov/signup/
 
 Please note that our HSDS service is for demonstration purposes only. The API in the example above is hosted on an NLR server and will have limits on the amount of data you can access via HSDS. It is common to get an error: ``OSError: Error retrieving data: None errors`` if you attempt to access too much data or if the server is busy. Here are two references for scaling reV using HSDS and AWS:
 
-#. `Setup your own HSDS server on your personal computer <https://nrel.github.io/rex/misc/examples.hsds.html#>`_
-#. `Run reV on the AWS Parallel Cluster Infrastructure <https://nrel.github.io/reV/misc/examples.aws_pcluster.html>`_
+#. `Setup your own HSDS server on your personal computer <https://natlabrockies.github.io/rex/misc/examples.hsds.html#>`_
+#. `Run reV on the AWS Parallel Cluster Infrastructure <https://natlabrockies.github.io/reV/misc/examples.aws_pcluster.html>`_
 
 Using HSDS with reV
 -------------------
 
-Once h5pyd has been installed and configured, `rex <https://github.com/nrel/rex>`_
-can pull data directly from AWS using `HSDS <https://github.com/NREL/hsds-examples>`_
+Once h5pyd has been installed and configured, `rex <https://github.com/NatLabRockies/rex>`_
+can pull data directly from AWS using `HSDS <https://github.com/NatLabRockies/hsds-examples>`_
 To access the resource data used by reV (NSRDB or WTK) you have to turn on the
-``hsds`` flag in the `resource handlers <https://nrel.github.io/rex/rex/rex.renewable_resource.html>`_:
+``hsds`` flag in the `resource handlers <https://natlabrockies.github.io/rex/rex/rex.renewable_resource.html>`_:
 
 .. code-block:: python
 
@@ -62,12 +62,12 @@ To access the resource data used by reV (NSRDB or WTK) you have to turn on the
 reV Gen
 -------
 
-reV generation (`reV.Gen <https://nrel.github.io/reV/_autosummary/reV.generation.html>`_)
+reV generation (`reV.Gen <https://natlabrockies.github.io/reV/_autosummary/reV.generation.html>`_)
 will automatically infer if a file path is locally on disk or from HSDS.
 
 Note that for all of these examples, the ``sam_file`` input points to files in
 the
-`reV test directory <https://github.com/NREL/reV/tree/master/tests/data/SAM>`_
+`reV test directory <https://github.com/NatLabRockies/reV/tree/master/tests/data/SAM>`_
 that may not be copied in your install. You may want to download the relevant
 SAM system configs from that directory and point the ``sam_file`` variable to
 the correct filepath on your computer.
@@ -151,6 +151,6 @@ Compute pvcapacity factors for all resource gids in a Rhode Island:
 Command Line Interface (CLI)
 ----------------------------
 
-`reV-gen <https://nrel.github.io/reV/_cli/reV-gen.html#rev-gen>`_
+`reV-gen <https://natlabrockies.github.io/reV/_cli/reV-gen.html#rev-gen>`_
 can also be run from the command line and will output the results to an .h5
-file that can be read with `rex.resource.Resource <https://nrel.github.io/rex/rex/rex.resource.html#rex.resource.Resource>`_.
+file that can be read with `rex.resource.Resource <https://natlabrockies.github.io/rex/rex/rex.resource.html#rex.resource.Resource>`_.

@@ -39,7 +39,7 @@ def test_gen_swh_non_leap_year():
     gen.run(max_workers=1)
 
     # Some updates to SWH in this patch:
-    # https://github.com/NREL/ssc/commit/
+    # https://github.com/NatLabRockies/ssc/commit/
     # c2c1d28b7f8ba22a8f78f26e8bbd0cc404283816
     # so we only check some of the datasets
     to_check_dsets = ('T_amb', 'draw', 'beam', 'diffuse', 'I_incident',

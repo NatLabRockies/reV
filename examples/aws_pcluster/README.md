@@ -71,6 +71,7 @@ Moving forward, we need to tell the AWS CLI which profile to use for authenticat
 export AWS_PROFILE=profile_name
 ```
 
+<a id="3-configure-ssh-access"></a>
 ## 3) Configure SSH Access
 
 The most direct way to interact with your parallel cluster is through a Secure Shell (SSH) Protocol connection. This will enable to you to both interact with the operating and file systems and to transfer data to and from the cluster. Because subsequent setup steps will require SSH information, it is best to go ahead and address this one before moving on. To do this, assuming you don't have existing keys stored on your computer, you first need to generate a pair (public and private) of SSH keys. There are a few ways to do this, outlined below.
@@ -78,7 +79,7 @@ The most direct way to interact with your parallel cluster is through a Secure S
 > Note: While the most common of these algorithms (the Rivest–Shamir–Adleman cryptosystem or `RSA`) will work for some operating systems, other images on AWS do not allow it and will require you to use a more up-to-date algorithm. In this case, you may use the newer `Ed25519` option, which is based on the Edwards-curve Digital Signature Algorithm. For more on AWS and SSH, see: [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
 
-#### Method #1: Generate a key-pair on your local machine and copy the public key to AWS's Secrets manager
+### Method #1: Generate a key-pair on your local machine and copy the public key to AWS's Secrets manager
 Users on Unix systems may use the built-in `ssh-keygen` command. Windows users may also use this command, though it will require the installation of an OpenSSH server. There are different algorithms and keysizes that you may specify when running this command and which one will be acceptable for your parallel cluster will depend on the security requirements of the operating system you chose when creating it. Here, given the limitations on some operating systems described above, we will generate a Ed25519 key pair with the following command:
 
 ```
@@ -89,10 +90,10 @@ You will be prompted to enter a file in which to save the key pair. You may ente
 
 Following this step, assuming you used the default location, you will find your private key (`id_ed25519`) and public key (`id_25519.pub`) in the hidden `~/.ssh` directory. Open your EC2 portal (search for this in the search bar on the top of the page to the right on the AWS icon) and under "Network & Security" click the "Key Pairs" option. On the top right of this page, you'll find a blue "Actions" button with a dropdown option, use that to navigate to the "Import key pair" page. Give your key a name and either click the browse button to upload your public  key contents or paste the contents directly into the box below this option. Remember this key name, you'll need it when configuring your cluster. Once this is done, click the orange "Import key pair" to the bottom-right and you're done.
 
-#### Method #2: Generate a key-pair through AWS Key Manager and copy the public key to your local machine
-To use AWS to generate a key pair for you, navigate to the same "Key Pairs" page from your EC2 portal, but click the orange "Create key pair" button instead. You will be asked to give the key pair a name, as before, to choose both the encryption algorithm (RSA or ED25519), and to choose the private key format type. Assuming you are using an OpenSSH server, as described thus far, choose the `.pem` extension and click the orange "Create key pair" button at the bottom right. You will see a download screen pop up. Navigate to the location on your file system where'd you like to store the key file. We would suggest the default `~/.ssh` directory, but be careful not to overwrite any existing keys. Once you've finished this step you are done. 
+### Method #2: Generate a key-pair through AWS Key Manager and copy the public key to your local machine
+To use AWS to generate a key pair for you, navigate to the same "Key Pairs" page from your EC2 portal, but click the orange "Create key pair" button instead. You will be asked to give the key pair a name, as before, to choose both the encryption algorithm (RSA or ED25519), and to choose the private key format type. Assuming you are using an OpenSSH server, as described thus far, choose the `.pem` extension and click the orange "Create key pair" button at the bottom right. You will see a download screen pop up. Navigate to the location on your file system where'd you like to store the key file. We would suggest the default `~/.ssh` directory, but be careful not to overwrite any existing keys. Once you've finished this step you are done.
 
-#### Method #3: Generate a key-pair on your local machine and copy the public key to AWS
+### Method #3: Generate a key-pair on your local machine and copy the public key to AWS
 The AWS CLI provides an option to import a key pair directly from your terminal. To do this, follow the steps outlined in `Method #1`, but instead of importing your private key in the browser, run the following command:
 
 ```Bash
@@ -104,7 +105,7 @@ For more information on this method, see
 
 
 ## 4) Setup and Deploy the Parallel Cluster
-An AWS Parallel Cluster provides the user a head node that controls the distribution of computational work to a number of compute nodes, each of which are spun up on demand and shutdown after the work is finished. For reV runs, this also requires a shared file system. Once an AWS account is created, the user is able to choose the type of cluster they want and parameterize its characteristics. The following outlines how to configure and spin up a cluster using the AWS CLI, after which you will have access to the head node and file system until you delete the cluster (as outlined in [step 8](#8-aws-parallel-cluster-updating-and-deleting)).
+An AWS Parallel Cluster provides the user a head node that controls the distribution of computational work to a number of compute nodes, each of which are spun up on demand and shutdown after the work is finished. For reV runs, this also requires a shared file system. Once an AWS account is created, the user is able to choose the type of cluster they want and parameterize its characteristics. The following outlines how to configure and spin up a cluster using the AWS CLI, after which you will have access to the head node and file system until you delete the cluster (as outlined in [step 9](#9-aws-parallel-cluster-updating-and-deleting)).
 
 ### 4a) Differences with an HPC
 At this point, it is worthwhile to point out that there are default behaviors in an AWS Parallel Cluster that may differ from what a user with access to an onsite HPC might expect. This can cause some confusion when configuring a reV job since the model was designed specifically to run on NLR HPC systems.
@@ -115,9 +116,10 @@ AWS, however, uses the default SLURM settings and shares nodes between jobs by d
 
 Alternatively, you can tweak a few settings to turn node sharing off. Without having to spin up a new cluster, you may simply set the `memory` option in the reV `execution_control` block to approximately match the available memory on the target compute node. If you want to change the default behavior to be exclusive, you may add `JobExclusiveAllocation = true` to the target SLURM Queue (e.g., standard or bigmem in the example) in your AWS Parallel Cluster configuration file before spinning up your cluster. You may also specify the exclusive node option using the `feature` option in your `execution_control` block by setting the value to `--exclusive`.
 
-Another subtle difference between NLR's Slurm setting and the default parameters used in AWS involves checking out an interactive node. The `salloc` command allows you to manually check out a compute node of your choosing. This may be useful if you wish to monitor a reV job mid-stream or if you'd like to check something like memory overhead before kicking your jobs off. On NLR's HPC systems, this will put you in a resource queue which can take more or less time to get through depending on how many other users are attempting to connect to the same compute nodes on the system. On high-traffic days, this may take a signficant amount of time depending on your node choice, how long you asked to use the resource, and how many other users are trying to checkout the same type of node. On low-traffic days, you may be instantly granted a compute node allocation and will be SSH'd into that node automatically. On an AWS system with default Slurm settings you will not necessarily have to wait for other users, but it will take some time for the node to spin up since these instances aren't on standby as they are on an HPC system. Then, once the node is ready, you will then have to manually log into that node. In this case, you may use the `squeue` command to see the hostname of the machine you checked out and then you can use the `ssh` command to log into it. Slurm settings such as this may be configured to your liking in the [Job Scheduler Section](docs.aws.amazon.com/parallelcluster/latest/ug/Scheduling-v3.html#yaml-Scheduling-Scheduler) of your Parallel Cluster configuration file.
+Another subtle difference between NLR's Slurm setting and the default parameters used in AWS involves checking out an interactive node. The `salloc` command allows you to manually check out a compute node of your choosing. This may be useful if you wish to monitor a reV job mid-stream or if you'd like to check something like memory overhead before kicking your jobs off. On NLR's HPC systems, this will put you in a resource queue which can take more or less time to get through depending on how many other users are attempting to connect to the same compute nodes on the system. On high-traffic days, this may take a signficant amount of time depending on your node choice, how long you asked to use the resource, and how many other users are trying to checkout the same type of node. On low-traffic days, you may be instantly granted a compute node allocation and will be SSH'd into that node automatically. On an AWS system with default Slurm settings you will not necessarily have to wait for other users, but it will take some time for the node to spin up since these instances aren't on standby as they are on an HPC system. Then, once the node is ready, you will then have to manually log into that node. In this case, you may use the `squeue` command to see the hostname of the machine you checked out and then you can use the `ssh` command to log into it. Slurm settings such as this may be configured to your liking in the [Job Scheduler Section](https://docs.aws.amazon.com/parallelcluster/latest/ug/Scheduling-v3.html#yaml-Scheduling-Scheduler) of your Parallel Cluster configuration file.
 
 
+<a id="4b-the-parallel-cluster-configuration-file"></a>
 ### 4b) The Parallel Cluster Configuration File
 
 The next step is to write a YAML configuration file that specifies the build characteristic of the machines and software you wish to wish to deploy (e.g., operating system, disk, RAM, CPUs, job scheduler, etc.). Here, you may use the AWS CLI for a set of command lines prompts that will guide the build process or you may write your own manually. To use the guided process, use the command below or go to [The AWS Parallel Cluster Configuration page](https://docs.aws.amazon.com/parallelcluster/latest/ug/install-v3-configuring.html) for more detailed instructions.
@@ -126,15 +128,15 @@ The next step is to write a YAML configuration file that specifies the build cha
 pcluster configure --config ./cluster-config.yaml
 ```
 
-To write your own configuration file, you may start with the [example configuration file](https://github.com/NREL/reV-tutorial/blob/master/tutorial_13_rev_in_cloud/rev-pcluster-config.yaml) provided for you in this repository. Each configuration section used in the example is briefly described below along with some notes on reV-specific considerations. For more information on how to specify your cluster to your needs please visit the latest [AWS documentation](https://docs.aws.amazon.com/parallelcluster/latest/ug/cluster-configuration-file-v3.html) and take a look at some AWS-provided [example configuration files](https://github.com/aws/aws-parallelcluster/tree/release-3.0/cli/tests/pcluster/example_configs).
+To write your own configuration file, you may start with the [example configuration file](https://github.com/NatLabRockies/reV-tutorial/blob/master/tutorial_13_rev_in_cloud/rev-pcluster-config.yaml) provided for you in this repository. Each configuration section used in the example is briefly described below along with some notes on reV-specific considerations. For more information on how to specify your cluster to your needs please visit the latest [AWS documentation](https://docs.aws.amazon.com/parallelcluster/latest/ug/cluster-configuration-file-v3.html) and take a look at some AWS-provided [example configuration files](https://github.com/aws/aws-parallelcluster/tree/release-3.0/cli/tests/pcluster/example_configs).
 
 1. **Region**:
 
-    This is a top-level entry specifying the region of the data center that holds your cluster's hardware. See Amazon's Global Infrastructure page for a map showing all regions [here](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/). We suggest that you use "us-west-2", which is in Oregon, to reduce data transfer latency in the reV generation step (this is where the NLR resource data is stored). 
+    This is a top-level entry specifying the region of the data center that holds your cluster's hardware. See Amazon's Global Infrastructure page for a map showing all regions [here](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/). We suggest that you use "us-west-2", which is in Oregon, to reduce data transfer latency in the reV generation step (this is where the NLR resource data is stored).
 
 2. **Image**:
 
-    This section provides an `Os` option for specifying the operating system (OS) you wish to use. The following Linux operating systems are supported in all regions (see [https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html](https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html)). We chose Ubuntu 24.04 in the example configuration because the `HSDS` package is tested on it, but other options may be more suitable depending on your comfort levels with the different Linux options or your institution's setup. Do note that different operating systems use different package managers, so that will affect the contents of the Bash script used to connect reV to the HSDS-stored resource data as described in [section 5](#5-configuring-rev).
+    This section provides an `Os` option for specifying the operating system (OS) you wish to use. The following Linux operating systems are supported in all regions (see [https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html](https://docs.aws.amazon.com/parallelcluster/latest/ug/Image-v3.html)). We chose Ubuntu 24.04 in the example configuration because the `HSDS` package is tested on it, but other options may be more suitable depending on your comfort levels with the different Linux options or your institution's setup. Do note that different operating systems use different package managers, so that will affect the contents of the Bash script used to connect reV to the HSDS-stored resource data as described in [section 6](#6-setup-rev).
 
     - `alinux2`: Amazon Linux 2
     - `alinux2023`: Amazon Linux 2023
@@ -150,24 +152,24 @@ To write your own configuration file, you may start with the [example configurat
     This section describes the hardware and behavior of the "head" node, which is very similar to the "login" node many HPC users are likely accustomed to. This node does not need the highest performing hardware in your cluster. It only requires needs enough power to allow the user to comfortably navigate the file system, move files around, and to provide reV enough computational resource to efficiently submit jobs to the compute node. The hardware chosen in this example configuration (`t3.large`) is a general purpose, low-cost option with 2 virtual CPUs and 8 GiB of memory. This is "burstable" class of EC2 resources, which charges based on usage and is perfect for a reV head node setup with only periodic file editing and job submission activity. See the Amazon documentation for the [T3 EC2 Instance Class](https://aws.amazon.com/ec2/instance-types/t3/) for more information about this component.
 
     > Note that this section is also where you will specify the name of the SSH key-pair you created in [section 3](#3-configure-ssh-access). This entry is found in the `Ssh` subsection (`KeyName`).
-    
+
     > Make sure to replace the `SubnetId` value in the `Networking` subsection with the appropriate value given to you by your system administrator or (where would you find this?)
 
     > Note that we are using read-only access for S3 buckets in this configuration (`AmazonS3ReadOnlyAccess`). This is because we are writing our reV outputs to the shared file system and only use S3 to access the resource data. If, for any reason, you need to elevate or refine your access privileges, change the `AdditionalIamPolicies` `Policy` entries to something more permissible. You may also add additional policies to fit your needs. See all available options here: [https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/policy-list.html).
 
 4. **Scheduling**
 
-    A job scheduler is used to distribute computational work to the compute nodes and monitor usage. For multi-user setups, it also handles and prioritizes user requests for resources in a job "queue". This configuration section allows the user to both specify the job scheduler and each compute node that will be managed by that scheduler. In the example setup, the Slurm (originally, an acronym for Simple Linux Utility for Resource Management) job scheduler was used. The AWS Batch scheduler is also available, though this choice will change the configuration parameters needed and is only available on Amazon Linux images. In this section you'll see two different `SlurmQueues` entries; these are two SLURM-managed compute nodes used for different scale reV runs. The first we're calling the `standard` node and it uses a `c6a.12xlarge` EC2 instance. This is a moderately sized setup (48 CPUs, 96 GiB RAM) based on the 3rd generation AMD EPYC processors, which were originally released in 2021 and are suitable for standard reV wind and solar runs at a national scale (i.e., the Contiguous United States). See the AWS entry for the c6a EC2 class [here](https://aws.amazon.com/ec2/instance-types/c6a/). The second entry in the sample config is called the `bigmem` node and uses an m6a.12xlarge EC2 instance which provides 48 EPYC vCPUs as well but increases the available memory to 192 GiB (see [its AWS page here](https://aws.amazon.com/ec2/instance-types/c6a/)). These nodes are more useful for the memory-intensive reV-Bespoke module, which dynamically places individual turbines based on available land, wind resource, and wake losses. The appropriate instance type for your purpose will depend on many factors such as the scale of your reV runs, which modules you wish to use, your budget, etc. 
-        
+    A job scheduler is used to distribute computational work to the compute nodes and monitor usage. For multi-user setups, it also handles and prioritizes user requests for resources in a job "queue". This configuration section allows the user to both specify the job scheduler and each compute node that will be managed by that scheduler. In the example setup, the Slurm (originally, an acronym for Simple Linux Utility for Resource Management) job scheduler was used. The AWS Batch scheduler is also available, though this choice will change the configuration parameters needed and is only available on Amazon Linux images. In this section you'll see two different `SlurmQueues` entries; these are two SLURM-managed compute nodes used for different scale reV runs. The first we're calling the `standard` node and it uses a `c6a.12xlarge` EC2 instance. This is a moderately sized setup (48 CPUs, 96 GiB RAM) based on the 3rd generation AMD EPYC processors, which were originally released in 2021 and are suitable for standard reV wind and solar runs at a national scale (i.e., the Contiguous United States). See the AWS entry for the c6a EC2 class [here](https://aws.amazon.com/ec2/instance-types/c6a/). The second entry in the sample config is called the `bigmem` node and uses an m6a.12xlarge EC2 instance which provides 48 EPYC vCPUs as well but increases the available memory to 192 GiB (see [its AWS page here](https://aws.amazon.com/ec2/instance-types/c6a/)). These nodes are more useful for the memory-intensive reV-Bespoke module, which dynamically places individual turbines based on available land, wind resource, and wake losses. The appropriate instance type for your purpose will depend on many factors such as the scale of your reV runs, which modules you wish to use, your budget, etc.
+
     Detailed information about all options in this section may be found [in AWS Parallel Cluster Scheduling page](https://docs.aws.amazon.com/parallelcluster/latest/ug/Scheduling-v3.html).
 
 5. **SharedStorage**
 
-    The final hardware component in the sample Parallel Cluster configuration file specifies disk and file system settings. reV is highly I/O intensive, relying heavily on the file system to write out temporary chunked files from compute nodes or to read in outputs from previous modules into subsequent modules in the modeling pipeline. Here, we have chosen a solid-state drive (SSD) Lustre file system mounted on `/scratch` with 1.2 TB of storage.  We have found that model performance for large-scale reV runs can be severely hampered by sub-optimal file systems and suggest that you stick with this option, though disk size and mount points will, of course, depend on your use-case. More information on this type of filesystem can be found in [AWS's Fsx for Lustre Documentation Page](aws.amazon.com/fsx/lustre/) and more configuration options for this entry in this configuration file can be found on [AWS's SharedStorage page](https://docs.aws.amazon.com/parallelcluster/latest/ug/SharedStorage-v3.html).
+    The final hardware component in the sample Parallel Cluster configuration file specifies disk and file system settings. reV is highly I/O intensive, relying heavily on the file system to write out temporary chunked files from compute nodes or to read in outputs from previous modules into subsequent modules in the modeling pipeline. Here, we have chosen a solid-state drive (SSD) Lustre file system mounted on `/scratch` with 1.2 TB of storage.  We have found that model performance for large-scale reV runs can be severely hampered by sub-optimal file systems and suggest that you stick with this option, though disk size and mount points will, of course, depend on your use-case. More information on this type of filesystem can be found in [AWS's Fsx for Lustre Documentation Page](https://aws.amazon.com/fsx/lustre/) and more configuration options for this entry in this configuration file can be found on [AWS's SharedStorage page](https://docs.aws.amazon.com/parallelcluster/latest/ug/SharedStorage-v3.html).
 
 6. **Tags**
 
-    The `Tags` section in the configuration file specifies options for resource management in CloudFormation. It is used in the sample config simply to communicate billing information, but may be used for many other management purposes. To learn more about this section, you may start at the [Parallel Cluster Tag Configuration page](https://docs.aws.amazon.com/parallelcluster/latest/ug/Tags-v3.html), which will then direct you to more resources describing CloudFormation and its options. 
+    The `Tags` section in the configuration file specifies options for resource management in CloudFormation. It is used in the sample config simply to communicate billing information, but may be used for many other management purposes. To learn more about this section, you may start at the [Parallel Cluster Tag Configuration page](https://docs.aws.amazon.com/parallelcluster/latest/ug/Tags-v3.html), which will then direct you to more resources describing CloudFormation and its options.
 
 
 
@@ -243,6 +245,7 @@ source ~/.bashrc
 arev
 ```
 
+<a id="5b-configure-data-access"></a>
 ### 5b) Configure Data Access
 1. Create an HSDS Configuration file in your home directory called `~/.hscfg` with just the following content:
     ```
@@ -273,25 +276,26 @@ arev
 4. Test your HSDS local server configuration on your head node. The start HSDS script will run a quick access test on an example NLR resource file, but you may also run any of the subsequent command after it has finished to double check:
 
     - Run the start script: `./start_hsds.sh`
-    - Run `docker ps` and verify that there are active HSDS services (hsds_rangeget_1, hsds_sn_1, hsds_head_1, and an hsds_dn_* node for every available core). 
+    - Run `docker ps` and verify that there are active HSDS services (hsds_rangeget_1, hsds_sn_1, hsds_head_1, and an hsds_dn_* node for every available core).
     - Run `hsinfo` and verify that this doesn’t throw an error
     - Run the a Python access test with `h5pyd`: `test_hsds.py`.
-    - When you're finished testing on the head node, you can run `./start_hsds.sh --stop` to shut the server down. 
+    - When you're finished testing on the head node, you can run `./start_hsds.sh --stop` to shut the server down.
 
 Now you (and reV) should have access to all the resource files in this bucket. You can explore available datasets using the `hsls` command on the remote files and directories in the remote resource directory. For example, `hsls /nrel/` will list out all top-level resource directories and `hsls /nrel/wtk/conus/wtk_conus_2007.h5` will list out all the datasets and shapes in that file (include the trailing slash on directory names).
 
+<a id="6-setup-rev"></a>
 ## 6) Setup reV
 
-In this repository, you'll find an example reV wind power run for two years in Rhode Island. All of the reV configuration files you'll need for this example run are provided. You should be able to just run the model, but you may need to tweak some configurations if you installed files in a different locations from the defaults or if you need to update some execution parameters to better fit your AWS system. 
+In this repository, you'll find an example reV wind power run for two years in Rhode Island. All of the reV configuration files you'll need for this example run are provided. You should be able to just run the model, but you may need to tweak some configurations if you installed files in a different locations from the defaults or if you need to update some execution parameters to better fit your AWS system.
 
 ### 6a) Install reV and configuration files
 Navigate to the shared file system directory and clone this repository there to get the sample reV configuration files and HSDS startup scripts. We want it in the shared directory because this is where we are going to be writing reV outputs. Then, in the same Python environment you installed HSDS into, install reV through PyPI, and run the CLI to check that it works. If you see reV's help file, the installation was successful and works on your system.
 
 ```bash
 cd /scratch/
-git clone https://github.com/NREL/reV-tutorial.git
+git clone https://github.com/NatLabRockies/reV-tutorial.git
 cd reV-tutorial/tutorial_13_rev_in_cloud/
-pip install NREL-reV
+pip install NLR-reV
 reV
 ```
 
@@ -309,7 +313,7 @@ The `sh_script` option in the execution control of a reV configuration file will
 "sh_script": "/scratch/reV-tutorial/tutorial_13_rev_in_cloud/start_hsds.sh",
 ```
 
-> NOTE: The techmap step in `aggregation` should happen on the fly if the HSDS server if running properly, but it might fail if there's a connection issue. In that case, check the techmap dataset in the exclusion file to make sure it was written correctly. Sometimes the techmap step will appear to succeed, but actually fail to write any values to the data array (i.e., you'll see all -1s). In this case, try deleting the techmap from the exclusion file and running again. If that fails, assuming you verified the configuration settings are correct and that HSDS is running properly, you can either try to build the manually or submit an issue to reV's [GitHub repository](https://github.com/NREL/reV/issues).
+> NOTE: The techmap step in `aggregation` should happen on the fly if the HSDS server if running properly, but it might fail if there's a connection issue. In that case, check the techmap dataset in the exclusion file to make sure it was written correctly. Sometimes the techmap step will appear to succeed, but actually fail to write any values to the data array (i.e., you'll see all -1s). In this case, try deleting the techmap from the exclusion file and running again. If that fails, assuming you verified the configuration settings are correct and that HSDS is running properly, you can either try to build the manually or submit an issue to reV's [GitHub repository](https://github.com/NatLabRockies/reV/issues).
 
 
 ### 6c) reV Execution Settings:
@@ -317,7 +321,7 @@ When SLURM is not set to node sharing, there is more responsibility for the the 
 
 - `sites_per_worker`: The number of concurrent process the CPU will run at a time. A higher `sites_per_worker` value requires more memory but will reduce the number of slower I/O processes. If you are getting either low memory utilization or out-of-memory (OOM) errors you can adjust this variable up or down.
 - `max_workers`: The maximum number of CPU cores per node to split reV work across. A higher number of workers will increase the memory overhead used to manage concurrency. If you are getting either low memory utilization or OOM errors you can also adjust this variable up or down.
-- `memory_utilization_limit`: The percentage of available memory at which reV starts dumping data from memory onto disk. Because disk I/O is slower than memory transfers, it can improve runtimes to perform fewer I/O operations by holding more data in memory for longer. However, full memory utilization is not desired because of the possibility for brief memory spikes that can cause OOM errors (either from reV itself or background processes). So, this number can be adjusted up to some percentage of total available memory that leaves enough room for other processes. 
+- `memory_utilization_limit`: The percentage of available memory at which reV starts dumping data from memory onto disk. Because disk I/O is slower than memory transfers, it can improve runtimes to perform fewer I/O operations by holding more data in memory for longer. However, full memory utilization is not desired because of the possibility for brief memory spikes that can cause OOM errors (either from reV itself or background processes). So, this number can be adjusted up to some percentage of total available memory that leaves enough room for other processes.
     > Note: this is the memory utilization at which reV will start dumping data to disk, meaning actual memory use will continue to rise for a period after it starts the write process, so this needs to be somewhat lower than your target threshold (in a full-scale version of the example reV-generation config, this value was set to 70% but actual memory use topped out at about 90%). The proper value will depend on many factors such as your hardware, operating system, other reV execution control settings, and other processes running on the server.
 - `nodes`: The number of nodes you choose will also determine the number of individual processes (reV sites) that each individual node runs. The larger number of nodes, the smaller number of sites on each. On a shared HPC system, a higher number of nodes could result in longer queue times, especially on busy days. More nodes will also result in longer node and process start up times and more chunked files written to the filesystem. More nodes may result in faster model runs according to your wall clock, but they could increase overall computational resource costs given the overhead mentioned above.
 - `pool_size`: This is the maximum number of processes to submit to the `concurrent.futures.ProcessPoolExecutor` on any one node at a time. Lowering this value will help to reduce parallel process memory overhead, but will result in somewhat longer runtimes since some CPU workers at the end of each process pool execution will remain idle until the last processes are finished and the next pool is submitted.
@@ -328,7 +332,7 @@ When SLURM is set to share nodes, additional resources left on any one node may 
 
 HSDS has certain request limits that you may have to either account for or adjust to perform large-scale reV runs. These values are stored in `hsds/admin/config/config.yml` in the HSDS repository. There are 106 such settings, but here are few to start:
 
-- `max_tcp_connections`: Max number of inflight Transmission Control Protocol (TCP) connections. 
+- `max_tcp_connections`: Max number of inflight Transmission Control Protocol (TCP) connections.
 - `max_pending_write_requests`: Maxium number of inflight write requests.
 - `max_task_count`: Maximum number of concurrent tasks per node before the server will return a 503 (Service Unavailable) error.
 - `max_tasks_per_node_per_request`:  Maximum number of inflight tasks to each node per request.
@@ -337,7 +341,7 @@ A common problem you might come across is a violation of the max HSDS task count
 
 ### 7) Run reV
 
-If everything was configured correctly, you should be able to run the example run! Here, we are running the reV pipeline so that it monitors progress on the compute nodes (and successful modules kick off subsequent modules automatically) as a background process. 
+If everything was configured correctly, you should be able to run the example run! Here, we are running the reV pipeline so that it monitors progress on the compute nodes (and successful modules kick off subsequent modules automatically) as a background process.
 
 ```bash
 cd wind/
@@ -345,7 +349,7 @@ reV pipeline -c config_pipeline.json --monitor --background
 ```
 
 
-## 8) Costs 
+## 8) Costs
 
 In this setup, there are four main sets of costs or fees for running reV on an AWS Parallel Cluster:
 
@@ -354,10 +358,10 @@ In this setup, there are four main sets of costs or fees for running reV on an A
 4) Constant hourly and storage-based SLURM accounting fees.
 5) Various other AWS programs that provide services such as DNS resolution, system monitoring, threat detection, etc.
 
-So, estimating the cost of your reV run or runs will depend both on how long you incur constant costs while your cluster is deployed and how many intermittant costs you incur from the reV runs themselves. These prices will also vary depending on many factors such as your hardware, time, and location. To provide a rough estimate of how much a reV run might cost you, a set of national-scale runs was performed and the resulting costs are summarized below. 
+So, estimating the cost of your reV run or runs will depend both on how long you incur constant costs while your cluster is deployed and how many intermittant costs you incur from the reV runs themselves. These prices will also vary depending on many factors such as your hardware, time, and location. To provide a rough estimate of how much a reV run might cost you, a set of national-scale runs was performed and the resulting costs are summarized below.
 
 ### Test Run Rate Assumptions:
-- **LustreFSx SSD (1.2GB):** $720.13 /month 
+- **LustreFSx SSD (1.2GB):** $720.13 /month
 - **Head node (t3.large):**  $60.74 /month
 - **Compute node (m6a.12xlarge):**  $2.07 /hour *
 - **Compute node (c6a.12xlarge):** $1.84 /hour
@@ -385,12 +389,13 @@ So, estimating the cost of your reV run or runs will depend both on how long you
 
 For more details on costs see [https://aws.amazon.com/pcs/pricing/](https://aws.amazon.com/pcs/pricing/).
 
+<a id="9-aws-parallel-cluster-updating-and-deleting"></a>
 ## 9) AWS Parallel Cluster Updating and Deleting
 
 If you wish to adjust your cluster's system configuration after setting everything up, you can do so from your local computer's terminal with the AWS CLI. Pause, update, and restart your cluster with the following commands:
 
 ```bash
-pcluster list-clusters # For a reminder of the cluster name 
+pcluster list-clusters # For a reminder of the cluster name
 pcluster update-compute-fleet -n cluster_name --status STOP_REQUESTED. # This will take a while
 pcluster update-cluster --cluster-name cluster_name --cluster-configuration /path/to/pcluster-config.yaml
 pcluster update-compute-fleet -n cluster_name --status START_REQUESTED. # So will this
@@ -411,7 +416,7 @@ Of course, if you are fully done with the cluster and wish to shut it down perma
 ## Appendix: Deprecated and Untested Methods
 ### I. Setting up an HSDS Kubernetes Service
 
-Setting up your own HSDS Kubernetes service is one way to run a large reV job with full parallelization. This has not been trialed by the NREL team in full, but we have tested on the HSDS group's Kubernetes cluster. If you want to pursue this route, you can follow the HSDS repository instructions for [HSDS Kubernetes on AWS](https://github.com/HDFGroup/hsds/blob/master/docs/kubernetes_install_aws.md).
+Setting up your own HSDS Kubernetes service is one way to run a large reV job with full parallelization. This has not been trialed by the NLR team in full, but we have tested on the HSDS group's Kubernetes cluster. If you want to pursue this route, you can follow the HSDS repository instructions for [HSDS Kubernetes on AWS](https://github.com/HDFGroup/hsds/blob/master/docs/kubernetes_install_aws.md).
 
 
 ### II. Setting up an HSDS Lambda Service
@@ -474,19 +479,19 @@ Follow these instructions from your Cloud9 environment. None of this is directly
             "Server": "Python/3.8 aiohttp/3.8.1"
           },
           "body": {
-            "start_time": 1637706428, 
+            "start_time": 1637706428,
             "state": "READY",
             "hsds_version": "0.7.0beta",
             "name": "HSDS on AWS Lambda",
             "greeting": "Welcome to HSDS!",
-            "about": "HSDS is a webservice for HDF data", 
+            "about": "HSDS is a webservice for HDF data",
             "node_count": 1,
             "dn_urls": [
                 "http+unix://%2Ftmp%2Fhs1a1c917f%2Fdn_1.sock"
             ],
             "dn_ids": [
                 "dn-001"
-            ], 
+            ],
             "username": "anonymous",
             "isadmin": false
            }

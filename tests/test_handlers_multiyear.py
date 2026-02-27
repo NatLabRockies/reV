@@ -140,7 +140,7 @@ def test_my_collection(source, dset, group):
             out_dsets = f.datasets
 
         msg = "Missing datasets after collection"
-        assert np.in1d(my_dsets, out_dsets).all(), msg
+        assert np.isin(my_dsets, out_dsets).all(), msg
 
 
 # pylint: disable=no-member

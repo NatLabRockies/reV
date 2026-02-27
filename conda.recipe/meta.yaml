@@ -1,5 +1,5 @@
 package:
-    name: nrel-rev
+    name: nlr-rev
     version: {{ environ.get('GIT_DESCRIBE_TAG','').replace('v', '', 1) }}
 
 source:
@@ -15,7 +15,7 @@ requirements:
     - python
     - pip
     - setuptools
-    - NREL-rex
+    - NLR-rex
     - NREL-PySAM
     - NREL-NRWAL
     - packaging
@@ -25,7 +25,7 @@ requirements:
   run:
     - python
     - pip
-    - NREL-rex
+    - NLR-rex
     - NREL-PySAM
     - NREL-NRWAL
     - packaging
@@ -34,8 +34,8 @@ requirements:
     - shapely
 
 about:
-  home: "https://github.com/NREL/reV"
+  home: "https://github.com/NatLabRockies/reV"
   license: BSD 3-Clause
   summary: "The reV Model"
-  doc_url: "https://nrel.github.io/reV"
-  dev_url: "https://github.com/NREL/reV"
+  doc_url: "https://natlabrockies.github.io/reV"
+  dev_url: "https://github.com/NatLabRockies/reV"

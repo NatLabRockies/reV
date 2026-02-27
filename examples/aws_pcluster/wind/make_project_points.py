@@ -1,7 +1,7 @@
-"""Make reV project points for a study area and resoure dataset.
+"""Make reV project points for a study area and resource dataset
 
-This required a running HSDS service that points to NLR's (formerly NREL)
-resource data S3 bucket.
+This required a running HSDS service that points to NLR's resource data
+S3 bucket.
 """
 from pathlib import Path
 
@@ -13,12 +13,12 @@ SAMPLE_FPATH = "/nrel/wtk/conus/wtk_conus_2008.h5"
 
 
 def main(src, state=None):
-    """Write a project points file from an NREL-formatted resource file.
+    """Write a project points file from an NLR-formatted resource file.
 
     Parameters
     ----------
     src : str
-        The file path an NREL-formatted HDF5 resource file. If HSDS is running
+        The file path an NLR-formatted HDF5 resource file. If HSDS is running
         it will attempt to open a remote path, if not it will search for a
         local path. Required.
     state : str

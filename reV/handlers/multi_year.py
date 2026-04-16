@@ -23,7 +23,13 @@ from reV.generation.base import LCOE_REQUIRED_OUTPUTS
 from reV.config.output_request import SAMOutputRequest
 from reV.handlers.outputs import Outputs
 from reV.utilities import ModuleName, log_versions
-from reV.utilities.exceptions import ConfigError, HandlerRuntimeError
+from reV.utilities.exceptions import (
+    CollectionRuntimeError,
+    CollectionValueError,
+    CollectionWarning,
+    ConfigError,
+    HandlerRuntimeError,
+)
 from reV.utilities.cli_functions import add_to_run_attrs
 
 logger = logging.getLogger(__name__)
@@ -172,7 +178,7 @@ class MultiYearGroup:
                        'be collected: {}, pattern: {}'
                        .format(source_files, self._source_pattern))
                 logger.error(msg)
-                raise RuntimeError(msg)
+                raise CollectionRuntimeError(msg)
 
         elif self._source_dir and self._source_prefix:
             source_files = []
@@ -368,7 +374,7 @@ class MultiYear(Outputs):
                         msg = ('Coordinates do not match between '
                                'collection files!')
                         logger.warning(msg)
-                        warn(msg)
+                        warn(msg, CollectionWarning)
 
                 _, ds_dtype, ds_chunks = f_in.get_dset_properties(dset)
                 ds_attrs = f_in.get_attrs(dset=dset)
@@ -411,7 +417,7 @@ class MultiYear(Outputs):
         if not all(fp.endswith('.h5') for fp in source_files):
             msg = ('Non-h5 files cannot be collected: {}'.format(source_files))
             logger.error(msg)
-            raise RuntimeError(msg)
+            raise CollectionRuntimeError(msg)
 
         return source_files
 
@@ -675,8 +681,10 @@ class MultiYear(Outputs):
         source_files = cls.parse_source_files_pattern(source_files)
         with Outputs(source_files[0]) as f:
             if dset not in f.datasets:
-                raise KeyError('Dataset "{}" not found in source file: "{}"'
-                               .format(dset, source_files[0]))
+                raise CollectionValueError(
+                    'Dataset "{}" not found in source file: "{}"'
+                    .format(dset, source_files[0])
+                )
 
             shape, _, _ = f.get_dset_properties(dset)
 
@@ -862,7 +870,7 @@ def my_collect_groups(out_fpath, groups, clobber=True, config_file=None):
         msg = ('Found existing multi-year file: "{}". Removing...'
                .format(str(out_fpath)))
         logger.warning(msg)
-        warn(msg)
+        warn(msg, CollectionWarning)
         os.remove(out_fpath)
 
     out_dir = os.path.dirname(out_fpath)

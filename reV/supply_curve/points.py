@@ -4,6 +4,7 @@
 reV supply curve points frameworks.
 """
 
+import re
 import logging
 from abc import ABC
 from warnings import warn
@@ -2712,3 +2713,34 @@ def _infer_cf_dset_ac(cf_dset):
 
     cf_name = "-".join(parts[:-1])
     return f"{cf_name}_ac-{parts[-1]}"
+
+
+def extract_unique_area_developable_agg_factors(*equations):
+    """Extract unique agg factors from variables
+
+    Agg factors will be extracted for all strings matching the pattern:
+
+        <stat>_agg<integer>_<SupplyCurveField.AREA_SQ_KM>
+
+    Parameters
+    ----------
+    *equations : str
+        One or more equation strings.
+
+    Returns
+    -------
+    set
+        Unique aggregation factors.
+    """
+
+    area_field = re.escape(str(SupplyCurveField.AREA_SQ_KM))
+    pattern = re.compile(rf"\b[a-zA-Z0-9]+_agg(\d+)_{area_field}\b")
+
+    factors = set()
+    for equation in equations:
+        for match in pattern.findall(equation):
+            factor = int(match)
+            if factor not in factors:
+                factors.add(factor)
+
+    return factors

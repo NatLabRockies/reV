@@ -17,6 +17,7 @@ from reV.supply_curve.extent import SupplyCurveExtent
 from reV.supply_curve.points import (
     GenerationSupplyCurvePoint,
     SupplyCurvePoint,
+    extract_unique_area_developable_agg_factors,
 )
 from reV.supply_curve.sc_aggregation import SupplyCurveAggregation
 from reV.utilities import SupplyCurveField
@@ -36,6 +37,54 @@ EXCL_DICT = {
 F_TECHMAP = os.path.join(TESTDATADIR, "sc_out/baseline_ri_tech_map.h5")
 DSET_TM = "res_ri_pv"
 RTOL = 0.001
+
+
+@pytest.mark.parametrize(
+    ("equations", "expected"),
+    [
+        ((), set()),
+        (("",), set()),
+        (("capacity_ac_mw + n_gids",), set()),
+        (
+            (
+                f"mean_agg2_{SupplyCurveField.AREA_SQ_KM}",
+                f"max_agg10_{SupplyCurveField.AREA_SQ_KM}",
+            ),
+            {2, 10},
+        ),
+        (
+            (
+                f"p50_agg2_{SupplyCurveField.AREA_SQ_KM} + "
+                f"std_agg2_{SupplyCurveField.AREA_SQ_KM}",
+                f"min_agg3_{SupplyCurveField.AREA_SQ_KM}",
+            ),
+            {2, 3},
+        ),
+    ],
+)
+def test_extract_unique_area_developable_agg_factors(equations, expected):
+    """Test extraction of valid unique area aggregation factors."""
+
+    assert extract_unique_area_developable_agg_factors(*equations) == expected
+
+
+@pytest.mark.parametrize(
+    "equation",
+    [
+        f"mean_agg_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg-2_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg2.5_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg2_{SupplyCurveField.AREA_SQ_KM}_extra",
+        "mean_agg2_area_sq_miles",
+        f"mean_value_agg2_{SupplyCurveField.AREA_SQ_KM}",
+    ],
+)
+def test_extract_unique_area_developable_agg_factors_invalid_patterns(
+    equation,
+):
+    """Test that near-matches are not extracted as aggregation factors."""
+
+    assert extract_unique_area_developable_agg_factors(equation) == set()
 
 
 @pytest.mark.parametrize("resolution", [7, 32, 50, 64, 163])

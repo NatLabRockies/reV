@@ -2779,7 +2779,7 @@ def extract_unique_area_developable_agg_factors(*equations):
 
     Parameters
     ----------
-    *equations : str
+    *equations : str | None
         One or more equation strings.
 
     Returns
@@ -2793,6 +2793,8 @@ def extract_unique_area_developable_agg_factors(*equations):
 
     factors = set()
     for equation in equations:
+        if not equation:
+            continue
         for match in pattern.findall(equation):
             factor = int(match)
             if factor not in factors:

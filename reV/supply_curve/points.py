@@ -2813,7 +2813,7 @@ def extract_unique_area_developable_agg_factors(*equations):
     for equation in equations:
         if not equation:
             continue
-        for match in pattern.findall(equation):
+        for match in pattern.findall(str(equation)):
             factor = int(match)
             if factor not in factors:
                 factors.add(factor)

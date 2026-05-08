@@ -17,10 +17,13 @@ from reV.supply_curve.extent import SupplyCurveExtent
 from reV.supply_curve.points import (
     GenerationSupplyCurvePoint,
     SupplyCurvePoint,
+    _validate_sub_agg_factors,
     extract_unique_area_developable_agg_factors,
 )
 from reV.supply_curve.sc_aggregation import SupplyCurveAggregation
 from reV.utilities import SupplyCurveField
+from reV.utilities.exceptions import SupplyCurveInputError
+
 
 F_EXCL = os.path.join(TESTDATADIR, "ri_exclusions/ri_exclusions.h5")
 F_GEN = os.path.join(TESTDATADIR, "gen_out/gen_ri_pv_2012_x000.h5")
@@ -85,6 +88,69 @@ def test_extract_unique_area_developable_agg_factors_invalid_patterns(
     """Test that near-matches are not extracted as aggregation factors."""
 
     assert extract_unique_area_developable_agg_factors(equation) == set()
+
+
+@pytest.mark.parametrize("agg_factors", [set(), [], tuple()])
+def test_validate_sub_agg_factors_empty_inputs(agg_factors):
+    """Test that empty agg factor collections are accepted."""
+
+    assert _validate_sub_agg_factors(agg_factors, 64) is None
+
+
+@pytest.mark.parametrize(
+    ("agg_factors", "resolution"),
+    [
+        ({1}, 64),
+        ({2, 4, 8, 16, 32}, 64),
+        ({3, 9}, 27),
+    ],
+)
+def test_validate_sub_agg_factors_valid(agg_factors, resolution):
+    """Test that valid sub-aggregation factors pass validation."""
+
+    assert _validate_sub_agg_factors(agg_factors, resolution) is None
+
+
+@pytest.mark.parametrize("agg_factors", [{64}, {128}, {2, 64}, {2, 128}])
+def test_validate_sub_agg_factors_too_large(agg_factors):
+    """Test that factors >= resolution raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="greater than or equal to the supply curve resolution",
+    ):
+        _validate_sub_agg_factors(agg_factors, 64)
+
+
+@pytest.mark.parametrize("agg_factors", [{3}, {5}, {2, 3}, {6, 10}])
+def test_validate_sub_agg_factors_not_divisible(agg_factors):
+    """Test that non-divisible factors raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="do not divide evenly into the supply curve resolution",
+    ):
+        _validate_sub_agg_factors(agg_factors, 64)
+
+
+def test_validate_sub_agg_factors_too_large_precedes_not_divisible():
+    """Test validation order when both error classes are present."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="greater than or equal to the supply curve resolution",
+    ):
+        _validate_sub_agg_factors({65, 3}, 64)
+
+
+def test_validate_sub_agg_factors_zero_factor_invalid():
+    """Test that zero-valued factors raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="non-positive sub-aggregation factors",
+    ):
+        _validate_sub_agg_factors({0}, 64)
 
 
 @pytest.mark.parametrize("resolution", [7, 32, 50, 64, 163])

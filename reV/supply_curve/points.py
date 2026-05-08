@@ -2738,3 +2738,55 @@ def extract_unique_area_developable_agg_factors(*equations):
                 factors.add(factor)
 
     return factors
+
+
+def _validate_sub_agg_factors(agg_factors, resolution):
+    """Validate sub-aggregation factors for economies of scale
+
+    Parameters
+    ----------
+    agg_factors : set
+        Set of unique sub-aggregation factors to validate.
+    resolution : int
+        Supply curve resolution to validate against.
+
+    Raises
+    ------
+    SupplyCurveInputError
+        If any agg factor is greater than or equal to the resolution, or if
+        any agg factor does not divide evenly into the resolution.
+    """
+    if not agg_factors:
+        return
+
+    agg_factors_non_positive = {f for f in agg_factors if f <= 0}
+    if agg_factors_non_positive:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with non-positive "
+            "sub-aggregation factors. Found sub-agg factors of {} "
+            "with supply curve resolution of {}".format(
+                agg_factors_non_positive, resolution
+            )
+        )
+
+    agg_factors_too_large = {f for f in agg_factors if f >= resolution}
+    if agg_factors_too_large:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with sub-aggregation "
+            "factors greater than or equal to the supply curve "
+            "resolution. Found sub-agg factors of {} with supply "
+            "curve resolution of {}".format(
+                agg_factors_too_large, resolution
+            )
+        )
+
+    agg_factors_not_divisible = {f for f in agg_factors if resolution % f != 0}
+    if agg_factors_not_divisible:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with sub-aggregation "
+            "factors that do not divide evenly into the supply curve "
+            "resolution. Found sub-agg factors of {} with supply "
+            "curve resolution of {}".format(
+                agg_factors_not_divisible, resolution
+            )
+        )

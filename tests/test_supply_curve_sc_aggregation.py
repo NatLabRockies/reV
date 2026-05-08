@@ -483,6 +483,95 @@ def test_data_layer_methods():
         assert slope_min <= slope_mode <= slope_max
 
 
+def test_sc_agg_econ_scale_with_sub_agg_area_stats():
+    """Test EOS equations can use sub-agg area stats without leaking those
+    internal fields into the SC output."""
+
+    agg = 2
+    area = SupplyCurveField.AREA_SQ_KM
+    cap_stat = f"max_agg{agg}_{area}"
+    fixed_stat = f"p50_agg{agg}_{area}"
+    var_stat = f"min_agg{agg}_{area}"
+
+    cap_cost_scale = f"0 * {cap_stat} + 1.5"
+    fixed_cost_scale = f"0 * {fixed_stat} + 0.75"
+    var_cost_scale = f"0 * {var_stat} + 0.5"
+
+    with tempfile.TemporaryDirectory() as td:
+        gen_temp = os.path.join(td, "ri_my_pv_gen.h5")
+        out_fp = os.path.join(td, "sc_eos_sub_agg")
+        shutil.copy(GEN, gen_temp)
+
+        data = {
+            "capital_cost": 34900000,
+            "fixed_operating_cost": 280000,
+            "fixed_charge_rate": 0.09606382995843887,
+            "variable_operating_cost": 0.1,
+            "system_capacity": 20000,
+        }
+        h5_dsets = [
+            "capital_cost",
+            "fixed_operating_cost",
+            "fixed_charge_rate",
+            "variable_operating_cost",
+            "system_capacity",
+        ]
+
+        with h5py.File(gen_temp, "a") as res:
+            for key, value in data.items():
+                arr = np.full(res["meta"].shape, value)
+                res.create_dataset(key, res["meta"].shape, data=arr)
+
+            for key in (
+                "capital_cost",
+                "fixed_operating_cost",
+                "variable_operating_cost",
+            ):
+                arr = np.full(res["meta"].shape, data[key])
+                res.create_dataset(f"base_{key}", res["meta"].shape, data=arr)
+
+        base = SupplyCurveAggregation(
+            EXCL,
+            TM_DSET,
+            excl_dict=EXCL_DICT,
+            res_class_dset=None,
+            res_class_bins=None,
+            data_layers=DATA_LAYERS,
+            gids=[37],
+            h5_dsets=h5_dsets,
+            recalc_lcoe=False,
+        )
+        baseline = base.summarize(gen_temp, max_workers=1)
+
+        sca = SupplyCurveAggregation(
+            EXCL,
+            TM_DSET,
+            excl_dict=EXCL_DICT,
+            res_class_dset=None,
+            res_class_bins=None,
+            data_layers=DATA_LAYERS,
+            gids=[37],
+            h5_dsets=h5_dsets,
+            cap_cost_scale=cap_cost_scale,
+            fixed_cost_scale=fixed_cost_scale,
+            var_cost_scale=var_cost_scale,
+            recalc_lcoe=False,
+        )
+        sca.run(out_fp, gen_fpath=gen_temp, max_workers=1)
+        summary = pd.read_csv(out_fp + ".csv")
+
+    assert np.allclose(summary[SupplyCurveField.EOS_MULT], 1.5)
+    assert np.allclose(summary[SupplyCurveField.FIXED_EOS_MULT], 0.75)
+    assert np.allclose(summary[SupplyCurveField.VAR_EOS_MULT], 0.5)
+    assert not np.allclose(
+        summary[SupplyCurveField.MEAN_LCOE],
+        baseline[SupplyCurveField.MEAN_LCOE],
+    )
+
+    for col in (cap_stat, fixed_stat, var_stat):
+        assert col not in summary.columns
+
+
 @pytest.mark.parametrize(
     "cap_cost_scale",
     ["1", f"2 * np.multiply(1000, {SupplyCurveField.CAPACITY_AC_MW}) ** -0.3"]

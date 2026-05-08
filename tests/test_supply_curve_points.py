@@ -43,11 +43,13 @@ RTOL = 0.001
 
 
 def _make_generation_sc_point_for_sub_agg_stats(include_mask, resolution):
-    """Create a minimal GenerationSupplyCurvePoint for _sub_agg_stats."""
+    """Create a minimal GenerationSupplyCurvePoint for sub_agg_stats."""
 
     point = object.__new__(GenerationSupplyCurvePoint)
     point._resolution = resolution
     point._incl_mask = np.array(include_mask, dtype=float)
+    point._gids = np.ones_like(include_mask).flatten()
+    point._excl_area = 1.0
     point._incl_mask_flat = None
     point._zone_mask = None
     return point
@@ -170,7 +172,7 @@ def test_sub_agg_stats_agg2():
     include_mask = np.arange(1, 17).reshape(4, 4)
     point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 4)
 
-    summary = point._sub_agg_stats(2)
+    summary = point.sub_agg_stats(2)
     area = SupplyCurveField.AREA_SQ_KM
     expected_chunk_sums = np.array([[14.0, 22.0], [46.0, 54.0]])
 
@@ -197,7 +199,7 @@ def test_sub_agg_stats_agg1_returns_pixel_stats():
     include_mask = np.array([[0.0, 0.5], [1.0, 0.25]])
     point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 2)
 
-    summary = point._sub_agg_stats(1)
+    summary = point.sub_agg_stats(1)
     area = SupplyCurveField.AREA_SQ_KM
     expected_chunk_sums = include_mask
 

@@ -568,40 +568,85 @@ class SupplyCurveAggregation(BaseAggregation):
             ``None``, no friction data is aggregated.
             By default, ``None``.
         cap_cost_scale : str, optional
-            Optional capital cost scaling equation to implement
-            "economies of scale". Equations must be in python string
-            format and must return a scalar value to multiply the
-            capital cost by. Independent variables in the equation
-            should match the names of the columns in the ``reV`` supply
-            curve aggregation output table (see the documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the capital cost.
-            By default, ``None``.
+            Optional capital cost scaling equation used to implement
+            "economies of scale". The equation must be a valid python
+            string expression that evaluates to a scalar multiplier for
+            the capital cost.
+
+            Independent variables in the equation may reference any
+            standard supply curve aggregation output field, and may also
+            reference derived sub-aggregation developable-area
+            statistics of the form
+            ``<stat>_agg<factor>_<area_field>``. Here,
+            ``<area_field>`` is typically
+            :obj:`~reV.utilities.SupplyCurveField.AREA_SQ_KM`,
+            ``<factor>`` is a positive integer sub-aggregation factor,
+            and ``<stat>`` can be one of: ``min``, ``max``, ``mean``,
+            ``std``, ``p10``, ``p25``, ``p50``, ``p75``, or ``p90``.
+
+            For example, ``max_agg2_area_developable_sq_km`` refers to
+            the maximum developable area across all ``2 x 2`` sub-cells
+            inside a supply-curve cell, and
+            ``p50_agg4_area_developable_sq_km`` refers to the median
+            developable area across all ``4 x 4`` sub-cells.
+
+            Any referenced sub-aggregation factor must divide evenly
+            into the supply-curve resolution and must be strictly less
+            than that resolution. These derived statistics are computed
+            only when referenced by an economies-of-scale equation and
+            are not included as columns in the final output table. If
+            ``None``, no economies of scale are applied to the capital
+            cost. By default, ``None``.
         fixed_cost_scale : str, optional
-            Optional fixed operating cost scaling equation to implement
-            "economies of scale". Equations must be in python string
-            format and must return a scalar value to multiply the
-            fixed operating cost by. Independent variables in the
-            equation should match the names of the columns in the
-            ``reV`` supply curve aggregation output table (see the
-            documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the fixed operating cost.
+            Optional fixed operating cost scaling equation used to
+            implement "economies of scale". The equation must be a
+            valid python string expression that evaluates to a scalar
+            multiplier for the fixed operating cost.
+
+            Independent variables may reference any standard supply
+            curve aggregation output field, as well as derived
+            sub-aggregation developable-area statistics of the form
+            ``<stat>_agg<factor>_<area_field>``. Supported statistics
+            are ``min``, ``max``, ``mean``, ``std``, ``p10``, ``p25``,
+            ``p50``, ``p75``, and ``p90``. Referenced
+            sub-aggregation factors must be positive integers that
+            divide evenly into the supply-curve resolution and are
+            smaller than that resolution.
+
+            Example::
+
+                fixed_cost_scale =
+                    "0.75 + 0 * p50_agg2_area_developable_sq_km"
+
+            These derived sub-aggregation statistics are internal
+            helpers for economies-of-scale evaluation and are not
+            written to the final output table. If ``None``, no
+            economies of scale are applied to the fixed operating cost.
             By default, ``None``.
         var_cost_scale : str, optional
-            Optional variable operating cost scaling equation to
-            implement "economies of scale". Equations must be in python
-            string format and must return a scalar value to multiply the
-            variable operating cost by. Independent variables in the
-            equation should match the names of the columns in the
-            ``reV`` supply curve aggregation output table (see the
-            documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the variable operating cost.
-            By default, ``None``.
+            Optional variable operating cost scaling equation used to
+            implement "economies of scale". The equation must be a
+            valid python string expression that evaluates to a scalar
+            multiplier for the variable operating cost.
+
+            Independent variables may reference both standard supply
+            curve aggregation output fields and derived
+            sub-aggregation developable-area statistics named like
+            ``<stat>_agg<factor>_<area_field>``. Supported statistics
+            are ``min``, ``max``, ``mean``, ``std``, ``p10``, ``p25``,
+            ``p50``, ``p75``, and ``p90``. Referenced factors must be
+            valid sub-aggregation factors for the active supply-curve
+            resolution.
+
+            Example::
+
+                var_cost_scale =
+                    "1.0 - 0.05 * min_agg2_area_developable_sq_km"
+
+            These extra statistics are computed on demand for
+            economies-of-scale evaluation and are not exposed as output
+            columns. If ``None``, no economies of scale are applied to
+            the variable operating cost. By default, ``None``.
         recalc_lcoe : bool, optional
             Flag to re-calculate the LCOE from the multi-year mean
             capacity factor and annual energy production data. This
@@ -1126,40 +1171,85 @@ class SupplyCurveAggregation(BaseAggregation):
             Area of an exclusion pixel in km2. None will try to infer the area
             from the profile transform attribute in excl_fpath, by default None
         cap_cost_scale : str, optional
-            Optional capital cost scaling equation to implement
-            "economies of scale". Equations must be in python string
-            format and must return a scalar value to multiply the
-            capital cost by. Independent variables in the equation
-            should match the names of the columns in the ``reV`` supply
-            curve aggregation output table (see the documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the capital cost.
-            By default, ``None``.
+            Optional capital cost scaling equation used to implement
+            "economies of scale". The equation must be a valid python
+            string expression that evaluates to a scalar multiplier for
+            the capital cost.
+
+            Independent variables in the equation may reference any
+            standard supply curve aggregation output field, and may also
+            reference derived sub-aggregation developable-area
+            statistics of the form
+            ``<stat>_agg<factor>_<area_field>``. Here,
+            ``<area_field>`` is typically
+            :obj:`~reV.utilities.SupplyCurveField.AREA_SQ_KM`,
+            ``<factor>`` is a positive integer sub-aggregation factor,
+            and ``<stat>`` can be one of: ``min``, ``max``, ``mean``,
+            ``std``, ``p10``, ``p25``, ``p50``, ``p75``, or ``p90``.
+
+            For example, ``max_agg2_area_developable_sq_km`` refers to
+            the maximum developable area across all ``2 x 2`` sub-cells
+            inside a supply-curve cell, and
+            ``p50_agg4_area_developable_sq_km`` refers to the median
+            developable area across all ``4 x 4`` sub-cells.
+
+            Any referenced sub-aggregation factor must divide evenly
+            into the supply-curve resolution and must be strictly less
+            than that resolution. These derived statistics are computed
+            only when referenced by an economies-of-scale equation and
+            are not included as columns in the final output table. If
+            ``None``, no economies of scale are applied to the capital
+            cost. By default, ``None``.
         fixed_cost_scale : str, optional
-            Optional fixed operating cost scaling equation to implement
-            "economies of scale". Equations must be in python string
-            format and must return a scalar value to multiply the
-            fixed operating cost by. Independent variables in the
-            equation should match the names of the columns in the
-            ``reV`` supply curve aggregation output table (see the
-            documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the fixed operating cost.
+            Optional fixed operating cost scaling equation used to
+            implement "economies of scale". The equation must be a
+            valid python string expression that evaluates to a scalar
+            multiplier for the fixed operating cost.
+
+            Independent variables may reference any standard supply
+            curve aggregation output field, as well as derived
+            sub-aggregation developable-area statistics of the form
+            ``<stat>_agg<factor>_<area_field>``. Supported statistics
+            are ``min``, ``max``, ``mean``, ``std``, ``p10``, ``p25``,
+            ``p50``, ``p75``, and ``p90``. Referenced
+            sub-aggregation factors must be positive integers that
+            divide evenly into the supply-curve resolution and are
+            smaller than that resolution.
+
+            Example::
+
+                fixed_cost_scale =
+                    "0.75 + 0 * p50_agg2_area_developable_sq_km"
+
+            These derived sub-aggregation statistics are internal
+            helpers for economies-of-scale evaluation and are not
+            written to the final output table. If ``None``, no
+            economies of scale are applied to the fixed operating cost.
             By default, ``None``.
         var_cost_scale : str, optional
-            Optional variable operating cost scaling equation to
-            implement "economies of scale". Equations must be in python
-            string format and must return a scalar value to multiply the
-            variable operating cost by. Independent variables in the
-            equation should match the names of the columns in the
-            ``reV`` supply curve aggregation output table (see the
-            documentation of
-            :class:`~reV.supply_curve.sc_aggregation.SupplyCurveAggregation`
-            for details on available outputs). If ``None``, no economies
-            of scale are applied to the variable operating cost.
-            By default, ``None``.
+            Optional variable operating cost scaling equation used to
+            implement "economies of scale". The equation must be a
+            valid python string expression that evaluates to a scalar
+            multiplier for the variable operating cost.
+
+            Independent variables may reference both standard supply
+            curve aggregation output fields and derived
+            sub-aggregation developable-area statistics named like
+            ``<stat>_agg<factor>_<area_field>``. Supported statistics
+            are ``min``, ``max``, ``mean``, ``std``, ``p10``, ``p25``,
+            ``p50``, ``p75``, and ``p90``. Referenced factors must be
+            valid sub-aggregation factors for the active supply-curve
+            resolution.
+
+            Example::
+
+                var_cost_scale =
+                    "1.0 - 0.05 * min_agg2_area_developable_sq_km"
+
+            These extra statistics are computed on demand for
+            economies-of-scale evaluation and are not exposed as output
+            columns. If ``None``, no economies of scale are applied to
+            the variable operating cost. By default, ``None``.
         recalc_lcoe : bool
             Flag to re-calculate the LCOE from the multi-year mean capacity
             factor and annual energy production data. This requires several

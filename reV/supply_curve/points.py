@@ -444,7 +444,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         area : float
             Non-excluded resource/generation area in square km.
         """
-        return np.sum(self.include_mask_flat) * self.pixel_area
+        return np.sum(self.include_mask_flat[self.bool_mask]) * self.pixel_area
 
     @property
     def latitude(self):
@@ -466,7 +466,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         -------
         n_gids : list
         """
-        return np.sum(self.include_mask_flat > 0)
+        return np.sum(self.include_mask_flat[self.bool_mask] > 0)
 
     @property
     def zone_mask(self):

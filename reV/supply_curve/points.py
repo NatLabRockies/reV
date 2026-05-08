@@ -2302,7 +2302,6 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         # has an exclusions multiplier of 0
         exclude = exclude.reshape(self.include_mask.shape)
         self._incl_mask[exclude] = 0.0
-        self._incl_mask = self._incl_mask.flatten()
 
         if (self._gen_gids != -1).sum() == 0:
             msg = (

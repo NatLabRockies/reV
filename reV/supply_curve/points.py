@@ -2433,9 +2433,70 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
 
         return summary
 
-    @staticmethod
-    def economies_of_scale(summary, cap_cost_scale=None, fixed_cost_scale=None,
-                           var_cost_scale=None):
+    def _sub_agg_stats(self, agg):
+        """Compute sub-agg developable area stats
+
+        Split developable area array into n equal parts along each dimension,
+        sum each chunk and return the reduced chunk-sum summary statistics.
+
+        Output statistics are:
+
+            - "min": minimum chunk sum
+            - "max": maximum chunk sum
+            - "mean": mean of chunk sums
+            - "std": standard deviation of chunk sums
+            - "p10": 10th percentile of chunk sums
+            - "p25": 25th percentile of chunk sums
+            - "p50": 50th percentile of chunk sums
+            - "p75": 75th percentile of chunk sums
+            - "p90": 90th percentile of chunk sums
+
+        Parameters
+        ----------
+        agg : int
+            Sub-resolution aggregation factor.
+
+        Returns
+        -------
+        summary : dict
+            Summary statistics for chunk_sums.
+        """
+
+        n = self._resolution // agg
+
+        # Example for 2D:
+        # (12, 8) with n=4 -> reshape to (4, 3, 4, 2)
+        # then sum over the chunk-size axes -> (4, 4)
+        chunk_sizes = tuple(dim // n for dim in self.include_mask.shape)
+        reshape_dims = tuple(
+            dim for chunk in chunk_sizes for dim in (n, chunk)
+        )
+
+        reshaped = self.include_mask.reshape(reshape_dims)
+
+        # Sum over the "within-chunk" axes: 1, 3, 5, ...
+        sum_axes = tuple(range(1, reshaped.ndim, 2))
+        chunk_sums = reshaped.sum(axis=sum_axes)
+
+        return {
+            f"min_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.min(),
+            f"max_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.max(),
+            f"mean_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.mean(),
+            f"std_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.std(),
+            f"p10_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 10),
+            f"p25_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 25),
+            f"p50_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 50),
+            f"p75_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 75),
+            f"p90_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 90),
+        }
+
+    def economies_of_scale(self, summary, cap_cost_scale=None,
+                           fixed_cost_scale=None, var_cost_scale=None):
         """Apply economies of scale to this point summary
 
         Parameters

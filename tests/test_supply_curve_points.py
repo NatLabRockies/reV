@@ -42,6 +42,17 @@ DSET_TM = "res_ri_pv"
 RTOL = 0.001
 
 
+def _make_generation_sc_point_for_sub_agg_stats(include_mask, resolution):
+    """Create a minimal GenerationSupplyCurvePoint for _sub_agg_stats."""
+
+    point = object.__new__(GenerationSupplyCurvePoint)
+    point._resolution = resolution
+    point._incl_mask = np.array(include_mask, dtype=float)
+    point._incl_mask_flat = None
+    point._zone_mask = None
+    return point
+
+
 @pytest.mark.parametrize(
     ("equations", "expected"),
     [
@@ -151,6 +162,54 @@ def test_validate_sub_agg_factors_zero_factor_invalid():
         match="non-positive sub-aggregation factors",
     ):
         _validate_sub_agg_factors({0}, 64)
+
+
+def test_sub_agg_stats_agg2():
+    """Test sub-aggregation stats for 2x2 chunking on a known mask."""
+
+    include_mask = np.arange(1, 17).reshape(4, 4)
+    point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 4)
+
+    summary = point._sub_agg_stats(2)
+    area = SupplyCurveField.AREA_SQ_KM
+    expected_chunk_sums = np.array([[14.0, 22.0], [46.0, 54.0]])
+
+    expected = {
+        f"min_agg2_{area}": expected_chunk_sums.min(),
+        f"max_agg2_{area}": expected_chunk_sums.max(),
+        f"mean_agg2_{area}": expected_chunk_sums.mean(),
+        f"std_agg2_{area}": expected_chunk_sums.std(),
+        f"p10_agg2_{area}": np.percentile(expected_chunk_sums, 10),
+        f"p25_agg2_{area}": np.percentile(expected_chunk_sums, 25),
+        f"p50_agg2_{area}": np.percentile(expected_chunk_sums, 50),
+        f"p75_agg2_{area}": np.percentile(expected_chunk_sums, 75),
+        f"p90_agg2_{area}": np.percentile(expected_chunk_sums, 90),
+    }
+
+    assert set(summary) == set(expected)
+    for key, value in expected.items():
+        assert np.isclose(summary[key], value)
+
+
+def test_sub_agg_stats_agg1_returns_pixel_stats():
+    """Test sub-aggregation stats when each chunk is a single pixel."""
+
+    include_mask = np.array([[0.0, 0.5], [1.0, 0.25]])
+    point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 2)
+
+    summary = point._sub_agg_stats(1)
+    area = SupplyCurveField.AREA_SQ_KM
+    expected_chunk_sums = include_mask
+
+    assert np.isclose(summary[f"min_agg1_{area}"], expected_chunk_sums.min())
+    assert np.isclose(summary[f"max_agg1_{area}"], expected_chunk_sums.max())
+    assert np.isclose(
+        summary[f"mean_agg1_{area}"], expected_chunk_sums.mean()
+    )
+    assert np.isclose(summary[f"std_agg1_{area}"], expected_chunk_sums.std())
+    assert np.isclose(
+        summary[f"p50_agg1_{area}"], np.percentile(expected_chunk_sums, 50)
+    )
 
 
 @pytest.mark.parametrize("resolution", [7, 32, 50, 64, 163])

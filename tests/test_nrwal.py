@@ -15,6 +15,8 @@ import traceback
 import numpy as np
 import pandas as pd
 import pytest
+import toml
+import yaml
 from rex.utilities.utilities import pd_date_range
 
 from reV import TESTDATADIR
@@ -22,6 +24,7 @@ from reV.cli import main
 from reV.handlers.outputs import Outputs
 from reV.nrwal.nrwal import RevNrwal
 from reV.utilities import ModuleName
+from reV.utilities import SiteDataField
 
 SOURCE_DIR = os.path.join(TESTDATADIR, 'nrwal/')
 
@@ -162,6 +165,104 @@ def test_nrwal():
         cf_net = gcf_adjustment[mask] * (1 - losses[mask]) * cf_mean_raw[mask]
         assert np.allclose(cf_mean_new[mask], cf_net, rtol=0.005)
         assert np.allclose(cf_mean_new[~mask], cf_mean_raw[~mask])
+
+
+@pytest.mark.parametrize("config_type", ["json", "yaml", "toml"])
+def test_nrwal_site_data_config(config_type):
+    """Test NRWAL site_data parsing from config files matches CSV input."""
+    with tempfile.TemporaryDirectory() as td:
+        for fn in os.listdir(SOURCE_DIR):
+            shutil.copy(os.path.join(SOURCE_DIR, fn), os.path.join(td, fn))
+
+        baseline_gen_fpath = os.path.join(td, 'gen_csv_2010_node00.h5')
+        config_gen_fpath = os.path.join(td, 'gen_config_2010_node00.h5')
+        shutil.copy(os.path.join(td, 'gen_2010_node00.h5'), baseline_gen_fpath)
+        shutil.copy(os.path.join(td, 'gen_2010_node00.h5'), config_gen_fpath)
+
+        site_data_csv = os.path.join(td, 'example_offshore_data.csv')
+        site_data_df = pd.read_csv(site_data_csv)
+        site_data_config = {
+            str(gid): values
+            for gid, values in site_data_df.set_index(
+                SiteDataField.GID
+            ).to_dict(orient='index').items()
+        }
+        site_data_config_fp = os.path.join(td, f'site_data.{config_type}')
+
+        with open(site_data_config_fp, 'w') as fh:
+            if config_type == 'json':
+                json.dump(site_data_config, fh)
+            elif config_type == 'yaml':
+                yaml.safe_dump(site_data_config, fh, sort_keys=False)
+            else:
+                toml.dump(site_data_config, fh)
+
+        offshore_config = os.path.join(td, 'offshore.json')
+        onshore_config = os.path.join(td, 'onshore.json')
+        sam_configs = {'onshore': onshore_config, 'offshore': offshore_config}
+        nrwal_configs = {'offshore': os.path.join(td, 'nrwal_offshore.yaml')}
+        output_request = [
+            'fixed_charge_rate', 'depth', 'total_losses', 'cf_profile',
+            'array', 'export', 'gcf_adjustment', 'lcoe_fcr', 'cf_mean'
+        ]
+        time_index = pd_date_range(
+            '20100101', '20110101', closed='right', freq='1h'
+        )
+
+        with Outputs(baseline_gen_fpath, 'r') as f:
+            n_sites = len(f.meta)
+
+        cf_profile = np.random.default_rng(0).random(
+            (len(time_index), n_sites)
+        )
+        fixed_charge_rate = 0.09 * np.ones(n_sites, dtype=np.float32)
+
+        for gen_fpath in (baseline_gen_fpath, config_gen_fpath):
+            with Outputs(gen_fpath, 'a') as f:
+                f.time_index = time_index
+                f._add_dset(
+                    'cf_profile',
+                    cf_profile,
+                    np.uint32,
+                    attrs={'scale_factor': 1000},
+                    chunks=(None, 10),
+                )
+                f._add_dset(
+                    'fixed_charge_rate',
+                    fixed_charge_rate,
+                    np.float32,
+                    attrs={'scale_factor': 1},
+                    chunks=None,
+                )
+
+        RevNrwal(
+            baseline_gen_fpath,
+            site_data_csv,
+            sam_configs,
+            nrwal_configs,
+            output_request,
+            site_meta_cols=['depth'],
+        ).run()
+
+        RevNrwal(
+            config_gen_fpath,
+            site_data_config_fp,
+            sam_configs,
+            nrwal_configs,
+            output_request,
+            site_meta_cols=['depth'],
+        ).run()
+
+        compare_dsets = [
+            'fixed_charge_rate', 'depth', 'total_losses', 'array', 'export',
+            'gcf_adjustment', 'lcoe_fcr', 'cf_mean', 'cf_profile'
+        ]
+        with Outputs(baseline_gen_fpath, 'r') as baseline, Outputs(
+            config_gen_fpath, 'r'
+        ) as test:
+            assert baseline.meta.equals(test.meta)
+            for dset in compare_dsets:
+                assert np.allclose(baseline[dset], test[dset], equal_nan=True)
 
 
 @pytest.mark.parametrize("out_fn", ["nrwal_meta.csv", None])

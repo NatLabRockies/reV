@@ -326,17 +326,25 @@ class Gen(BaseGen):
               dataset is detected in the generation file.
 
             By default, ``('cf_mean',)``.
-        site_data : str | pd.DataFrame, optional
-            Site-specific input data for SAM calculation. If this input
-            is a string, it should be a path that points to a CSV file.
-            Otherwise, this input should be a DataFrame with
-            pre-extracted site data. Rows in this table should match
-            the input sites via a ``gid`` column. The rest of the
-            columns should match configuration input keys that will take
-            site-specific values. Note that some or all site-specific
-            inputs can be specified via the `project_points` input
-            table instead. If ``None``, no site-specific data is
-            considered.
+        site_data : str | os.PathLike | dict | pd.DataFrame, optional
+            Site-specific input data for SAM calculation. This input can
+            be one of the following:
+
+                - A path to a CSV file with one row per site and a
+                    ``gid`` column.
+                - A path to a JSON, YAML, YML, or TOML config file that
+                    contains site ``gid`` values as top-level keys and
+                    dictionaries of site-specific inputs as values.
+                - A gid-keyed dictionary following the same format as
+                    the JSON/YAML/TOML config input.
+                - A DataFrame with pre-extracted site data.
+
+            After loading, the rows in this table are matched to the
+            input sites via ``gid``. The rest of the columns should
+            match configuration input keys that will take site-specific
+            values. Note that some or all site-specific inputs can be
+            specified via the `project_points` input table instead. If
+            ``None``, no site-specific data is considered.
 
             .. Note:: This input is often used to provide site-based
                regional capital cost multipliers. ``reV`` does not

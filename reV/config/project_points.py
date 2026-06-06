@@ -10,6 +10,7 @@ from warnings import warn
 
 import numpy as np
 import pandas as pd
+from gaps.config import load_config
 from rex.multi_file_resource import MultiFileResource
 from rex.resource import Resource
 from rex.resource_extraction.resource_extraction import (
@@ -25,6 +26,7 @@ from reV.utilities.exceptions import ConfigError, ConfigWarning
 
 logger = logging.getLogger(__name__)
 _DEFAULT_CURTAIL_KEY = "default"
+_PROJECT_POINTS_CONFIG_EXTENSIONS = (".json", ".yaml", ".yml", ".toml")
 
 
 class PointsControl:
@@ -235,10 +237,13 @@ class ProjectPoints:
         """
         Parameters
         ----------
-        points : int | slice | list | tuple | str | pd.DataFrame | dict
-            Slice specifying project points, string pointing to a project
-            points csv, or a dataframe containing the effective csv contents.
-            Can also be a single integer site value.
+        points : int | slice | list | tuple | str | os.PathLike | pd.DataFrame | dict
+            Slice specifying project points, a pointer to a project points
+            CSV, JSON, YAML, YML, or TOML file, or a dataframe containing the
+            effective table contents. JSON/YAML/YML/TOML config files are
+            expected to contain gid values as keys and dictionaries of
+            point-specific inputs as values. Can also be a single integer site
+            value.
         sam_configs : dict | str | SAMConfig
             SAM input configuration ID(s) and file path(s). Keys are the SAM
             config ID(s) which map to the config column in the project points
@@ -592,10 +597,13 @@ class ProjectPoints:
 
         Parameters
         ----------
-        points : int | str | pd.DataFrame | slice | list | dict
-            Slice specifying project points, string pointing to a project
-            points csv, or a dataframe containing the effective csv contents.
-            Can also be a single integer site value.
+        points : int | str | os.PathLike | pd.DataFrame | slice | list | dict
+            Slice specifying project points, string/path pointing to a
+            project points CSV, JSON, YAML, YML, or TOML file, or a dataframe
+            containing the effective table contents. JSON/YAML/YML/TOML
+            config files are expected to contain gid values as keys and
+            dictionaries of point-specific inputs as values. Can also be a
+            single integer site value.
         res_file : str | NoneType
             Optional resource file to find maximum length of project points if
             points slice stop is None.
@@ -605,10 +613,19 @@ class ProjectPoints:
         df : pd.DataFrame
             DataFrame mapping sites (gids) to SAM technology (config)
         """
-        if isinstance(points, str):
-            df = cls._parse_csv(points)
+        if isinstance(points, (str, os.PathLike)):
+            points = os.fspath(points)
+            if points.endswith(".csv"):
+                df = cls._parse_csv(points)
+            elif points.endswith(_PROJECT_POINTS_CONFIG_EXTENSIONS):
+                df = _parse_points_mapping(load_config(points))
+            else:
+                raise ValueError(
+                    "Config project points file must be .csv, .json, .yaml, "
+                    ".yml, or .toml, but received: {}".format(points)
+                )
         elif isinstance(points, dict):
-            df = pd.DataFrame(points)
+            df = _parse_points_mapping(points)
         elif isinstance(points, (int, slice, list, tuple, np.ndarray)):
             df = cls._parse_sites(points, res_file=res_file)
         elif isinstance(points, pd.DataFrame):
@@ -1210,3 +1227,19 @@ class ProjectPoints:
             pp._df[c] = meta[c].values
 
         return pp
+
+
+def _parse_points_mapping(points):
+    """Parse project points from a mapping input."""
+
+    if points and all(isinstance(value, dict) for value in points.values()):
+        df = pd.DataFrame.from_dict(points, orient="index")
+        df.index = pd.Index(
+            pd.to_numeric(df.index, errors="raise"),
+            name=SiteDataField.GID,
+        )
+        df = df.reset_index()
+    else:
+        df = pd.DataFrame(points)
+
+    return df

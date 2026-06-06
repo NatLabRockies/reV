@@ -154,8 +154,9 @@ def test_sam_config(tech):
         sam_config = {'default': safe_json_load(sam_file)}
 
         points = slice(0, 100)
-        points_config = pd.DataFrame({SiteDataField.GID: range(0, 100),
-                                      SiteDataField.CONFIG: ['default'] * 100})
+        points_config = {
+            gid: {SiteDataField.CONFIG: 'default'} for gid in range(0, 100)
+        }
 
         gen_json = Gen('pvwattsv5', points, sam_file, res_file,
                        output_request=('cf_profile',), sites_per_worker=50)
@@ -175,8 +176,9 @@ def test_sam_config(tech):
         sam_config = {'default': safe_json_load(sam_file)}
 
         points = slice(0, 10)
-        points_config = pd.DataFrame({SiteDataField.GID: range(0, 10),
-                                      SiteDataField.CONFIG: ['default'] * 10})
+        points_config = {
+            gid: {SiteDataField.CONFIG: 'default'} for gid in range(0, 10)
+        }
 
         gen_json = Gen('windpower', points, sam_file, res_file,
                        output_request=('cf_profile',), sites_per_worker=3)

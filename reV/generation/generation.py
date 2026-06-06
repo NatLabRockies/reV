@@ -167,9 +167,12 @@ class Gen(BaseGen):
             to evaluate reV at a single location. A list or tuple of
             integers (or slice) representing the generation GIDs of
             multiple sites can be specified to evaluate reV at multiple
-            specific locations. A string pointing to a project points
-            CSV file may also be specified. Typically, the CSV contains
-            the following columns:
+            specific locations. A string or path pointing to a project
+            points CSV, JSON, YAML, YML, or TOML file may also be
+            specified. JSON/YAML/YML/TOML inputs are expected to use
+            generation GID values as top-level keys and dictionaries of
+            point-specific inputs as values. Typically, the resulting
+            table contains the following columns:
 
                 - ``gid``: Integer specifying the generation GID of each
                   site.
@@ -204,8 +207,11 @@ class Gen(BaseGen):
             each location). Columns that do not correspond to a config
             key may also be included, but they will be ignored. A
             DataFrame following the same guidelines as the CSV input
-            (or a dictionary that can be used to initialize such a
-            DataFrame) may be used for this input as well.
+            may be used for this input as well. You may also supply a
+            gid-keyed dictionary directly, where each key is a
+            generation GID and each value is a dictionary of
+            point-specific inputs, using the same structure as the
+            JSON/YAML/YML/TOML config input.
 
             .. Note:: By default, the generation GID of each site is
               assumed to match the resource GID to be evaluated for that

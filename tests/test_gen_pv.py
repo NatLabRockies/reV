@@ -634,6 +634,61 @@ def test_gen_pv_site_data_numpy_shading_matrix():
     assert np.allclose(test.out["cf_mean"], baseline.out["cf_mean"])
 
 
+def test_gen_pv_site_data_shading_matrix_from_file(tmp_path):
+    """Test pvwattsv8 shading site_data can be read from disk."""
+    output_request = ("cf_mean",)
+    year = 2012
+    rev2_points = slice(0, 1)
+    res_file = TESTDATADIR + "/nsrdb/ri_100_nsrdb_{}.h5".format(year)
+    sam_files = TESTDATADIR + "/SAM/i_pvwattsv8.json"
+    shading_azal = [[0, 0, 180], [0, 0, 0], [89, 0, 0]]
+
+    list_site_data = pd.DataFrame(
+        {
+            SiteDataField.GID: [0],
+            "shading_azal": [shading_azal],
+            "shading_diff": [0.0],
+            "shading_en_azal": [1],
+            "shading_en_diff": [1],
+        }
+    )
+    file_site_data = pd.DataFrame(
+        {
+            SiteDataField.GID: [0],
+            "shading_azal": [json.dumps(shading_azal)],
+            "shading_diff": [0.0],
+            "shading_en_azal": [1],
+            "shading_en_diff": [1],
+        }
+    )
+    site_data_fpath = tmp_path / "site_data.csv"
+    file_site_data.to_csv(site_data_fpath, index=False)
+
+    baseline = Gen(
+        "pvwattsv8",
+        rev2_points,
+        sam_files,
+        res_file,
+        sites_per_worker=1,
+        output_request=output_request,
+        site_data=list_site_data,
+    )
+    baseline.run(max_workers=1)
+
+    test = Gen(
+        "pvwattsv8",
+        rev2_points,
+        sam_files,
+        res_file,
+        sites_per_worker=1,
+        output_request=output_request,
+        site_data=str(site_data_fpath),
+    )
+    test.run(max_workers=1)
+
+    assert np.allclose(test.out["cf_mean"], baseline.out["cf_mean"])
+
+
 def test_clipping():
     """Test reV pvwattsv7 generation against baseline data"""
     year = 2012

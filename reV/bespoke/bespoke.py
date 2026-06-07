@@ -1692,7 +1692,7 @@ class BespokeWindPlants(BaseAggregation):
             return the variable operating cost in $. Has access to the
             same variables as the objective_function. You can set this
             to "0" to effectively ignore balance-of-system costs.
-        project_points : int | list | tuple | str | os.PathLike | dict | pd.DataFrame | slice
+        project_points : int | list | tuple | str | dict | pd.DataFrame | slice
             Input specifying which sites to process. A single integer
             representing the supply curve GID of a site may be specified
             to evaluate ``reV`` at a supply curve point. A list or tuple

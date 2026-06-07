@@ -667,6 +667,13 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         sum_axes = tuple(range(1, reshaped.ndim, 2))
         chunk_sums = reshaped.sum(axis=sum_axes)
 
+        assert np.isclose(chunk_sums.sum(), self.area), (
+            "Chunk sums do not sum to total area, check the sub-agg stats "
+            "calculation. Sum of chunk sums: {}, total area: {}".format(
+                chunk_sums.sum(), self.area
+            )
+        )
+
         return {
             f"min_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.min(),
             f"max_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.max(),

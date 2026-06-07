@@ -1,3 +1,4 @@
+"""Test parsing of project points configs"""
 import json
 import os
 
@@ -67,7 +68,8 @@ def test_project_points_init_from_config_file(tmp_path, config_type):
 
     assert project_points.sites == [0, 1, 2]
     assert project_points.get_sites_from_config("default") == [0, 1, 2]
-    assert project_points.df[SiteDataField.CURTAILMENT].tolist() == [None, None, "curt"]
+    assert (project_points.df[SiteDataField.CURTAILMENT].tolist()
+            == [None, None, "curt"])
 
 
 def test_parse_project_points_column_mapping_dict():
@@ -79,7 +81,8 @@ def test_parse_project_points_column_mapping_dict():
 
     parsed = ProjectPoints._parse_points(points)
 
-    expected = pd.DataFrame(points).sort_values(SiteDataField.GID).reset_index(drop=True)
+    expected = pd.DataFrame(points).sort_values(SiteDataField.GID)
+    expected = expected.reset_index(drop=True)
     expected[SiteDataField.CURTAILMENT] = None
     expected["points_order"] = [1, 0]
 

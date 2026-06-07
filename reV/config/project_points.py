@@ -237,7 +237,7 @@ class ProjectPoints:
         """
         Parameters
         ----------
-        points : int | slice | list | tuple | str | os.PathLike | pd.DataFrame | dict
+        points : int | slice | list | tuple | str | pd.DataFrame | dict
             Slice specifying project points, a pointer to a project points
             CSV, JSON, YAML, YML, or TOML file, or a dataframe containing the
             effective table contents. JSON/YAML/YML/TOML config files are
@@ -509,88 +509,6 @@ class ProjectPoints:
         """
         return self._curtailment
 
-    @staticmethod
-    def _parse_csv(fname):
-        """Import project points from .csv
-
-        Parameters
-        ----------
-        fname : str
-            Project points .csv file (with path). Must have 'gid' and
-            'config' column names.
-
-        Returns
-        -------
-        df : pd.DataFrame
-            DataFrame mapping sites (gids) to SAM technology (config)
-        """
-        fname = fname.strip()
-        if fname.endswith(".csv"):
-            df = pd.read_csv(fname)
-        else:
-            raise ValueError(
-                "Config project points file must be "
-                ".csv, but received: {}".format(fname)
-            )
-
-        return df
-
-    @staticmethod
-    def _parse_sites(points, res_file=None):
-        """Parse project points from list or slice
-
-        Parameters
-        ----------
-        points : int | str | slice | list
-            Slice specifying project points, string pointing to a
-            project points csv. Can also be a single integer site value.
-        res_file : str | NoneType
-            Optional resource file to find maximum length of project points if
-            points slice stop is None.
-
-        Returns
-        -------
-        df : pd.DataFrame
-            DataFrame mapping sites (gids) to SAM technology (config)
-        """
-        df = pd.DataFrame(columns=[SiteDataField.GID, SiteDataField.CONFIG])
-        if isinstance(points, int):
-            points = [points]
-        if isinstance(points, (list, tuple, np.ndarray)):
-            # explicit site list, set directly
-            if any(isinstance(i, (list, tuple, np.ndarray)) for i in points):
-                msg = "Provided project points is not flat: {}!".format(points)
-                logger.error(msg)
-                raise RuntimeError(msg)
-
-            df[SiteDataField.GID] = points
-        elif isinstance(points, slice):
-            stop = points.stop
-            if stop is None:
-                if res_file is None:
-                    raise ValueError(
-                        "Must supply a resource file if "
-                        "points is a slice of type "
-                        " slice(*, None, *)"
-                    )
-
-                multi_h5_res, _ = check_res_file(res_file)
-                if multi_h5_res:
-                    stop = MultiFileResource(res_file).shape[1]
-                else:
-                    stop = Resource(res_file).shape[1]
-
-            df[SiteDataField.GID] = list(range(*points.indices(stop)))
-        else:
-            raise TypeError(
-                "Project Points sites needs to be set as a list, "
-                "tuple, or slice, but was set as: {}".format(type(points))
-            )
-
-        df[SiteDataField.CONFIG] = None
-
-        return df
-
     @classmethod
     def _parse_points(cls, points, res_file=None):
         """Generate the project points df from inputs
@@ -613,27 +531,7 @@ class ProjectPoints:
         df : pd.DataFrame
             DataFrame mapping sites (gids) to SAM technology (config)
         """
-        if isinstance(points, (str, os.PathLike)):
-            points = os.fspath(points)
-            if points.endswith(".csv"):
-                df = cls._parse_csv(points)
-            elif points.endswith(_PROJECT_POINTS_CONFIG_EXTENSIONS):
-                df = _parse_points_mapping(load_config(points))
-            else:
-                raise ValueError(
-                    "Config project points file must be .csv, .json, .yaml, "
-                    ".yml, or .toml, but received: {}".format(points)
-                )
-        elif isinstance(points, dict):
-            df = _parse_points_mapping(points)
-        elif isinstance(points, (int, slice, list, tuple, np.ndarray)):
-            df = cls._parse_sites(points, res_file=res_file)
-        elif isinstance(points, pd.DataFrame):
-            df = points
-        else:
-            raise ValueError(
-                "Cannot parse Project points data from {}".format(type(points))
-            )
+        df = _parse_points_input_to_df(points, res_file)
         df = df.rename(SupplyCurveField.map_to(SiteDataField), axis=1)
         if SiteDataField.GID not in df.columns:
             raise KeyError(
@@ -1229,6 +1127,32 @@ class ProjectPoints:
         return pp
 
 
+def _parse_points_input_to_df(points, res_file):
+    """Parse the points input into a dataframe"""
+    if isinstance(points, (str, os.PathLike)):
+        points = os.fspath(points)
+        if points.endswith(".csv"):
+            df = _parse_csv(points)
+        elif points.endswith(_PROJECT_POINTS_CONFIG_EXTENSIONS):
+            df = _parse_points_mapping(load_config(points))
+        else:
+            raise ValueError(
+                "Config project points file must be .csv, .json, .yaml, "
+                ".yml, or .toml, but received: {}".format(points)
+            )
+    elif isinstance(points, dict):
+        df = _parse_points_mapping(points)
+    elif isinstance(points, (int, slice, list, tuple, np.ndarray)):
+        df = _parse_sites(points, res_file=res_file)
+    elif isinstance(points, pd.DataFrame):
+        df = points
+    else:
+        raise ValueError(
+            "Cannot parse Project points data from {}".format(type(points))
+        )
+    return df
+
+
 def _parse_points_mapping(points):
     """Parse project points from a mapping input."""
 
@@ -1241,5 +1165,87 @@ def _parse_points_mapping(points):
         df = df.reset_index()
     else:
         df = pd.DataFrame(points)
+
+    return df
+
+
+def _parse_csv(fname):
+    """Import project points from .csv
+
+    Parameters
+    ----------
+    fname : str
+        Project points .csv file (with path). Must have 'gid' and
+        'config' column names.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        DataFrame mapping sites (gids) to SAM technology (config)
+    """
+    fname = fname.strip()
+    if fname.endswith(".csv"):
+        df = pd.read_csv(fname)
+    else:
+        raise ValueError(
+            "Config project points file must be "
+            ".csv, but received: {}".format(fname)
+        )
+
+    return df
+
+
+def _parse_sites(points, res_file=None):
+    """Parse project points from list or slice
+
+    Parameters
+    ----------
+    points : int | str | slice | list
+        Slice specifying project points, string pointing to a
+        project points csv. Can also be a single integer site value.
+    res_file : str | NoneType
+        Optional resource file to find maximum length of project points if
+        points slice stop is None.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        DataFrame mapping sites (gids) to SAM technology (config)
+    """
+    df = pd.DataFrame(columns=[SiteDataField.GID, SiteDataField.CONFIG])
+    if isinstance(points, int):
+        points = [points]
+    if isinstance(points, (list, tuple, np.ndarray)):
+        # explicit site list, set directly
+        if any(isinstance(i, (list, tuple, np.ndarray)) for i in points):
+            msg = "Provided project points is not flat: {}!".format(points)
+            logger.error(msg)
+            raise RuntimeError(msg)
+
+        df[SiteDataField.GID] = points
+    elif isinstance(points, slice):
+        stop = points.stop
+        if stop is None:
+            if res_file is None:
+                raise ValueError(
+                    "Must supply a resource file if "
+                    "points is a slice of type "
+                    " slice(*, None, *)"
+                )
+
+            multi_h5_res, _ = check_res_file(res_file)
+            if multi_h5_res:
+                stop = MultiFileResource(res_file).shape[1]
+            else:
+                stop = Resource(res_file).shape[1]
+
+        df[SiteDataField.GID] = list(range(*points.indices(stop)))
+    else:
+        raise TypeError(
+            "Project Points sites needs to be set as a list, "
+            "tuple, or slice, but was set as: {}".format(type(points))
+        )
+
+    df[SiteDataField.CONFIG] = None
 
     return df

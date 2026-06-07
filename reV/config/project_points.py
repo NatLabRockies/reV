@@ -6,11 +6,12 @@ reV Project Points Configuration
 import copy
 import logging
 import os
+from functools import partial
 from warnings import warn
 
 import numpy as np
 import pandas as pd
-from gaps.config import load_config
+from gaps.utilities.io import parse_points_input_to_df
 from rex.multi_file_resource import MultiFileResource
 from rex.resource import Resource
 from rex.resource_extraction.resource_extraction import (
@@ -531,7 +532,10 @@ class ProjectPoints:
         df : pd.DataFrame
             DataFrame mapping sites (gids) to SAM technology (config)
         """
-        df = _parse_points_input_to_df(points, res_file)
+        df = parse_points_input_to_df(
+            points,
+            parse_sites_callable=partial(_parse_sites, res_file=res_file)
+        )
         df = df.rename(SupplyCurveField.map_to(SiteDataField), axis=1)
         if SiteDataField.GID not in df.columns:
             raise KeyError(
@@ -1125,74 +1129,6 @@ class ProjectPoints:
             pp._df[c] = meta[c].values
 
         return pp
-
-
-def _parse_points_input_to_df(points, res_file):
-    """Parse the points input into a dataframe"""
-    if isinstance(points, (str, os.PathLike)):
-        points = os.fspath(points)
-        if points.endswith(".csv"):
-            df = _parse_csv(points)
-        elif points.endswith(_PROJECT_POINTS_CONFIG_EXTENSIONS):
-            df = _parse_points_mapping(load_config(points))
-        else:
-            raise ValueError(
-                "Config project points file must be .csv, .json, .yaml, "
-                ".yml, or .toml, but received: {}".format(points)
-            )
-    elif isinstance(points, dict):
-        df = _parse_points_mapping(points)
-    elif isinstance(points, (int, slice, list, tuple, np.ndarray)):
-        df = _parse_sites(points, res_file=res_file)
-    elif isinstance(points, pd.DataFrame):
-        df = points
-    else:
-        raise ValueError(
-            "Cannot parse Project points data from {}".format(type(points))
-        )
-    return df
-
-
-def _parse_points_mapping(points):
-    """Parse project points from a mapping input."""
-
-    if points and all(isinstance(value, dict) for value in points.values()):
-        df = pd.DataFrame.from_dict(points, orient="index")
-        df.index = pd.Index(
-            pd.to_numeric(df.index, errors="raise"),
-            name=SiteDataField.GID,
-        )
-        df = df.reset_index()
-    else:
-        df = pd.DataFrame(points)
-
-    return df
-
-
-def _parse_csv(fname):
-    """Import project points from .csv
-
-    Parameters
-    ----------
-    fname : str
-        Project points .csv file (with path). Must have 'gid' and
-        'config' column names.
-
-    Returns
-    -------
-    df : pd.DataFrame
-        DataFrame mapping sites (gids) to SAM technology (config)
-    """
-    fname = fname.strip()
-    if fname.endswith(".csv"):
-        df = pd.read_csv(fname)
-    else:
-        raise ValueError(
-            "Config project points file must be "
-            ".csv, but received: {}".format(fname)
-        )
-
-    return df
 
 
 def _parse_sites(points, res_file=None):

@@ -12,11 +12,14 @@ generation output file. This is usually the wind or solar resource resolution
 but could be the supply curve resolution after representative profiles is run.
 """
 import logging
+import os
 from warnings import warn
 
 import numpy as np
 import pandas as pd
+from gaps.config import load_config
 
+from reV.generation.base import _site_data_from_config
 from reV.generation.generation import Gen
 from reV.handlers.outputs import Outputs
 from reV.utilities import SiteDataField, ResourceMetaField, log_versions
@@ -63,16 +66,24 @@ class RevNrwal:
               invalidate this parsing, meaning the `gen_fpath` input
               will have to be specified manually.
 
-        site_data : str | pd.DataFrame
-            Site-specific input data for NRWAL calculation.If this input
-            is a string, it should be a path that points to a CSV file.
-            Otherwise, this input should be a DataFrame with
-            pre-extracted site data. Rows in this table should match
-            the `meta_gid_col` in the `gen_fpath` meta data input
-            sites via a ``gid`` column. A ``config`` column must also be
-            provided that corresponds to the `nrwal_configs` input. Only
-            sites with a gid in this file's ``gid`` column will be run
-            through NRWAL.
+        site_data : str | os.PathLike | dict | pd.DataFrame
+            Site-specific input data for NRWAL calculation. This input
+            can be one of the following:
+
+                - A path to a CSV file with one row per site and a
+                    ``gid`` column.
+                - A path to a JSON, YAML, YML, or TOML config file that
+                    contains site ``gid`` values as top-level keys and
+                    dictionaries of site-specific inputs as values.
+                - A gid-keyed dictionary following the same format as
+                    the JSON/YAML/TOML config input.
+                - A DataFrame with pre-extracted site data.
+
+            Rows in this table should match the `meta_gid_col` in the
+            `gen_fpath` meta data input sites via a ``gid`` column. A
+            ``config`` column must also be provided that corresponds to
+            the `nrwal_configs` input. Only sites with a gid in this
+            file's ``gid`` column will be run through NRWAL.
         sam_files : dict | str
             A dictionary mapping SAM input configuration ID(s) to SAM
             configuration(s). Keys are the SAM config ID(s) which
@@ -218,8 +229,30 @@ class RevNrwal:
             columns are spatial data inputs.
         """
 
-        if isinstance(self._site_data, str):
-            self._site_data = pd.read_csv(self._site_data)
+        if isinstance(self._site_data, (str, os.PathLike)):
+            self._site_data = os.fspath(self._site_data)
+            if self._site_data.endswith(".csv"):
+                self._site_data = pd.read_csv(self._site_data)
+            else:
+                self._site_data = _site_data_from_config(
+                    load_config(self._site_data)
+                )
+        elif isinstance(self._site_data, dict):
+            self._site_data = _site_data_from_config(self._site_data)
+
+        msg = (
+            "NRWAL site_data must be a csv/config filepath, gid-keyed "
+            "mapping, or dataframe but received: {}".format(
+                type(self._site_data)
+            )
+        )
+        assert isinstance(self._site_data, pd.DataFrame), msg
+
+        if (
+            SiteDataField.GID not in self._site_data
+            and self._site_data.index.name == SiteDataField.GID
+        ):
+            self._site_data = self._site_data.reset_index()
 
         if "dist_l_to_ts" in self._site_data:
             if self._site_data["dist_l_to_ts"].sum() > 0:

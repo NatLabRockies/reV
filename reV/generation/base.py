@@ -14,6 +14,7 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 import psutil
+from gaps.config import load_config
 from rex.resource import Resource
 from rex.utilities.execution import SpawnProcessPool
 
@@ -806,10 +807,11 @@ class BaseGen(ABC):
 
         Parameters
         ----------
-        inp : str | pd.DataFrame | None
-            Site data in .csv or pre-extracted dataframe format. None signifies
-            that there is no extra site-specific data and that everything is
-            fully defined in the input h5 and SAM json configs.
+        inp : str | os.PathLike | dict | pd.DataFrame | None
+            Site data in .csv, json, yaml, yml, or toml format, a gid-keyed
+            mapping of site-specific inputs, or a pre-extracted dataframe.
+            None signifies that there is no extra site-specific data and that
+            everything is fully defined in the input h5 and SAM json configs.
 
         Returns
         -------
@@ -824,16 +826,22 @@ class BaseGen(ABC):
             site_data.index.name = ResourceMetaField.GID
         else:
             # explicit input, initialize df
-            if isinstance(inp, str):
+            if isinstance(inp, (str, os.PathLike)):
+                inp = os.fspath(inp)
                 if inp.endswith(".csv"):
                     site_data = pd.read_csv(inp)
+                else:
+                    site_data = _site_data_from_config(load_config(inp))
             elif isinstance(inp, pd.DataFrame):
                 site_data = inp
+            elif isinstance(inp, dict):
+                site_data = _site_data_from_config(inp)
             else:
                 # site data was not able to be set. Raise error.
                 raise Exception(
-                    "Site data input must be .csv or "
-                    "dataframe, but received: {}".format(inp)
+                    "Site data input must be .csv, json, yaml, yml, toml, "
+                    "gid-keyed mapping, or dataframe, but received: {}"
+                    .format(inp)
                 )
 
             gid_not_in_site_data = ResourceMetaField.GID not in site_data
@@ -1433,3 +1441,14 @@ class BaseGen(ABC):
             warn(w, ParallelExecutionWarning)
 
         return result
+
+
+def _site_data_from_config(config):
+    """Convert a gid-keyed config mapping to the site-data DataFrame."""
+
+    site_data = pd.DataFrame.from_dict(config, orient="index")
+    site_data.index = pd.Index(
+        pd.to_numeric(site_data.index, errors="raise"),
+        name=ResourceMetaField.GID,
+    )
+    return site_data

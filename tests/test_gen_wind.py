@@ -92,11 +92,17 @@ def test_wind_gen_slice(f_rev1_out, rev2_points, year, max_workers):
     )
     sam_files = TESTDATADIR + "/SAM/wind_gen_standard_losses_0.json"
     res_file = TESTDATADIR + "/wtk/ri_100_wtk_{}.h5".format(year)
+    project_points = {
+        gid: {"config": None}
+        for gid in range(*rev2_points.indices(rev2_points.stop))
+    }
 
     # run reV 2.0 generation
-    pp = ProjectPoints(rev2_points, sam_files, "windpower", res_file=res_file)
+    pp = ProjectPoints(
+        project_points, sam_files, "windpower", res_file=res_file
+    )
     gen = Gen(
-        "windpower", rev2_points, sam_files, res_file, sites_per_worker=3
+        "windpower", project_points, sam_files, res_file, sites_per_worker=3
     )
     gen.run(max_workers=max_workers)
     gen_outs = list(gen.out["cf_mean"])

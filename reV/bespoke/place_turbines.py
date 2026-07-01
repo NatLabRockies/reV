@@ -255,7 +255,8 @@ class PlaceTurbines:
         define potential turbine locations that will be used as design
         variables in the gentic algorithm.
         """
-        packing = PackTurbines(self.min_spacing, self.packing_polygons)
+        packing = PackTurbines(self.min_spacing, self.packing_polygons,
+                               max_iters=self.turbine_upper_limit)
         nturbs = 1E6
         mult = 1.0
         iters = 0

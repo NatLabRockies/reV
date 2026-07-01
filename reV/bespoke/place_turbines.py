@@ -262,8 +262,8 @@ class PlaceTurbines:
         iters = 0
         while nturbs > 300:
             iters += 1
-            if iters > 10000:
-                msg = ('Too many attempts within initialize packing')
+            if iters > 10_000:
+                msg = 'Too many attempts within initialize packing'
                 raise WhileLoopPackingError(msg)
             packing.clear()
             packing.min_spacing = self.min_spacing * mult

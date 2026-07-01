@@ -459,7 +459,14 @@ class BespokeSinglePlant:
         logger.debug(
             "Bespoke objective function: {}".format(objective_function)
         )
-        logger.debug("Bespoke cost function: {}".format(objective_function))
+        logger.debug("Bespoke cost function: {}".format(capital_cost_function))
+        logger.debug("Bespoke FOC function: {}".format(
+            fixed_operating_cost_function))
+        logger.debug("Bespoke VOC function: {}".format(
+            variable_operating_cost_function))
+        logger.debug("Bespoke BOS function: {}".format(
+            balance_of_system_cost_function))
+        logger.debug("Bespoke min spacing: {}".format(min_spacing))
         logger.debug("Bespoke GA initialization kwargs: {}".format(ga_kwargs))
         logger.debug(
             "Bespoke EOS multiplier baseline capacity: {:,} MW".format(

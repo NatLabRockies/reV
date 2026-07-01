@@ -195,6 +195,16 @@ class PlaceTurbines:
                        .format(substr, eqn))
                 raise ValueError(msg)
 
+    @property
+    def turbine_upper_limit(self):
+        """int: Maximum number of turbines that can be packed"""
+        sc_area = (
+            (self.ncols * self.pixel_side_length + self.min_spacing)
+            * (self.nrows * self.pixel_side_length + self.min_spacing)
+        )
+        turb_area = self.min_spacing ** 2 * np.pi
+        return max(300, int(sc_area / turb_area * 1.1))
+
     def define_exclusions(self):
         """From the exclusions data, create a shapely MultiPolygon as
         self.safe_polygons that defines where turbines can be placed.

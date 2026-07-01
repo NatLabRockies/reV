@@ -44,8 +44,8 @@ class PackTurbines():
             iters = 0
             while can_add_more:
                 iters += 1
-                if iters > 10000:
-                    msg = ('Too many points placed in packing algorithm')
+                if iters > 10_000:
+                    msg = 'Too many points placed in packing algorithm'
                     raise WhileLoopPackingError(msg)
 
                 if leftover.area > 0:

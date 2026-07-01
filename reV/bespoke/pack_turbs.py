@@ -13,11 +13,12 @@ from reV.utilities.exceptions import WhileLoopPackingError
 logger = logging.getLogger(__name__)
 
 
-class PackTurbines():
+class PackTurbines:
     """Framework to maximize plant capacity in a provided wind plant area.
     """
 
-    def __init__(self, min_spacing, safe_polygons, weight_x=0.0013547):
+    def __init__(self, min_spacing, safe_polygons, weight_x=0.0013547,
+                 max_iters=10_000):
         """
         Parameters
         ----------
@@ -27,6 +28,11 @@ class PackTurbines():
             The "safe" area(s) where turbines can be placed without
             violating boundary, setback, exclusion, or other constraints.
         weight_x : float, optional
+            Weighting factor for the x-coordinate when determining the
+            optimal turbine placement. Default is 0.0013547.
+        max_iters : int, optional
+            Maximum number of iterations for the packing algorithm.
+            Default is 10,000.
         """
         if min_spacing <= 0:
             raise ValueError('min_spacing must be greater than 0')
@@ -34,6 +40,7 @@ class PackTurbines():
         self.min_spacing = min_spacing
         self.safe_polygons = safe_polygons
         self.weight_x = weight_x
+        self.max_iters = max_iters
 
         # turbine locations
         self.turbine_x = np.array([])
@@ -53,7 +60,7 @@ class PackTurbines():
             iters = 0
             while can_add_more:
                 iters += 1
-                if iters > 10_000:
+                if iters > self.max_iters:
                     msg = 'Too many points placed in packing algorithm'
                     raise WhileLoopPackingError(msg)
 

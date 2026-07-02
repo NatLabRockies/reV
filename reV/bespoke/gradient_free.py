@@ -18,7 +18,7 @@ class GeneticAlgorithm:
     def __init__(self, bits, bounds, variable_type, objective_function,
                  max_generation=100, population_size=0, crossover_rate=0.1,
                  mutation_rate=0.01, tol=1E-6, convergence_iters=5,
-                 max_time=3600):
+                 max_time=3600, plant_noise=None, plant_noise_limit=55):
         """
         Parameters
         ----------
@@ -51,6 +51,15 @@ class GeneticAlgorithm:
             The number of generations to determine convergence.
         max_time : float
             The maximum time (in seconds) to run the genetic algorithm.
+        plant_noise : PlantNoise object, optional
+            An optional PlantNoise object that can be used to compute the
+            plant-level sound at observer locations. If provided, the genetic
+            algorithm will compute a penalty for any noise violations at the
+            observer locations.
+        plant_noise_limit : float, optional
+            The sound level limit (in dB) for the plant-level sound at observer
+            locations. If the plant-level sound exceeds this limit, a penalty
+            will be added to the objective function value.
         """
 
         logger.debug('Initializing GeneticAlgorithm...')
@@ -91,6 +100,9 @@ class GeneticAlgorithm:
         # offspring fitnesses
         self.discretized_variables = {}  # a dict of arrays containing all of
         # the discretized design variable
+
+        self.plant_noise = plant_noise
+        self.plant_noise_limit = plant_noise_limit
 
         # outputs
         self.solution_history = np.array([])
@@ -157,8 +169,17 @@ class GeneticAlgorithm:
         # initialize fitness of the parent population
         for i in range(self.population_size):
             self.chromosome_2_variables(self.parent_population[i])
-            self.parent_fitness[i] = \
+            self.parent_fitness[i] = (
                 self.objective_function(self.design_variables)
+                + self._noise_penalty()
+            )
+
+    def _noise_penalty(self):
+        """Compute optional noise penalty"""
+        if self.plant_noise is None:
+            return 0.0
+        noise = self.plant_noise.compute_noise(self.design_variables)
+        return np.sum(noise[noise > self.plant_noise_limit])
 
     def chromosome_2_variables(self, chromosome):
         """convert the binary chromosomes to design variable values"""
@@ -242,8 +263,10 @@ class GeneticAlgorithm:
             # determine fitness of offspring
             for i in range(self.population_size):
                 self.chromosome_2_variables(self.offspring_population[i])
-                self.offspring_fitness[i] = \
+                self.offspring_fitness[i] = (
                     self.objective_function(self.design_variables)
+                    + self._noise_penalty()
+                )
 
             # rank the total population from best to worst
             total_fitness = np.append(self.parent_fitness,

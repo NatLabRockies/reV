@@ -232,13 +232,14 @@ class GeneticAlgorithm:
             # rank the total population from best to worst
             total_fitness = np.append(self.parent_fitness,
                                       self.offspring_fitness)
-            ranked_fitness = \
-                np.argsort(total_fitness)[0:int(self.population_size)]
+            total_population = (
+                np.vstack([self.parent_population, self.offspring_population]))
+            ranked_fitness_ind = (
+                np.argsort(total_fitness)[0:int(self.population_size)])
 
-            total_population = \
-                np.vstack([self.parent_population, self.offspring_population])
-            self.parent_population[:, :] = total_population[ranked_fitness, :]
-            self.parent_fitness[:] = total_fitness[ranked_fitness]
+            self.parent_fitness[:] = total_fitness[ranked_fitness_ind]
+            self.parent_population[:, :] = (
+                total_population[ranked_fitness_ind, :])
 
             # store solution history and wrap up generation
             self.solution_history[generation] = np.min(self.parent_fitness)

@@ -207,6 +207,20 @@ class GeneticAlgorithm:
                     self.offspring_population[i][j] = \
                         (self.offspring_population[i][j] + 1) % 2
 
+    def make_nonzero(self):
+        """Make sure no offspring has zero capacity"""
+        # if any offspring scenarios have no turbines (all 0), randomly place 1
+        no_turbine_offsprings = np.all(self.offspring_population == 0, axis=1)
+        num_no_turbine_offsprings = np.sum(no_turbine_offsprings)
+        if num_no_turbine_offsprings > 0:
+            fix_offspring_idx = np.where(no_turbine_offsprings)[0]
+            new_turbine_idx = np.random.choice(
+                np.arange(self.nbits),
+                size=(num_no_turbine_offsprings,),
+                replace=True
+            )
+            self.offspring_population[fix_offspring_idx, new_turbine_idx] = 1
+
     def optimize_ga(self):
         """run the genetic algorithm"""
 
@@ -223,6 +237,8 @@ class GeneticAlgorithm:
                 run_time < self.max_time:
             self.crossover()
             self.mutate()
+            self.make_nonzero()
+
             # determine fitness of offspring
             for i in range(self.population_size):
                 self.chromosome_2_variables(self.offspring_population[i])

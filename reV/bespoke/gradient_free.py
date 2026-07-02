@@ -7,10 +7,11 @@ import time
 from math import log
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
-class GeneticAlgorithm():
+class GeneticAlgorithm:
     """a simple genetic algorithm used to select bespoke turbine locations
     """
 

@@ -353,7 +353,22 @@ class PlaceTurbines:
         --------
         :class:`~reV.bespoke.gradient_free.GeneticAlgorithm` : GA Algorithm.
         """
+        self._run_ga(**kwargs)
+        self.wind_plant["wind_farm_xCoordinates"] = self.turbine_x
+        self.wind_plant["wind_farm_yCoordinates"] = self.turbine_y
+        self.wind_plant["system_capacity"] = self.capacity
+
+    def _run_ga(self, **kwargs):
+        """Run GA if needed"""
         nlocs = len(self.x_locations)
+        if nlocs == 0:
+            self.optimized_design_variables = []
+            return
+
+        if nlocs == 1:
+            self.optimized_design_variables = [True]
+            return
+
         bits = np.ones(nlocs, dtype=int)
         bounds = np.zeros((nlocs, 2), dtype=int)
         bounds[:, 1] = 2
@@ -380,12 +395,8 @@ class PlaceTurbines:
         ga.optimize_ga()
 
         optimized_design_variables = ga.optimized_design_variables
-        self.optimized_design_variables = \
-            [bool(y) for y in optimized_design_variables]
-
-        self.wind_plant["wind_farm_xCoordinates"] = self.turbine_x
-        self.wind_plant["wind_farm_yCoordinates"] = self.turbine_y
-        self.wind_plant["system_capacity"] = self.capacity
+        self.optimized_design_variables = [
+            bool(y) for y in optimized_design_variables]
 
     def place_turbines(self, **kwargs):
         """Define bespoke wind plant turbine layouts.

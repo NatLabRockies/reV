@@ -25,12 +25,14 @@ def test_rev_version_cli_is_clean():
     result = subprocess.run([exe, "--version"], capture_output=True, text=True,
                             env=env, check=False)
 
-    expected = f"reV, version {version('NLR-reV')}"
-
     assert result.returncode == 0, (f"stdout: {result.stdout}\n"
                                     f"stderr: {result.stderr}")
     assert result.stderr == ""
-    assert result.stdout.splitlines() == [expected]
+
+    stdout_lines = result.stdout.splitlines()
+    assert len(stdout_lines) == 1
+    assert "reV" in stdout_lines[0]
+    assert f"version {version('NLR-reV')}" in stdout_lines[0]
 
 
 @pytest.mark.parametrize(

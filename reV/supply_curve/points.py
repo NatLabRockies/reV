@@ -273,7 +273,8 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
 
         super().__init__(gid, exclusion_shape, resolution=resolution)
 
-        self._gids = self._parse_techmap(tm_dset)
+        self.tm = self._parse_techmap(tm_dset)
+        self._gids = self.tm.flatten()
         self._h5_gids = self._gids
         self._h5_gid_set = None
 
@@ -354,12 +355,12 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         Returns
         -------
         res_gids : np.ndarray
-            1D array with length == number of exclusion points. reV resource
-            gids (native resource index) from the original resource data
-            corresponding to the tech exclusions.
+            2D array with reV resource gids (native resource index) from
+            the original resource data corresponding to the tech
+            exclusions.
         """
         res_gids = self.exclusions.excl_h5[tm_dset, self.rows, self.cols]
-        res_gids = res_gids.astype(np.int32).flatten()
+        res_gids = res_gids.astype(np.int32)
 
         if (res_gids != -1).sum() == 0:
             emsg = (
@@ -493,8 +494,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
             self._incl_mask = self.exclusions[self.rows, self.cols]
 
             # make sure exclusion pixels outside resource extent are excluded
-            out_of_extent = self._gids.reshape(self._incl_mask.shape) == -1
-            self._incl_mask[out_of_extent] = 0.0
+            self._incl_mask[self.tm == -1] = 0.0
 
             if self._incl_mask.max() > 1:
                 w = (
@@ -651,8 +651,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         n = self._resolution // agg
 
         arr = self.include_mask.copy()
-        out_of_extent = self._gids.reshape(arr.shape) == -1
-        arr[out_of_extent] = 0.0
+        arr[self.tm == -1] = 0.0
 
         # Example for 2D:
         # (12, 8) with n=4 -> reshape to (4, 3, 4, 2)

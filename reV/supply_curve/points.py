@@ -436,6 +436,20 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         return self._excl_area
 
     @property
+    def area_based_pixel_side_length_meters(self):
+        """Get the length of a single exclusion pixel side (meters)
+
+        Returns
+        -------
+        float
+        """
+        length = None
+        if self.pixel_area is not None:
+            length = np.sqrt(self.pixel_area) * 1000.0
+
+        return length
+
+    @property
     def area(self):
         """Get the non-excluded resource area of the supply curve point in the
         current resource class.

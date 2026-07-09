@@ -3,10 +3,19 @@
 import os
 import shutil
 import subprocess
+import py_compile
+import warnings
+from pathlib import Path
 from importlib.metadata import version
+
+import pytest
+
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_rev_version_cli_is_clean():
+    """Test that no warning is thrown when checking the reV CLI version"""
     exe = shutil.which("reV")
     assert exe is not None, "reV console script not found on PATH"
 
@@ -22,3 +31,19 @@ def test_rev_version_cli_is_clean():
                                     f"stderr: {result.stderr}")
     assert result.stderr == ""
     assert result.stdout.splitlines() == [expected]
+
+
+@pytest.mark.parametrize(
+    "relpath",
+    [
+        "reV/supply_curve/points.py",
+        "reV/bespoke/bespoke.py",
+        "reV/supply_curve/sc_aggregation.py",
+    ],
+)
+def test_no_invalid_escape_warnings(relpath):
+    """Test that no warning is thrown at compile time"""
+    path = ROOT / relpath
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", SyntaxWarning)
+        py_compile.compile(str(path), doraise=True)

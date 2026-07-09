@@ -817,27 +817,6 @@ class BespokeSinglePlant:
         return self.sc_point.gid
 
     @property
-    def include_mask(self):
-        """Get the supply curve point 2D inclusion mask (included is 1,
-        excluded is 0)
-
-        Returns
-        -------
-        np.ndarray
-        """
-        return self.sc_point.include_mask
-
-    @property
-    def pixel_side_length(self):
-        """Get the length of a single exclusion pixel side (meters)
-
-        Returns
-        -------
-        float
-        """
-        return np.sqrt(self.sc_point.pixel_area) * 1000.0
-
-    @property
     def original_sam_sys_inputs(self):
         """Get the original (pre-optimized) SAM windpower system inputs.
 
@@ -1111,8 +1090,8 @@ class BespokeSinglePlant:
                 self.fixed_operating_cost_function,
                 self.variable_operating_cost_function,
                 self.balance_of_system_cost_function,
-                self.include_mask,
-                self.pixel_side_length,
+                self.sc_point.include_mask,
+                self.sc_point.area_based_pixel_side_length_meters,
                 self.min_spacing,
                 self.convex_hull_buffer)
 

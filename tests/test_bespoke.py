@@ -310,7 +310,7 @@ def test_correct_turb_location(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.include_mask)
+        include_mask = np.zeros_like(bsp.sc_point.include_mask)
         include_mask[1, -2] = 1
         pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,
@@ -358,7 +358,7 @@ def test_correct_turb_chb(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.include_mask)
+        include_mask = np.zeros_like(bsp.sc_point.include_mask)
         include_mask[1, -2] = 1
         pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,

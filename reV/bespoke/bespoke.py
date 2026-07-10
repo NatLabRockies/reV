@@ -1198,7 +1198,8 @@ class BespokeSinglePlant:
             msg = (
                 "The reV bespoke module depends on the following special "
                 "dependencies that were not found in the active "
-                "environment: {}".format(missing)
+                "environment: {}\nTry running `pip install NLR-reV[bespoke]`"
+                .format(missing)
             )
             logger.error(msg)
             raise ModuleNotFoundError(msg)

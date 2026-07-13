@@ -702,6 +702,64 @@ def _compute_nn_conn_dist(x_coords, y_coords):
     return total_dist
 
 
+def _rel_obs_locs(sc_point, obs_tiff_fp):
+    """Compute the locations of observers relative to the SC-point."""
+
+    profile = sc_point.exclusions.excl_h5.profile
+
+    excl_crs = profile["crs"]
+    full_transform = Affine(*profile["transform"][:6])
+    window = Window.from_slices(sc_point.rows, sc_point.cols)
+    left, bottom, right, top = window_bounds(window, full_transform)
+
+    with rioxarray.open_rasterio(obs_tiff_fp) as obs_raster:
+        src_left, src_bottom, src_right, src_top = transform_bounds(
+            excl_crs,
+            obs_raster.rio.crs,
+            left,
+            bottom,
+            right,
+            top,
+        )
+
+        # Small pad so edge pixels are not dropped by bound rounding
+        xres, yres = obs_raster.rio.resolution()
+        src_left -= abs(xres)
+        src_right += abs(xres)
+        src_bottom -= abs(yres)
+        src_top += abs(yres)
+
+        subset = obs_raster.rio.clip_box(
+            minx=src_left,
+            miny=src_bottom,
+            maxx=src_right,
+            maxy=src_top,
+        ).squeeze(drop=True)
+
+        # Find observer locs
+        mask = np.isclose(subset.values, 1)
+        row_idx, col_idx = np.where(mask)
+        x_src = subset.x.values[col_idx]
+        y_src = subset.y.values[row_idx]
+
+        if str(obs_raster.rio.crs) != str(excl_crs):
+            x_sc, y_sc = transform(
+                obs_raster.rio.crs,
+                excl_crs,
+                x_src.tolist(),
+                y_src.tolist(),
+            )
+            x_sc = np.asarray(x_sc)
+            y_sc = np.asarray(y_sc)
+        else:
+            x_sc = np.asarray(x_src, dtype=float)
+            y_sc = np.asarray(y_src, dtype=float)
+
+    x_rel = x_sc - left
+    y_rel = y_sc - bottom
+    return np.c_[x_rel, y_rel]
+
+
 def _fix_wp_keys(eqn):
     """Surround key of `self.wind_plant` in quotes"""
     pattern = r'(self\.wind_plant\[\s*)([^\]]+?)(\s*\])'

@@ -74,12 +74,12 @@ SAM_CONFIGS = {"default": SAM_SYS_INPUTS}
 
 
 CAP_COST_FUN = (
-    "[140][0] * system_capacity "
+    "[140,60][0] * system_capacity "
     "* np.exp(-system_capacity / 1E5 * 0.1 + (1 - 0.1)) "
     "+ (self.wind_plant[annual_energy] or 0) * 0"
 )
 FOC_FUN = (
-    "[60][0] * system_capacity "
+    "[50,60,70][1] * system_capacity "
     "* np.exp(-system_capacity / 1E5 * 0.1 + (1 - 0.1)) "
     "+ (self.wind_plant[annual_energy] or 0) * 0"
 )

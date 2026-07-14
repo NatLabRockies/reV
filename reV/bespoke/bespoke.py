@@ -247,7 +247,7 @@ class BespokeSinglePlant:
     the local wind resource and exclusions for a single reV supply curve point.
     """
 
-    DEPENDENCIES = ("shapely",)
+    DEPENDENCIES = ("affine", "rasterio", "rioxarray", "shapely")
     OUT_ATTRS = copy.deepcopy(Gen.OUT_ATTRS)
 
     def __init__(self, gid, excl, res, tm_dset, sam_sys_inputs,
@@ -261,7 +261,8 @@ class BespokeSinglePlant:
                  resolution=64, excl_area=None, exclusion_shape=None,
                  eos_mult_baseline_cap_mw=200, convex_hull_buffer=0,
                  prior_meta=None, gid_map=None, bias_correct=None,
-                 pre_loaded_data=None, close=True):
+                 spl_h5_path=None, obs_tiff_fp=None, plant_noise_limit=55,
+                 spl_type="Leq", pre_loaded_data=None, close=True,):
         """
         Parameters
         ----------
@@ -442,6 +443,25 @@ class BespokeSinglePlant:
             you can include ``scalar`` and ``adder`` inputs as columns in the
             ``bias_correct`` table on a site-by-site basis. If ``None``, no
             corrections are applied. By default, ``None``.
+        spl_h5_path : str, default=None
+            Path to the SPL HDF5 file. If not provided, SPL data will
+            not be loaded and noise will not be taken into consideration
+            during optimization. By default, ``None``.
+        obs_tiff_fp : str, default=None
+            Path to the observer locations TIFF file. If not provided,
+            observer locations will not be loaded and noise will not be
+            taken into consideration during optimization.
+            By default, ``None``.
+        plant_noise_limit : float, default=55
+            The sound level limit (in dB) for the plant-level sound at
+            observer locations. If the plant-level sound exceeds this
+            limit, a penalty will be added to the objective function
+            value. By default, ``55``.
+        spl_type : str, default="Leq"
+            The type of SPL data to use from the HDF5 file. Allowed
+            options are: ['L10', 'L50', 'L90', 'Leq', 'Lmax']. Do not
+            change this input unless you understand why it is necessary.
+            By default, ``Leq``.
         pre_loaded_data : BespokeSinglePlantData, optional
             A pre-loaded :class:`BespokeSinglePlantData` object, or
             ``None``. Can be useful to speed up execution on file
@@ -460,24 +480,29 @@ class BespokeSinglePlant:
             "Bespoke objective function: {}".format(objective_function)
         )
         logger.debug("Bespoke cost function: {}".format(capital_cost_function))
-        logger.debug("Bespoke FOC function: {}".format(
-            fixed_operating_cost_function))
-        logger.debug("Bespoke VOC function: {}".format(
-            variable_operating_cost_function))
-        logger.debug("Bespoke BOS function: {}".format(
-            balance_of_system_cost_function))
+        logger.debug(
+            "Bespoke FOC function: {}"
+            .format(fixed_operating_cost_function))
+        logger.debug(
+            "Bespoke VOC function: {}"
+            .format(variable_operating_cost_function))
+        logger.debug(
+            "Bespoke BOS function: {}"
+            .format(balance_of_system_cost_function))
         logger.debug("Bespoke min spacing: {}".format(min_spacing))
         logger.debug("Bespoke GA initialization kwargs: {}".format(ga_kwargs))
         logger.debug(
-            "Bespoke EOS multiplier baseline capacity: {:,} MW".format(
-                eos_mult_baseline_cap_mw
-            )
+            "Bespoke EOS multiplier baseline capacity: {:,} MW"
+            .format(eos_mult_baseline_cap_mw)
         )
         logger.debug(
-            "Bespoke convex hull buffer: {:,} m".format(
-                convex_hull_buffer
-            )
+            "Bespoke convex hull buffer: {:,} m"
+            .format(convex_hull_buffer)
         )
+        logger.debug("Bespoke SPL file path: {}".format(spl_h5_path))
+        logger.debug("Bespoke Obs file path: {}".format(obs_tiff_fp))
+        logger.debug("Bespoke noise limit: {:,}".format(plant_noise_limit))
+        logger.debug("Bespoke SPL type: {}".format(spl_type))
 
         if isinstance(min_spacing, str) and min_spacing.endswith("x"):
             rotor_diameter = sam_sys_inputs["wind_turbine_rotor_diameter"]
@@ -511,6 +536,10 @@ class BespokeSinglePlant:
         self._wd_bins = wd_bins
         self._baseline_cap_mw = eos_mult_baseline_cap_mw
         self.convex_hull_buffer = convex_hull_buffer
+        self.spl_h5_path = spl_h5_path
+        self.obs_tiff_fp = obs_tiff_fp
+        self.plant_noise_limit = plant_noise_limit
+        self.spl_type = spl_type
 
         self._res_df = None
         self._prior_meta = prior_meta is not None
@@ -1084,16 +1113,19 @@ class BespokeSinglePlant:
             from reV.bespoke.place_turbines import PlaceTurbines
 
             self._plant_optm = PlaceTurbines(
+                self.sc_point,
                 self.wind_plant_pd,
                 self.objective_function,
                 self.capital_cost_function,
                 self.fixed_operating_cost_function,
                 self.variable_operating_cost_function,
                 self.balance_of_system_cost_function,
-                self.sc_point.include_mask,
-                self.sc_point.area_based_pixel_side_length_meters,
-                self.min_spacing,
-                self.convex_hull_buffer)
+                min_spacing=self.min_spacing,
+                convex_hull_buffer=self.convex_hull_buffer,
+                spl_h5_path=self.spl_h5_path,
+                obs_tiff_fp=self.obs_tiff_fp,
+                plant_noise_limit=self.plant_noise_limit,
+                spl_type=self.spl_type)
 
         return self._plant_optm
 
@@ -1539,7 +1571,8 @@ class BespokeWindPlants(BaseAggregation):
                  resolution=64, excl_area=None, data_layers=None,
                  pre_extract_inclusions=False, eos_mult_baseline_cap_mw=200,
                  convex_hull_buffer=0, prior_run=None, gid_map=None,
-                 bias_correct=None, pre_load_data=False):
+                 spl_h5_path=None, obs_tiff_fp=None, plant_noise_limit=55,
+                 spl_type="Leq", bias_correct=None, pre_load_data=False):
         """reV bespoke analysis class.
 
         Much like generation, ``reV`` bespoke analysis runs SAM
@@ -1966,6 +1999,25 @@ class BespokeWindPlants(BaseAggregation):
             resource input). If ``None``, the GID values in the project
             points are assumed to match the resource GID values.
             By default, ``None``.
+        spl_h5_path : str, default=None
+            Path to the SPL HDF5 file. If not provided, SPL data will
+            not be loaded and noise will not be taken into consideration
+            during optimization. By default, ``None``.
+        obs_tiff_fp : str, default=None
+            Path to the observer locations TIFF file. If not provided,
+            observer locations will not be loaded and noise will not be
+            taken into consideration during optimization.
+            By default, ``None``.
+        plant_noise_limit : float, default=55
+            The sound level limit (in dB) for the plant-level sound at
+            observer locations. If the plant-level sound exceeds this
+            limit, a penalty will be added to the objective function
+            value. By default, ``55``.
+        spl_type : str, default="Leq"
+            The type of SPL data to use from the HDF5 file. Allowed
+            options are: ['L10', 'L50', 'L90', 'Leq', 'Lmax']. Do not
+            change this input unless you understand why it is necessary.
+            By default, ``Leq``.
         bias_correct : str | pd.DataFrame, optional
             Optional DataFrame or CSV filepath to a wind or solar
             resource bias correction table. This has columns:

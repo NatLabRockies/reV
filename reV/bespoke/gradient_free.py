@@ -18,7 +18,7 @@ class GeneticAlgorithm:
     def __init__(self, bits, bounds, variable_type, objective_function,
                  max_generation=100, population_size=0, crossover_rate=0.1,
                  mutation_rate=0.01, tol=1E-6, convergence_iters=5,
-                 max_time=3600, plant_noise=None, plant_noise_limit=55):
+                 max_time=3600, plant_noise=None):
         """
         Parameters
         ----------
@@ -56,10 +56,6 @@ class GeneticAlgorithm:
             plant-level sound at observer locations. If provided, the genetic
             algorithm will compute a penalty for any noise violations at the
             observer locations.
-        plant_noise_limit : float, optional
-            The sound level limit (in dB) for the plant-level sound at observer
-            locations. If the plant-level sound exceeds this limit, a penalty
-            will be added to the objective function value.
         """
 
         logger.debug('Initializing GeneticAlgorithm...')
@@ -102,7 +98,6 @@ class GeneticAlgorithm:
         # the discretized design variable
 
         self.plant_noise = plant_noise
-        self.plant_noise_limit = plant_noise_limit
 
         # outputs
         self.solution_history = np.array([])
@@ -178,8 +173,7 @@ class GeneticAlgorithm:
         """Compute optional noise penalty"""
         if self.plant_noise is None:
             return 0.0
-        noise = self.plant_noise.compute_noise(self.design_variables)
-        return np.sum(noise[noise > self.plant_noise_limit])
+        return self.plant_noise.total_noise_penalty(self.design_variables)
 
     def chromosome_2_variables(self, chromosome):
         """convert the binary chromosomes to design variable values"""

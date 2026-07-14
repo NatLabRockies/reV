@@ -310,14 +310,14 @@ def test_correct_turb_location(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.sc_point.include_mask)
-        include_mask[1, -2] = 1
-        pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        sc_point = bsp.sc_point
+        sc_point._incl_mask = np.zeros_like(sc_point.include_mask)
+        sc_point._incl_mask[1, -2] = 1
+        pt = PlaceTurbines(sc_point, bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,
                            bsp.fixed_operating_cost_function,
                            bsp.variable_operating_cost_function,
                            bsp.balance_of_system_cost_function,
-                           include_mask, pixel_side_length=90,
                            min_spacing=45)
 
         pt.define_exclusions()
@@ -358,26 +358,26 @@ def test_correct_turb_chb(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.sc_point.include_mask)
-        include_mask[1, -2] = 1
-        pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        sc_point = bsp.sc_point
+        sc_point._incl_mask = np.zeros_like(sc_point.include_mask)
+        sc_point._incl_mask[1, -2] = 1
+        pt = PlaceTurbines(sc_point, bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,
                            bsp.fixed_operating_cost_function,
                            bsp.variable_operating_cost_function,
                            bsp.balance_of_system_cost_function,
-                           include_mask, pixel_side_length=90,
                            min_spacing=45)
 
         pt.define_exclusions()
         pt.initialize_packing()
         pt.optimized_design_variables = pt.x_locations >= 0
 
-        pt_buffered = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        pt_buffered = PlaceTurbines(sc_point, bsp.wind_plant_pd,
+                                    bsp.objective_function,
                                     bsp.capital_cost_function,
                                     bsp.fixed_operating_cost_function,
                                     bsp.variable_operating_cost_function,
                                     bsp.balance_of_system_cost_function,
-                                    include_mask, pixel_side_length=90,
                                     min_spacing=45, convex_hull_buffer=100)
 
         pt_buffered.define_exclusions()

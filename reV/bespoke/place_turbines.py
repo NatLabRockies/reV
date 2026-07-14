@@ -480,11 +480,12 @@ class PlaceTurbines:
     @none_until_optimized
     def nn_conn_dist_m(self):
         """This is the final avg straight line distance to turb medoid (m)"""
-        if self._optimized_nn_conn_dist_m is None:
-            self._optimized_nn_conn_dist_m = _compute_nn_conn_dist(
-                self.turbine_x, self.turbine_y
-            )
         return self._optimized_nn_conn_dist_m
+
+    @cached_property
+    def _optimized_nn_conn_dist_m(self):
+        """optimized nearest neighbor connection distance (m)"""
+        return _compute_nn_conn_dist(self.turbine_x, self.turbine_y)
 
     @property
     @none_until_optimized

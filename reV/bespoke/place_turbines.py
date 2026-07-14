@@ -4,13 +4,14 @@
 place turbines for bespoke wind plants
 """
 import re
-from functools import wraps
+from functools import wraps, cached_property
 
 import numpy as np
 from shapely.geometry import MultiPoint, MultiPolygon, Point, Polygon
 
 from reV.bespoke.gradient_free import GeneticAlgorithm
 from reV.bespoke.pack_turbs import PackTurbines
+from reV.bespoke.plant_noise import PlantNoiseInputs
 from reV.utilities.exceptions import WhileLoopPackingError
 
 
@@ -49,16 +50,19 @@ class PlaceTurbines:
     exclusions, wind resources, and objective
     """
 
-    def __init__(self, wind_plant, objective_function,
-                 capital_cost_function,
-                 fixed_operating_cost_function,
+    def __init__(self, sc_point, wind_plant, objective_function,
+                 capital_cost_function, fixed_operating_cost_function,
                  variable_operating_cost_function,
-                 balance_of_system_cost_function,
-                 include_mask, pixel_side_length, min_spacing,
-                 convex_hull_buffer=0):
+                 balance_of_system_cost_function, min_spacing,
+                 convex_hull_buffer=0, spl_h5_path=None, obs_tiff_fp=None,
+                 plant_noise_limit=55, spl_type="Leq"):
         """
+
         Parameters
         ----------
+        sc_point : SupplyCurvePoint
+            SupplyCurvePoint object representing the supply curve point
+            for the wind plant.
         wind_plant : WindPowerPD
             wind plant object to analyze wind plant performance. This
             object should have everything in the plant defined, such
@@ -135,20 +139,35 @@ class PlaceTurbines:
             return the variable operating cost in $. Has access to the
             same variables as the objective_function. You can set this
             to "0" to effectively ignore balance-of-system costs.
-        include_mask : np.ndarray
-            Supply curve point 2D inclusion mask where included pixels
-            are set to 1 and excluded pixels are set to 0.
-        pixel_side_length : int
-            Side length (m) of a single pixel of the `include_mask`.
         min_spacing : float
             The minimum spacing between turbines (in meters).
         convex_hull_buffer : float, default=0
             Buffer (in m) to apply to turbine location convex hull
             before computing the convex hull area and capacity density.
             By default, ``0``.
+        spl_h5_path : str, default=None
+            Path to the SPL HDF5 file. If not provided, SPL data will
+            not be loaded and noise will not be taken into consideration
+            during optimization. By default, ``None``.
+        obs_tiff_fp : str, default=None
+            Path to the observer locations TIFF file. If not provided,
+            observer locations will not be loaded and noise will not be
+            taken into consideration during optimization.
+            By default, ``None``.
+        plant_noise_limit : float, default=55
+            The sound level limit (in dB) for the plant-level sound at
+            observer locations. If the plant-level sound exceeds this
+            limit, a penalty will be added to the objective function
+            value. By default, ``55``.
+        spl_type : str, default="Leq"
+            The type of SPL data to use from the HDF5 file. Allowed
+            options are: ['L10', 'L50', 'L90', 'Leq', 'Lmax']. Do not
+            change this input unless you understand why it is necessary.
+            By default, ``Leq``.
         """
 
         # inputs
+        self.sc_point = sc_point
         self.wind_plant = wind_plant
 
         self.capital_cost_function = _fix_wp_keys(capital_cost_function)
@@ -160,13 +179,17 @@ class PlaceTurbines:
             balance_of_system_cost_function)
 
         self.objective_function = _fix_wp_keys(objective_function)
-        self.include_mask = include_mask
-        self.pixel_side_length = pixel_side_length
         self.min_spacing = min_spacing
         self.convex_hull_buffer = convex_hull_buffer
+        self._plant_noise_inputs = PlantNoiseInputs(
+            spl_path=spl_h5_path,
+            obs_tiff_fp=obs_tiff_fp,
+            plant_noise_limit=plant_noise_limit,
+            spl_type=spl_type
+        )
 
         # internal variables
-        self.nrows, self.ncols = np.shape(include_mask)
+        self.nrows, self.ncols = np.shape(self.sc_point.include_mask)
         self.x_locations = np.array([])
         self.y_locations = np.array([])
         self.turbine_capacity = \
@@ -176,7 +199,6 @@ class PlaceTurbines:
         self.packing_polygons = None
         self.optimized_design_variables = None
         self.safe_polygons = None
-        self._optimized_nn_conn_dist_m = None
 
         self._preflight(self.objective_function)
         self._preflight(self.capital_cost_function)
@@ -195,25 +217,45 @@ class PlaceTurbines:
                        .format(substr, eqn))
                 raise ValueError(msg)
 
+    @cached_property
+    def plant_noise(self):
+        """PlantSound: PlantSound object for computing plant-level sound"""
+        if len(self.x_locations) < 1:
+            self.initialize_packing()
+        if len(self.x_locations) < 1:
+            return None
+
+        buffer = (self.sc_point.area_based_pixel_side_length_meters
+                  + self.min_spacing)
+        return self._plant_noise_inputs.build_for_sc_point(self.sc_point,
+                                                           self.x_locations,
+                                                           self.y_locations,
+                                                           buffer=buffer)
+
     @property
     def turbine_upper_limit(self):
         """int: Maximum number of turbines that can be packed"""
-        sc_area = (
-            (self.ncols * self.pixel_side_length + self.min_spacing)
-            * (self.nrows * self.pixel_side_length + self.min_spacing)
-        )
+        padded_length = (self.ncols
+                         * self.sc_point.area_based_pixel_side_length_meters
+                         + self.min_spacing)
+        padded_width = (self.nrows
+                        * self.sc_point.area_based_pixel_side_length_meters
+                        + self.min_spacing)
+        padded_sc_area = padded_length * padded_width
         turb_area = self.min_spacing ** 2 * np.pi
-        return max(300, int(sc_area / turb_area * 1.1))
+        return max(300, int(padded_sc_area / turb_area * 1.1))
 
     def define_exclusions(self):
         """From the exclusions data, create a shapely MultiPolygon as
         self.safe_polygons that defines where turbines can be placed.
         """
-        ny, nx = np.shape(self.include_mask)
+        ny, nx = np.shape(self.sc_point.include_mask)
         self.safe_polygons = MultiPolygon()
-        side_x = np.arange(nx + 1) * self.pixel_side_length
-        side_y = np.arange(ny, -1, -1) * self.pixel_side_length
-        floored = np.floor(self.include_mask)
+        side_x = (np.arange(nx + 1)
+                  * self.sc_point.area_based_pixel_side_length_meters)
+        side_y = (np.arange(ny, -1, -1)
+                  * self.sc_point.area_based_pixel_side_length_meters)
+        floored = np.floor(self.sc_point.include_mask)
         for i in range(nx):
             for j in range(ny):
                 if floored[j, i] == 1:
@@ -232,8 +274,8 @@ class PlaceTurbines:
             # add extra setback to cell boundary
             minx = 0.0
             miny = 0.0
-            maxx = nx * self.pixel_side_length
-            maxy = ny * self.pixel_side_length
+            maxx = nx * self.sc_point.area_based_pixel_side_length_meters
+            maxy = ny * self.sc_point.area_based_pixel_side_length_meters
             minx += self.min_spacing / 2.0
             miny += self.min_spacing / 2.0
             maxx -= self.min_spacing / 2.0
@@ -270,14 +312,15 @@ class PlaceTurbines:
             packing.pack_turbines_poly()
             nturbs = len(packing.turbine_x)
             mult *= 1.1
+
         self.x_locations = packing.turbine_x
         self.y_locations = packing.turbine_y
 
     def _sc_center(self):
         """Supply curve point center. """
-        ny, nx = np.shape(self.include_mask)
-        cx = nx * self.pixel_side_length / 2
-        cy = ny * self.pixel_side_length / 2
+        ny, nx = np.shape(self.sc_point.include_mask)
+        cx = nx * self.sc_point.area_based_pixel_side_length_meters / 2
+        cy = ny * self.sc_point.area_based_pixel_side_length_meters / 2
         return cx, cy
 
     def _avg_sl_dist_to_cent(self, x_locs, y_locs):
@@ -385,11 +428,11 @@ class PlaceTurbines:
             'convergence_iters': 10000,
             'max_time': 3600
         }
-
         ga_kwargs.update(kwargs)
 
         ga = GeneticAlgorithm(bits, bounds, variable_type,
                               self.optimization_objective,
+                              plant_noise=self.plant_noise,
                               **ga_kwargs)
 
         ga.optimize_ga()
@@ -525,10 +568,7 @@ class PlaceTurbines:
     def full_cell_area(self):
         """This is the full non-excluded area available for wind turbine
         placement (km^2)"""
-        nx, ny = np.shape(self.include_mask)
-        side_x = nx * self.pixel_side_length
-        side_y = ny * self.pixel_side_length
-        return side_x * side_y / 1e6
+        return self.sc_point.pixel_area
 
     @property
     @none_until_optimized
@@ -701,64 +741,6 @@ def _compute_nn_conn_dist(x_coords, y_coords):
         left_to_connect.mask[next_connection] = 1
 
     return total_dist
-
-
-def _rel_obs_locs(sc_point, obs_tiff_fp):
-    """Compute the locations of observers relative to the SC-point."""
-
-    profile = sc_point.exclusions.excl_h5.profile
-
-    excl_crs = profile["crs"]
-    full_transform = Affine(*profile["transform"][:6])
-    window = Window.from_slices(sc_point.rows, sc_point.cols)
-    left, bottom, right, top = window_bounds(window, full_transform)
-
-    with rioxarray.open_rasterio(obs_tiff_fp) as obs_raster:
-        src_left, src_bottom, src_right, src_top = transform_bounds(
-            excl_crs,
-            obs_raster.rio.crs,
-            left,
-            bottom,
-            right,
-            top,
-        )
-
-        # Small pad so edge pixels are not dropped by bound rounding
-        xres, yres = obs_raster.rio.resolution()
-        src_left -= abs(xres)
-        src_right += abs(xres)
-        src_bottom -= abs(yres)
-        src_top += abs(yres)
-
-        subset = obs_raster.rio.clip_box(
-            minx=src_left,
-            miny=src_bottom,
-            maxx=src_right,
-            maxy=src_top,
-        ).squeeze(drop=True)
-
-        # Find observer locs
-        mask = np.isclose(subset.values, 1)
-        row_idx, col_idx = np.where(mask)
-        x_src = subset.x.values[col_idx]
-        y_src = subset.y.values[row_idx]
-
-        if str(obs_raster.rio.crs) != str(excl_crs):
-            x_sc, y_sc = transform(
-                obs_raster.rio.crs,
-                excl_crs,
-                x_src.tolist(),
-                y_src.tolist(),
-            )
-            x_sc = np.asarray(x_sc)
-            y_sc = np.asarray(y_sc)
-        else:
-            x_sc = np.asarray(x_src, dtype=float)
-            y_sc = np.asarray(y_src, dtype=float)
-
-    x_rel = x_sc - left
-    y_rel = y_sc - bottom
-    return np.c_[x_rel, y_rel]
 
 
 def _fix_wp_keys(eqn):

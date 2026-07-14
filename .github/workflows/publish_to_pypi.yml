@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install .[build]
+        pip install ".[bespoke,build]""
     - name: Build a binary wheel
       run: |
         python reV/utilities/_clean_readme.py README.rst

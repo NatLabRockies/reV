@@ -82,7 +82,8 @@ class PlantNoiseInputs:
             return None
 
         shifted_obs_locs = _rel_obs_locs(sc_point, self.obs_tiff_fp,
-                                         x_locations, y_locations, buffer=buffer)
+                                         x_locations, y_locations,
+                                         buffer=buffer)
         if len(shifted_obs_locs) < 1:
             return None
 
@@ -252,7 +253,7 @@ def _extend_sound(turbine_spl, radius=15.5):
     """
 
     theta = np.arange(0., 360., 22.5)
-    r1 = np.arange( 10.,  500., 10.)
+    r1 = np.arange(10., 500., 10.)
     r2 = np.arange(500., 5001., 20.)
     r_turbine = np.hstack((r1, r2))
     r_ext = np.arange(5100., radius * 1000, 100)
@@ -284,7 +285,8 @@ def _rel_obs_locs(sc_point, obs_tiff_fp, x_locations, y_locations, buffer=0):
     y_locations : ndarray
         Turbine y coordinates in the SC-point frame.
     buffer : float, optional
-        Buffer distance around the SC-point boundary to include observer locations.
+        Buffer distance around the SC-point boundary to include observer
+        locations.
 
     Returns
     -------
@@ -350,7 +352,6 @@ def _rel_obs_locs(sc_point, obs_tiff_fp, x_locations, y_locations, buffer=0):
     obs_loc = np.c_[x_rel, y_rel]
     turbine_locs = np.c_[x_locations, y_locations]
     return turbine_locs[:, None, :] - obs_loc
-
 
 
 def _get_turbine_res_gids(x_locations, y_locations, sc_point):

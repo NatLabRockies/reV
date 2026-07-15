@@ -218,7 +218,8 @@ def test_plant_noise_real_data(plant_noise_case):
             plant_noise_case["sc_point"],
         ),
     )
-    assert set(plant_noise.turbine_interp) == set(np.unique(plant_noise.turbine_gids))
+    assert (set(plant_noise.turbine_interp)
+            == set(np.unique(plant_noise.turbine_gids)))
 
     turbine_mask = np.ones(len(plant_noise.turbine_gids), dtype=bool)
     plant_level_noise = plant_noise.compute_noise(turbine_mask)
@@ -236,7 +237,8 @@ def test_plant_noise_real_data(plant_noise_case):
     )
     assert plant_noise.total_noise_penalty(turbine_mask) >= 0
 
-    violations, num_obs, violation_pct = plant_noise.violation_stats(turbine_mask)
+    stats = plant_noise.violation_stats(turbine_mask)
+    violations, num_obs, violation_pct = stats
     assert 0 <= violations <= num_obs
     assert num_obs == plant_noise.shifted_obs_locs.shape[1]
     assert violation_pct == pytest.approx(100 * violations / num_obs)

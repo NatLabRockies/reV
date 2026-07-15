@@ -13,7 +13,7 @@ from reV.version import __version__
 class _DocstringEnumMeta(EnumMeta):  # noqa
     """Metaclass to assign docstrings to Enum members"""
 
-    def __new__(mcs, clsname, bases, clsdict):
+    def __new__(mcs, clsname, bases, clsdict):  # noqa
         cls = super().__new__(mcs, clsname, bases, clsdict)
 
         try:

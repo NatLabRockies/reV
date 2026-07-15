@@ -444,6 +444,18 @@ class SupplyCurveField(FieldEnum):
     BESPOKE_BALANCE_OF_SYSTEM_COST = "optimized_plant_balance_of_system_cost"
     """Balance of system cost of the optimized wind plant layout"""
 
+    BESPOKE_NOISE_LIMIT_DB = "noise_limit_db"
+    """Plant noise limit used to model this SC point"""
+
+    BESPOKE_NOISE_VIOLATIONS_COUNT = "noise_violations_count"
+    """Number of observers for which the plant noise exceeds the limit"""
+
+    BESPOKE_NOISE_OBSERVER_COUNT = "noise_observer_count"
+    """Number of observers (structures) for wind plant noise"""
+
+    BESPOKE_NOISE_VIOLATIONS_PCT = "noise_violations_percent"
+    """Percentage of observers for which the plant noise exceeds the limit"""
+
     # #################### #
     # Transmission outputs #
     # #################### #

@@ -1436,6 +1436,20 @@ class BespokeSinglePlant:
         self._meta[SupplyCurveField.FULL_CELL_CAPACITY_DENSITY] = (
             self.plant_optimizer.full_cell_capacity_density
         )
+        if self.plant_optimizer.plant_noise is not None:
+            self._meta[SupplyCurveField.BESPOKE_NOISE_LIMIT_DB] = (
+                self.plant_optimizer.plant_noise_limit
+            )
+            self._meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT] = (
+                self.plant_optimizer.noise_violations
+            )
+            self._meta[SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT] = (
+                self.plant_optimizer.noise_observers
+            )
+            self._meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT] = (
+                self.plant_optimizer.noise_violations_pct
+            )
+
 
         # copy dataset outputs to meta data for supply curve table summary
         # convert SAM system capacity in kW to reV supply curve cap in MW

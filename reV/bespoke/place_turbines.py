@@ -605,6 +605,37 @@ class PlaceTurbines:
 
     @property
     @none_until_optimized
+    def plant_noise_limit(self):
+        """This is the noise limit (db) used in the optimization"""
+        return self._plant_noise_inputs.plant_noise_limit
+
+    @property
+    @none_until_optimized
+    def noise_violations(self):
+        """This is the number of observer locations with noise violations"""
+        return self._noise_stats[0]
+
+    @property
+    @none_until_optimized
+    def noise_observers(self):
+        """This is the number noise observers"""
+        return self._noise_stats[1]
+
+    @property
+    @none_until_optimized
+    def noise_violations_pct(self):
+        """This is the percent of observer locations with noise violations"""
+        return self._noise_stats[2]
+
+    @cached_property
+    def _noise_stats(self):
+        """Noise optimization statistics"""
+        return self.plant_noise.violation_stats(
+            np.array(self.optimized_design_variables)
+        )
+
+    @property
+    @none_until_optimized
     def aep(self):
         """This is the annual energy production of the optimized plant (kWh)"""
         if self.nturbs <= 0:

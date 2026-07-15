@@ -48,7 +48,8 @@ def _make_generation_sc_point_for_sub_agg_stats(include_mask, resolution):
     point = object.__new__(GenerationSupplyCurvePoint)
     point._resolution = resolution
     point._incl_mask = np.array(include_mask, dtype=float)
-    point._gids = np.ones_like(include_mask).flatten()
+    point.tm = np.ones_like(include_mask)
+    point._gids = point.tm.flatten()
     point._excl_area = 1.0
     point._incl_mask_flat = None
     point._zone_mask = None

@@ -1971,7 +1971,3 @@ def test_fix_wp_keys():
     '''
 
     assert _fix_wp_keys(input_text) == expected_output_text
-
-
-# FAILED tests/test_supply_curve_points.py::test_sub_agg_stats_agg2 - AttributeError: 'GenerationSupplyCurvePoint' object has no attribute 'tm'
-# FAILED tests/test_supply_curve_points.py::test_sub_agg_stats_agg1_returns_pixel_stats - AttributeError: 'GenerationSupplyCurvePoint' object has no attribute 'tm'

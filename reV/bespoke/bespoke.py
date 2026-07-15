@@ -1583,7 +1583,7 @@ class BespokeWindPlants(BaseAggregation):
                  convex_hull_buffer=0, prior_run=None, gid_map=None,
                  spl_h5_path=None, obs_tiff_fp=None, plant_noise_limit=55,
                  spl_type="Leq", bias_correct=None, pre_load_data=False):
-        """reV bespoke analysis class.
+        r"""reV bespoke analysis class.
 
         Much like generation, ``reV`` bespoke analysis runs SAM
         simulations by piping in renewable energy resource data (usually

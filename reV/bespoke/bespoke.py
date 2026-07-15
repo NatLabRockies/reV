@@ -349,10 +349,6 @@ class BespokeSinglePlant:
             return the variable operating cost in $. Has access to the
             same variables as the objective_function. You can set this
             to "0" to effectively ignore balance-of-system costs.
-        balance_of_system_cost_function : str
-            The plant balance-of-system cost function as a string, must
-            return the variable operating cost in $. Has access to the same
-            variables as the objective_function.
         min_spacing : float | int | str
             Minimum spacing between turbines in meters. Can also be a string
             like "5x" (default) which is interpreted as 5 times the turbine
@@ -1748,13 +1744,13 @@ class BespokeWindPlants(BaseAggregation):
                   a single SAM configuration file as the `sam_files`
                   input.
 
-            The CSV file may also contain site-specific inputs by
-            including a column named after a config keyword (e.g. a
-            column called ``capital_cost`` may be included to specify a
-            site-specific capital cost value for each location). Columns
-            that do not correspond to a config key may also be included,
-            but they will be ignored. The CSV file input can also have
-            these extra, optional columns:
+            The CSV file may also contain site-specific SAM config
+            inputs by including a column named after a SAM config
+            keyword. Columns that do not correspond to a SAM config key
+            may also be included, but they will be ignored. The columns
+            `"plant_noise_limit"` and `"spl_type"` may also be included
+            to specify site-specific noise limits. The CSV file input
+            can also have these extra, optional columns:
 
                 - ``capital_cost_multiplier``
                 - ``fixed_operating_cost_multiplier``
@@ -2026,11 +2022,15 @@ class BespokeWindPlants(BaseAggregation):
             The sound level limit (in dB) for the plant-level sound at
             observer locations. If the plant-level sound exceeds this
             limit, a penalty will be added to the objective function
-            value. By default, ``55``.
+            value. You can specify site-specific limits by including a
+            column called `"plant_noise_limit"` in the project points
+            input. By default, ``55``.
         spl_type : str, default="Leq"
             The type of SPL data to use from the HDF5 file. Allowed
             options are: ['L10', 'L50', 'L90', 'Leq', 'Lmax']. Do not
             change this input unless you understand why it is necessary.
+            You can specify site-specific SPL types by including a
+            column called `"spl_type"` in the project points input.
             By default, ``Leq``.
         bias_correct : str | pd.DataFrame, optional
             Optional DataFrame or CSV filepath to a wind or solar
@@ -2122,6 +2122,10 @@ class BespokeWindPlants(BaseAggregation):
         self._data_layers = data_layers
         self._eos_mult_baseline_cap_mw = eos_mult_baseline_cap_mw
         self._convex_hull_buffer = convex_hull_buffer
+        self._spl_h5_path = spl_h5_path
+        self._obs_tiff_fp = obs_tiff_fp
+        self._plant_noise_limit = plant_noise_limit
+        self._spl_type = spl_type
         self._prior_meta = self._parse_prior_run(prior_run)
         self._gid_map = BespokeSinglePlant._parse_gid_map(gid_map)
         self._bias_correct = Gen._parse_bc(bias_correct)
@@ -2612,8 +2616,9 @@ class BespokeWindPlants(BaseAggregation):
                    resolution=64, excl_area=0.0081, data_layers=None,
                    gids=None, exclusion_shape=None, slice_lookup=None,
                    eos_mult_baseline_cap_mw=200, convex_hull_buffer=0,
-                   prior_meta=None, gid_map=None, bias_correct=None,
-                   pre_loaded_data=None):
+                   prior_meta=None, gid_map=None, spl_h5_path=None,
+                   obs_tiff_fp=None, plant_noise_limit=55, spl_type="Leq",
+                   bias_correct=None, pre_loaded_data=None):
         """
         Standalone serial method to run bespoke optimization.
         See BespokeWindPlants docstring for parameter description.
@@ -2682,6 +2687,10 @@ class BespokeWindPlants(BaseAggregation):
                         convex_hull_buffer=convex_hull_buffer,
                         prior_meta=prior_meta,
                         gid_map=gid_map,
+                        spl_h5_path=spl_h5_path,
+                        obs_tiff_fp=obs_tiff_fp,
+                        plant_noise_limit=plant_noise_limit,
+                        spl_type=spl_type,
                         bias_correct=bias_correct,
                         pre_loaded_data=pre_loaded_data,
                         close=False,
@@ -2745,6 +2754,11 @@ class BespokeWindPlants(BaseAggregation):
                     rs, cs = self.slice_lookup[gid]
                     gid_incl_mask = self._inclusion_mask[rs, cs]
 
+                gid_idx = self._project_points.index(gid)
+                site_data = self._project_points.df.iloc[gid_idx]
+                plant_noise_limit = site_data.get(
+                    "plant_noise_limit", self._plant_noise_limit)
+                spl_type = site_data.get("spl_type", self._spl_type)
                 futures.append(exe.submit(
                     self.run_serial,
                     self._excl_fpath,
@@ -2775,6 +2789,10 @@ class BespokeWindPlants(BaseAggregation):
                     convex_hull_buffer=self._convex_hull_buffer,
                     prior_meta=self._get_prior_meta(gid),
                     gid_map=self._gid_map,
+                    spl_h5_path=self._spl_h5_path,
+                    obs_tiff_fp=self._obs_tiff_fp,
+                    plant_noise_limit=plant_noise_limit,
+                    spl_type=spl_type,
                     bias_correct=self._get_bc_for_gid(gid),
                     pre_loaded_data=self._pre_loaded_data_for_sc_gid(gid)))
 
@@ -2843,6 +2861,12 @@ class BespokeWindPlants(BaseAggregation):
                 ebc = self._eos_mult_baseline_cap_mw
                 chb = self._convex_hull_buffer
 
+                gid_idx = self._project_points.index(gid)
+                site_data = self._project_points.df.iloc[gid_idx]
+                plant_noise_limit = site_data.get(
+                    "plant_noise_limit", self._plant_noise_limit)
+                spl_type = site_data.get("spl_type", self._spl_type)
+
                 si = self.run_serial(self._excl_fpath,
                                      self._res_fpath,
                                      self._tm_dset,
@@ -2869,6 +2893,10 @@ class BespokeWindPlants(BaseAggregation):
                                      convex_hull_buffer=chb,
                                      prior_meta=prior_meta,
                                      gid_map=self._gid_map,
+                                     spl_h5_path=self._spl_h5_path,
+                                     obs_tiff_fp=self._obs_tiff_fp,
+                                     plant_noise_limit=plant_noise_limit,
+                                     spl_type=spl_type,
                                      bias_correct=i_bc,
                                      gids=gid,
                                      pre_loaded_data=pre_loaded_data)

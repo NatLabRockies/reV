@@ -905,7 +905,7 @@ def test_site_specific_noise_inputs(monkeypatch):
     """Test site-specific bespoke noise inputs passed via project points."""
     captured = {}
 
-    def _fake_run_serial(cls, *args, **kwargs):
+    def _fake_run_serial(__, *args, **kwargs):
         captured["sam_sys_inputs"] = copy.deepcopy(args[3])
         captured["plant_noise_limit"] = kwargs["plant_noise_limit"]
         captured["spl_type"] = kwargs["spl_type"]

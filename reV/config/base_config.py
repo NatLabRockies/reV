@@ -191,15 +191,15 @@ class BaseConfig(dict):
         """
 
         # str is either json file path or serialized json object
-        try:
-            # attempt to deserialize JSON-style string
-            config = json.loads(config)
-        except json.JSONDecodeError:
-            self._config_dir = os.path.dirname(unstupify_path(config))
-            self._config_dir += '/'
-            self._config_dir = self._config_dir.replace('\\', '/')
-            config = load_config(config)
-
+        if isinstance(config, str):
+            if config.startswith('\ufeff'):
+                self._config_dir = os.path.dirname(unstupify_path(config))
+                self._config_dir += '/'
+                self._config_dir = self._config_dir.replace('\\', '/')
+                config = load_config(config)
+            else:
+                # attempt to deserialize JSON-style string
+                config = json.loads(config)
         # Perform string replacement, save config to self instance
         if self._perform_str_rep:
             config = self.str_replace_and_resolve(config, self.STR_REP)

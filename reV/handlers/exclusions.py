@@ -47,6 +47,8 @@ class ExclusionLayers:
             raise TypeError(msg)
 
         self._iarr = None
+        self.__profile = None
+        self.__transform = None
 
     def __repr__(self):
         msg = "{} for {}".format(self.__class__.__name__, self.h5_file)
@@ -176,7 +178,22 @@ class ExclusionLayers:
         -------
         profile : dict
         """
-        return json.loads(self.h5.global_attrs['profile'])
+        if self.__profile is None:
+            self.__profile = json.loads(self.h5.global_attrs['profile'])
+        return self.__profile
+
+    @property
+    def transform(self):
+        """
+        GeoTiff transform for exclusions
+
+        Returns
+        -------
+        transform : list
+        """
+        if self.__transform is None and 'transform' in self.profile:
+            self.__transform = self.profile['transform']
+        return self.__transform
 
     @property
     def crs(self):
@@ -201,9 +218,8 @@ class ExclusionLayers:
         """
 
         area = None
-        if 'transform' in self.profile:
-            transform = self.profile['transform']
-            area = np.abs(transform[0] * transform[4])
+        if self.transform is not None:
+            area = np.abs(self.transform[0] * self.transform[4])
             area /= 1000 ** 2
 
         return area

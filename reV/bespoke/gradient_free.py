@@ -7,17 +7,18 @@ import time
 from math import log
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
-class GeneticAlgorithm():
+class GeneticAlgorithm:
     """a simple genetic algorithm used to select bespoke turbine locations
     """
 
     def __init__(self, bits, bounds, variable_type, objective_function,
                  max_generation=100, population_size=0, crossover_rate=0.1,
                  mutation_rate=0.01, tol=1E-6, convergence_iters=5,
-                 max_time=3600):
+                 max_time=3600, plant_noise=None):
         """
         Parameters
         ----------
@@ -50,6 +51,11 @@ class GeneticAlgorithm():
             The number of generations to determine convergence.
         max_time : float
             The maximum time (in seconds) to run the genetic algorithm.
+        plant_noise : PlantNoise object, optional
+            An optional PlantNoise object that can be used to compute the
+            plant-level sound at observer locations. If provided, the genetic
+            algorithm will compute a penalty for any noise violations at the
+            observer locations.
         """
 
         logger.debug('Initializing GeneticAlgorithm...')
@@ -90,6 +96,8 @@ class GeneticAlgorithm():
         # offspring fitnesses
         self.discretized_variables = {}  # a dict of arrays containing all of
         # the discretized design variable
+
+        self.plant_noise = plant_noise
 
         # outputs
         self.solution_history = np.array([])
@@ -156,8 +164,16 @@ class GeneticAlgorithm():
         # initialize fitness of the parent population
         for i in range(self.population_size):
             self.chromosome_2_variables(self.parent_population[i])
-            self.parent_fitness[i] = \
+            self.parent_fitness[i] = (
                 self.objective_function(self.design_variables)
+                + self._noise_penalty()
+            )
+
+    def _noise_penalty(self):
+        """Compute optional noise penalty"""
+        if self.plant_noise is None:
+            return 0.0
+        return self.plant_noise.total_noise_penalty(self.design_variables)
 
     def chromosome_2_variables(self, chromosome):
         """convert the binary chromosomes to design variable values"""
@@ -206,6 +222,20 @@ class GeneticAlgorithm():
                     self.offspring_population[i][j] = \
                         (self.offspring_population[i][j] + 1) % 2
 
+    def make_nonzero(self):
+        """Make sure no offspring has zero capacity"""
+        # if any offspring scenarios have no turbines (all 0), randomly place 1
+        no_turbine_offsprings = np.all(self.offspring_population == 0, axis=1)
+        num_no_turbine_offsprings = np.sum(no_turbine_offsprings)
+        if num_no_turbine_offsprings > 0:
+            fix_offspring_idx = np.where(no_turbine_offsprings)[0]
+            new_turbine_idx = np.random.choice(
+                np.arange(self.nbits),
+                size=(num_no_turbine_offsprings,),
+                replace=True
+            )
+            self.offspring_population[fix_offspring_idx, new_turbine_idx] = 1
+
     def optimize_ga(self):
         """run the genetic algorithm"""
 
@@ -222,22 +252,27 @@ class GeneticAlgorithm():
                 run_time < self.max_time:
             self.crossover()
             self.mutate()
+            self.make_nonzero()
+
             # determine fitness of offspring
             for i in range(self.population_size):
                 self.chromosome_2_variables(self.offspring_population[i])
-                self.offspring_fitness[i] = \
+                self.offspring_fitness[i] = (
                     self.objective_function(self.design_variables)
+                    + self._noise_penalty()
+                )
 
             # rank the total population from best to worst
             total_fitness = np.append(self.parent_fitness,
                                       self.offspring_fitness)
-            ranked_fitness = \
-                np.argsort(total_fitness)[0:int(self.population_size)]
+            total_population = (
+                np.vstack([self.parent_population, self.offspring_population]))
+            ranked_fitness_ind = (
+                np.argsort(total_fitness)[0:int(self.population_size)])
 
-            total_population = \
-                np.vstack([self.parent_population, self.offspring_population])
-            self.parent_population[:, :] = total_population[ranked_fitness, :]
-            self.parent_fitness[:] = total_fitness[ranked_fitness]
+            self.parent_fitness[:] = total_fitness[ranked_fitness_ind]
+            self.parent_population[:, :] = (
+                total_population[ranked_fitness_ind, :])
 
             # store solution history and wrap up generation
             self.solution_history[generation] = np.min(self.parent_fitness)

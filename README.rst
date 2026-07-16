@@ -129,6 +129,10 @@ Option 1: Install from PIP (recommended for analysts):
        - NOTE: If you install using conda and want to use `HSDS <https://github.com/NatLabRockies/hsds-examples>`_
          you will also need to install HSDS dependencies: ``pip install NLR-reV[hsds]``
 
+       - NOTE: If you intend to use the `bespoke` module, be sure to install the bespoke-specific
+         dependencies: ``pip install NLR-reV[bespoke]``
+
+
 Option 2: Clone repo (recommended for developers)
 -------------------------------------------------
 
@@ -143,6 +147,8 @@ Option 2: Clone repo (recommended for developers)
     5) Install ``reV`` and its dependencies by running:
        ``pip install .`` (or ``pip install -e .`` if running a dev branch
        or working on the source code)
+
+          - NOTE: If you intend to work on reV development, be sure to grab all the dependencies: ``pip install -e ".[bespoke,dev,test,doc,hsds,build]"``
 
 3. Check that ``reV`` was installed successfully
     1) From any directory, run the following commands. This should return the

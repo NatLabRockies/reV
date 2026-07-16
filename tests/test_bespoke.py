@@ -40,6 +40,8 @@ pytest.importorskip("shapely")
 SAM = os.path.join(TESTDATADIR, "SAM/i_windpower.json")
 EXCL = os.path.join(TESTDATADIR, "ri_exclusions/ri_exclusions.h5")
 RES = os.path.join(TESTDATADIR, "wtk/ri_100_wtk_{}.h5")
+SPL = os.path.join(TESTDATADIR, "bespoke/ri_sc33_spl.h5")
+OBS = os.path.join(TESTDATADIR, "bespoke/ri_sc33_observers.tif")
 TM_DSET = "techmap_wtk_ri_100"
 AGG_DSET = ("cf_mean", "cf_profile")
 
@@ -74,12 +76,12 @@ SAM_CONFIGS = {"default": SAM_SYS_INPUTS}
 
 
 CAP_COST_FUN = (
-    "[140][0] * system_capacity "
+    "[140,60][0] * system_capacity "
     "* np.exp(-system_capacity / 1E5 * 0.1 + (1 - 0.1)) "
     "+ (self.wind_plant[annual_energy] or 0) * 0"
 )
 FOC_FUN = (
-    "[60][0] * system_capacity "
+    "[50,60,70][1] * system_capacity "
     "* np.exp(-system_capacity / 1E5 * 0.1 + (1 - 0.1)) "
     "+ (self.wind_plant[annual_energy] or 0) * 0"
 )
@@ -125,6 +127,13 @@ EXPECTED_META_COLUMNS = ["gid",  # needed for H5 collection to work properly
                          SupplyCurveField.BESPOKE_FIXED_OPERATING_COST,
                          SupplyCurveField.BESPOKE_VARIABLE_OPERATING_COST,
                          SupplyCurveField.BESPOKE_BALANCE_OF_SYSTEM_COST]
+
+NOISE_META_COLUMNS = [
+    SupplyCurveField.BESPOKE_NOISE_LIMIT_DB,
+    SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT,
+    SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT,
+    SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT,
+]
 
 
 @pytest.mark.parametrize("use_wp", [False, True])
@@ -264,7 +273,8 @@ def test_zero_area(gid=33):
                                  )
 
         optimizer = bsp.plant_optimizer
-        optimizer.include_mask = np.zeros_like(optimizer.include_mask)
+        sc_point = bsp.sc_point
+        sc_point._incl_mask = np.zeros_like(sc_point.include_mask)
         optimizer.place_turbines(max_time=5)
 
         # pylint: disable=W0123
@@ -310,14 +320,14 @@ def test_correct_turb_location(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.include_mask)
-        include_mask[1, -2] = 1
-        pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        sc_point = bsp.sc_point
+        sc_point._incl_mask = np.zeros_like(sc_point.include_mask)
+        sc_point._incl_mask[1, -2] = 1
+        pt = PlaceTurbines(sc_point, bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,
                            bsp.fixed_operating_cost_function,
                            bsp.variable_operating_cost_function,
                            bsp.balance_of_system_cost_function,
-                           include_mask, pixel_side_length=90,
                            min_spacing=45)
 
         pt.define_exclusions()
@@ -358,26 +368,26 @@ def test_correct_turb_chb(gid=33):
                                  output_request=output_request,
                                  )
 
-        include_mask = np.zeros_like(bsp.include_mask)
-        include_mask[1, -2] = 1
-        pt = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        sc_point = bsp.sc_point
+        sc_point._incl_mask = np.zeros_like(sc_point.include_mask)
+        sc_point._incl_mask[1, -2] = 1
+        pt = PlaceTurbines(sc_point, bsp.wind_plant_pd, bsp.objective_function,
                            bsp.capital_cost_function,
                            bsp.fixed_operating_cost_function,
                            bsp.variable_operating_cost_function,
                            bsp.balance_of_system_cost_function,
-                           include_mask, pixel_side_length=90,
                            min_spacing=45)
 
         pt.define_exclusions()
         pt.initialize_packing()
         pt.optimized_design_variables = pt.x_locations >= 0
 
-        pt_buffered = PlaceTurbines(bsp.wind_plant_pd, bsp.objective_function,
+        pt_buffered = PlaceTurbines(sc_point, bsp.wind_plant_pd,
+                                    bsp.objective_function,
                                     bsp.capital_cost_function,
                                     bsp.fixed_operating_cost_function,
                                     bsp.variable_operating_cost_function,
                                     bsp.balance_of_system_cost_function,
-                                    include_mask, pixel_side_length=90,
                                     min_spacing=45, convex_hull_buffer=100)
 
         pt_buffered.define_exclusions()
@@ -432,8 +442,11 @@ def test_packing_algorithm(gid=33):
 
         assert len(optimizer.x_locations) < 165
         assert len(optimizer.x_locations) > 145
-        assert np.sum(optimizer.include_mask) == (
-            optimizer.safe_polygons.area / (optimizer.pixel_side_length**2)
+
+        sc_point = bsp.sc_point
+        assert np.sum(sc_point._incl_mask) == (
+            optimizer.safe_polygons.area
+            / (sc_point.area_based_pixel_side_length_meters**2)
         )
 
         bsp.close()
@@ -542,6 +555,68 @@ def test_single(gid=33):
         diff = cf_ideal - cf_bespoke
         assert all(diff > -0.00001)
         assert diff.mean() > 0.02
+
+        bsp.close()
+
+
+def test_single_with_noise(gid=33):
+    """Test single-plant bespoke noise outputs with real fixture data."""
+    output_request = ("system_capacity", "cf_mean")
+
+    with tempfile.TemporaryDirectory() as td:
+        res_fp = os.path.join(td, "ri_100_wtk_{}.h5")
+        excl_fp = os.path.join(td, "ri_exclusions.h5")
+        shutil.copy(EXCL, excl_fp)
+        shutil.copy(RES.format(2012), res_fp.format(2012))
+        shutil.copy(RES.format(2013), res_fp.format(2013))
+        res_fp = res_fp.format("*")
+
+        TechMapping.run(
+            excl_fp, RES.format(2012), dset=TM_DSET, max_workers=1,
+            sc_resolution=2560
+        )
+        bsp = BespokeSinglePlant(
+            gid,
+            excl_fp,
+            res_fp,
+            TM_DSET,
+            SAM_SYS_INPUTS,
+            OBJECTIVE_FUNCTION,
+            CAP_COST_FUN,
+            FOC_FUN,
+            VOC_FUN,
+            BOS_FUN,
+            min_spacing=45,
+            ga_kwargs={'max_time': 5},
+            excl_dict=EXCL_DICT,
+            output_request=output_request,
+            spl_h5_path=SPL,
+            obs_tiff_fp=OBS,
+            plant_noise_limit=55,
+        )
+
+        bsp.sc_point._incl_mask = np.zeros_like(bsp.sc_point.include_mask)
+        bsp.sc_point._incl_mask[1, -2] = 1
+
+        out = bsp.run_plant_optimization()
+        meta = bsp.meta.iloc[0]
+
+        assert out["system_capacity"] > 0
+        for col in NOISE_META_COLUMNS:
+            assert col in bsp.meta
+
+        assert meta[SupplyCurveField.BESPOKE_NOISE_LIMIT_DB] == 55
+        assert meta[SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT] > 0
+        assert 0 <= meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT] <= (
+            meta[SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT]
+        )
+        assert meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT] == (
+            pytest.approx(
+                100
+                * meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT]
+                / meta[SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT]
+            )
+        )
 
         bsp.close()
 
@@ -824,6 +899,69 @@ def test_bespoke():
                 f1["winddirection-2012"], f2["winddirection-2012"]
             )
             assert np.allclose(f1["ws_mean"], f2["ws_mean"])
+
+
+def test_site_specific_noise_inputs(monkeypatch):
+    """Test site-specific bespoke noise inputs passed via project points."""
+    captured = {}
+
+    def _fake_run_serial(__, *args, **kwargs):
+        captured["sam_sys_inputs"] = copy.deepcopy(args[3])
+        captured["plant_noise_limit"] = kwargs["plant_noise_limit"]
+        captured["spl_type"] = kwargs["spl_type"]
+        return {}
+
+    monkeypatch.setattr(
+        BespokeWindPlants,
+        "run_serial",
+        classmethod(_fake_run_serial),
+    )
+
+    with tempfile.TemporaryDirectory() as td:
+        res_fp = os.path.join(td, "ri_100_wtk_{}.h5")
+        excl_fp = os.path.join(td, "ri_exclusions.h5")
+        shutil.copy(EXCL, excl_fp)
+        shutil.copy(RES.format(2012), res_fp.format(2012))
+        shutil.copy(RES.format(2013), res_fp.format(2013))
+        res_fp = res_fp.format("*")
+
+        points = pd.DataFrame(
+            {
+                SiteDataField.GID: [33],
+                SiteDataField.CONFIG: ["default"],
+                "plant_noise_limit": [41],
+                "spl_type": ["Lmax"],
+            }
+        )
+
+        TechMapping.run(
+            excl_fp, RES.format(2012), dset=TM_DSET, max_workers=1,
+            sc_resolution=2560
+        )
+        bsp = BespokeWindPlants(
+            excl_fp,
+            res_fp,
+            TM_DSET,
+            OBJECTIVE_FUNCTION,
+            CAP_COST_FUN,
+            FOC_FUN,
+            VOC_FUN,
+            BOS_FUN,
+            points,
+            SAM_CONFIGS,
+            ga_kwargs={'max_time': 1},
+            excl_dict=EXCL_DICT,
+            spl_h5_path=SPL,
+            obs_tiff_fp=OBS,
+            plant_noise_limit=55,
+            spl_type="Leq",
+        )
+
+        assert bsp.run(max_workers=1) is None
+        assert captured["plant_noise_limit"] == 41
+        assert captured["spl_type"] == "Lmax"
+        assert captured["sam_sys_inputs"]["plant_noise_limit"] == 41
+        assert captured["sam_sys_inputs"]["spl_type"] == "Lmax"
 
 
 def test_collect_bespoke():

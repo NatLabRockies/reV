@@ -273,7 +273,8 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
 
         super().__init__(gid, exclusion_shape, resolution=resolution)
 
-        self._gids = self._parse_techmap(tm_dset)
+        self.tm = self._parse_techmap(tm_dset)
+        self._gids = self.tm.flatten()
         self._h5_gids = self._gids
         self._h5_gid_set = None
 
@@ -354,12 +355,12 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         Returns
         -------
         res_gids : np.ndarray
-            1D array with length == number of exclusion points. reV resource
-            gids (native resource index) from the original resource data
-            corresponding to the tech exclusions.
+            2D array with reV resource gids (native resource index) from
+            the original resource data corresponding to the tech
+            exclusions.
         """
         res_gids = self.exclusions.excl_h5[tm_dset, self.rows, self.cols]
-        res_gids = res_gids.astype(np.int32).flatten()
+        res_gids = res_gids.astype(np.int32)
 
         if (res_gids != -1).sum() == 0:
             emsg = (
@@ -435,6 +436,20 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         return self._excl_area
 
     @property
+    def area_based_pixel_side_length_meters(self):
+        """Get the length of a single exclusion pixel side (meters)
+
+        Returns
+        -------
+        float
+        """
+        length = None
+        if self.pixel_area is not None:
+            length = np.sqrt(self.pixel_area) * 1000.0
+
+        return length
+
+    @property
     def area(self):
         """Get the non-excluded resource area of the supply curve point in the
         current resource class.
@@ -493,8 +508,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
             self._incl_mask = self.exclusions[self.rows, self.cols]
 
             # make sure exclusion pixels outside resource extent are excluded
-            out_of_extent = self._gids.reshape(self._incl_mask.shape) == -1
-            self._incl_mask[out_of_extent] = 0.0
+            self._incl_mask[self.tm == -1] = 0.0
 
             if self._incl_mask.max() > 1:
                 w = (
@@ -651,8 +665,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         n = self._resolution // agg
 
         arr = self.include_mask.copy()
-        out_of_extent = self._gids.reshape(arr.shape) == -1
-        arr[out_of_extent] = 0.0
+        arr[self.tm == -1] = 0.0
 
         # Example for 2D:
         # (12, 8) with n=4 -> reshape to (4, 3, 4, 2)

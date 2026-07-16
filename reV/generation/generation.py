@@ -167,9 +167,12 @@ class Gen(BaseGen):
             to evaluate reV at a single location. A list or tuple of
             integers (or slice) representing the generation GIDs of
             multiple sites can be specified to evaluate reV at multiple
-            specific locations. A string pointing to a project points
-            CSV file may also be specified. Typically, the CSV contains
-            the following columns:
+            specific locations. A string or path pointing to a project
+            points CSV, JSON, YAML, YML, or TOML file may also be
+            specified. JSON/YAML/YML/TOML inputs are expected to use
+            generation GID values as top-level keys and dictionaries of
+            point-specific inputs as values. Typically, the resulting
+            table contains the following columns:
 
                 - ``gid``: Integer specifying the generation GID of each
                   site.
@@ -204,8 +207,11 @@ class Gen(BaseGen):
             each location). Columns that do not correspond to a config
             key may also be included, but they will be ignored. A
             DataFrame following the same guidelines as the CSV input
-            (or a dictionary that can be used to initialize such a
-            DataFrame) may be used for this input as well.
+            may be used for this input as well. You may also supply a
+            gid-keyed dictionary directly, where each key is a
+            generation GID and each value is a dictionary of
+            point-specific inputs, using the same structure as the
+            JSON/YAML/YML/TOML config input.
 
             .. Note:: By default, the generation GID of each site is
               assumed to match the resource GID to be evaluated for that
@@ -326,17 +332,25 @@ class Gen(BaseGen):
               dataset is detected in the generation file.
 
             By default, ``('cf_mean',)``.
-        site_data : str | pd.DataFrame, optional
-            Site-specific input data for SAM calculation. If this input
-            is a string, it should be a path that points to a CSV file.
-            Otherwise, this input should be a DataFrame with
-            pre-extracted site data. Rows in this table should match
-            the input sites via a ``gid`` column. The rest of the
-            columns should match configuration input keys that will take
-            site-specific values. Note that some or all site-specific
-            inputs can be specified via the `project_points` input
-            table instead. If ``None``, no site-specific data is
-            considered.
+        site_data : str | os.PathLike | dict | pd.DataFrame, optional
+            Site-specific input data for SAM calculation. This input can
+            be one of the following:
+
+                - A path to a CSV file with one row per site and a
+                    ``gid`` column.
+                - A path to a JSON, YAML, YML, or TOML config file that
+                    contains site ``gid`` values as top-level keys and
+                    dictionaries of site-specific inputs as values.
+                - A gid-keyed dictionary following the same format as
+                    the JSON/YAML/TOML config input.
+                - A DataFrame with pre-extracted site data.
+
+            After loading, the rows in this table are matched to the
+            input sites via ``gid``. The rest of the columns should
+            match configuration input keys that will take site-specific
+            values. Note that some or all site-specific inputs can be
+            specified via the `project_points` input table instead. If
+            ``None``, no site-specific data is considered.
 
             .. Note:: This input is often used to provide site-based
                regional capital cost multipliers. ``reV`` does not

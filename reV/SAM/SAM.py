@@ -591,7 +591,7 @@ class Sam:
                 logger.warning(msg)
                 warn(msg)
 
-        return key, value
+        return key, _to_pysam_compatible_value(value)
 
     def assign_inputs(self, inputs, raise_warning=False):
         """Assign a flat dictionary of inputs to the PySAM object.
@@ -993,3 +993,17 @@ def _add_sys_capacity(sam_inputs):
 def _sam_config_contains_turbine_layout(sam_config):
     """Detect wether SAM config contains multiple turbines in layout. """
     return len(sam_config.get("wind_farm_xCoordinates", ())) > 1
+
+
+def _to_pysam_compatible_value(value):
+    """Convert array-like inputs to plain Python containers for PySAM."""
+
+    if isinstance(value, np.ndarray):
+        value = value.tolist()
+    elif isinstance(value, np.generic):
+        return value.item()
+
+    if isinstance(value, (list, tuple)):
+        return [_to_pysam_compatible_value(v) for v in value]
+
+    return value

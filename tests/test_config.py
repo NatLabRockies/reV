@@ -375,7 +375,7 @@ def test_nested_sites():
     Test check for nested points list
     """
     res_file = os.path.join(TESTDATADIR, "wtk/ri_100_wtk_2012.h5")
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         points = [[1, 2, 3, 5]]
         sam_file = os.path.join(
             TESTDATADIR, "SAM/wind_gen_standard_losses_0.json"

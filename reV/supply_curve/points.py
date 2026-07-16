@@ -4,6 +4,7 @@
 reV supply curve points frameworks.
 """
 
+import re
 import logging
 from abc import ABC
 from warnings import warn
@@ -443,10 +444,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         area : float
             Non-excluded resource/generation area in square km.
         """
-        mask = self._gids != -1
-        area = np.sum(self.include_mask_flat[mask]) * self.pixel_area
-
-        return area
+        return np.sum(self.include_mask_flat[self.bool_mask]) * self.pixel_area
 
     @property
     def latitude(self):
@@ -468,10 +466,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         -------
         n_gids : list
         """
-        mask = self._gids != -1
-        n_gids = np.sum(self.include_mask_flat[mask] > 0)
-
-        return n_gids
+        return np.sum(self.include_mask_flat[self.bool_mask] > 0)
 
     @property
     def zone_mask(self):
@@ -623,6 +618,78 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
             mean = x.sum() / incl.sum()
 
         return mean
+
+    def sub_agg_stats(self, agg):
+        """Compute sub-agg developable area stats
+
+        Split developable area array into n equal parts along each dimension,
+        sum each chunk and return the reduced chunk-sum summary statistics.
+
+        Output statistics are:
+
+            - "min": minimum chunk sum
+            - "max": maximum chunk sum
+            - "mean": mean of chunk sums
+            - "std": standard deviation of chunk sums
+            - "p10": 10th percentile of chunk sums
+            - "p25": 25th percentile of chunk sums
+            - "p50": 50th percentile of chunk sums
+            - "p75": 75th percentile of chunk sums
+            - "p90": 90th percentile of chunk sums
+
+        Parameters
+        ----------
+        agg : int
+            Sub-resolution aggregation factor.
+
+        Returns
+        -------
+        summary : dict
+            Summary statistics for chunk_sums.
+        """
+
+        n = self._resolution // agg
+
+        arr = self.include_mask.copy()
+        out_of_extent = self._gids.reshape(arr.shape) == -1
+        arr[out_of_extent] = 0.0
+
+        # Example for 2D:
+        # (12, 8) with n=4 -> reshape to (4, 3, 4, 2)
+        # then sum over the chunk-size axes -> (4, 4)
+        chunk_sizes = tuple(dim // n for dim in arr.shape)
+        reshape_dims = tuple(
+            dim for chunk in chunk_sizes for dim in (n, chunk)
+        )
+        reshaped = arr.reshape(reshape_dims) * self.pixel_area
+
+        # Sum over the "within-chunk" axes: 1, 3, 5, ...
+        sum_axes = tuple(range(1, reshaped.ndim, 2))
+        chunk_sums = reshaped.sum(axis=sum_axes)
+
+        assert np.isclose(chunk_sums.sum(), self.area), (
+            "Chunk sums do not sum to total area, check the sub-agg stats "
+            "calculation. Sum of chunk sums: {}, total area: {}".format(
+                chunk_sums.sum(), self.area
+            )
+        )
+
+        return {
+            f"min_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.min(),
+            f"max_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.max(),
+            f"mean_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.mean(),
+            f"std_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": chunk_sums.std(),
+            f"p10_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 10),
+            f"p25_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 25),
+            f"p50_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 50),
+            f"p75_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 75),
+            f"p90_agg{agg}_{SupplyCurveField.AREA_SQ_KM}": np.percentile(
+                chunk_sums, 90),
+        }
 
     def mean_wind_dirs(self, arr):
         """
@@ -1454,7 +1521,7 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
     respective generation and resource data."""
 
     POWER_DENSITY = {"pv": 36, "wind": 3}
-    """Technology-dependent power density estimates (in MW/km\ :sup:`2`).
+    r"""Technology-dependent power density estimates (in MW/km\ :sup:`2`).
 
     The PV power density is a \**DC power density*\*, while the wind power
     density is an \**AC power density*\*.
@@ -2307,7 +2374,6 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         # has an exclusions multiplier of 0
         exclude = exclude.reshape(self.include_mask.shape)
         self._incl_mask[exclude] = 0.0
-        self._incl_mask = self._incl_mask.flatten()
 
         if (self._gen_gids != -1).sum() == 0:
             msg = (
@@ -2438,9 +2504,21 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
 
         return summary
 
-    @staticmethod
-    def economies_of_scale(summary, cap_cost_scale=None, fixed_cost_scale=None,
-                           var_cost_scale=None):
+    def _get_sub_agg_stats_for_eos(self, *equations):
+        """Get sub-agg developable area stats"""
+        sub_agg_factors = extract_unique_area_developable_agg_factors(
+            *equations
+        )
+        _validate_sub_agg_factors(sub_agg_factors, self._resolution)
+
+        extra_agg_stats = {}
+        for agg in sub_agg_factors:
+            extra_agg_stats.update(self.sub_agg_stats(agg))
+
+        return extra_agg_stats
+
+    def economies_of_scale(self, summary, cap_cost_scale=None,
+                           fixed_cost_scale=None, var_cost_scale=None):
         """Apply economies of scale to this point summary
 
         Parameters
@@ -2485,8 +2563,11 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         summary : dict
             Dictionary of summary outputs for this sc point.
         """
-
-        eos = EconomiesOfScale(data=summary, cap_eqn=cap_cost_scale,
+        extra_agg_stats = self._get_sub_agg_stats_for_eos(cap_cost_scale,
+                                                          fixed_cost_scale,
+                                                          var_cost_scale)
+        eos = EconomiesOfScale(data={**summary, **extra_agg_stats},
+                               cap_eqn=cap_cost_scale,
                                fixed_eqn=fixed_cost_scale,
                                var_eqn=var_cost_scale)
         summary[SupplyCurveField.RAW_LCOE] = eos.raw_lcoe
@@ -2712,3 +2793,88 @@ def _infer_cf_dset_ac(cf_dset):
 
     cf_name = "-".join(parts[:-1])
     return f"{cf_name}_ac-{parts[-1]}"
+
+
+def extract_unique_area_developable_agg_factors(*equations):
+    """Extract unique agg factors from variables
+
+    Agg factors will be extracted for all strings matching the pattern:
+
+        <stat>_agg<integer>_<SupplyCurveField.AREA_SQ_KM>
+
+    Parameters
+    ----------
+    *equations : str | None
+        One or more equation strings.
+
+    Returns
+    -------
+    set
+        Unique aggregation factors.
+    """
+
+    area_field = re.escape(str(SupplyCurveField.AREA_SQ_KM))
+    pattern = re.compile(rf"\b[a-zA-Z0-9]+_agg(\d+)_{area_field}\b")
+
+    factors = set()
+    for equation in equations:
+        if not equation:
+            continue
+        for match in pattern.findall(str(equation)):
+            factor = int(match)
+            if factor not in factors:
+                factors.add(factor)
+
+    return factors
+
+
+def _validate_sub_agg_factors(agg_factors, resolution):
+    """Validate sub-aggregation factors for economies of scale
+
+    Parameters
+    ----------
+    agg_factors : set
+        Set of unique sub-aggregation factors to validate.
+    resolution : int
+        Supply curve resolution to validate against.
+
+    Raises
+    ------
+    SupplyCurveInputError
+        If any agg factor is greater than or equal to the resolution, or if
+        any agg factor does not divide evenly into the resolution.
+    """
+    if not agg_factors:
+        return
+
+    agg_factors_non_positive = {f for f in agg_factors if f <= 0}
+    if agg_factors_non_positive:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with non-positive "
+            "sub-aggregation factors. Found sub-agg factors of {} "
+            "with supply curve resolution of {}".format(
+                agg_factors_non_positive, resolution
+            )
+        )
+
+    agg_factors_too_large = {f for f in agg_factors if f >= resolution}
+    if agg_factors_too_large:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with sub-aggregation "
+            "factors greater than or equal to the supply curve "
+            "resolution. Found sub-agg factors of {} with supply "
+            "curve resolution of {}".format(
+                agg_factors_too_large, resolution
+            )
+        )
+
+    agg_factors_not_divisible = {f for f in agg_factors if resolution % f != 0}
+    if agg_factors_not_divisible:
+        raise SupplyCurveInputError(
+            "Cannot apply economies of scale with sub-aggregation "
+            "factors that do not divide evenly into the supply curve "
+            "resolution. Found sub-agg factors of {} with supply "
+            "curve resolution of {}".format(
+                agg_factors_not_divisible, resolution
+            )
+        )

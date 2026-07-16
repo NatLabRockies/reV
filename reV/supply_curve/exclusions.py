@@ -1142,7 +1142,7 @@ class ExclusionMaskFromDict(ExclusionMask):
         sorted_layers = sorted(layers, key=_unix_patterns_first)
         for layer_pattern in sorted_layers:
             kwargs = layers[layer_pattern]
-            layer_names = fnmatch.filter(self.excl_layers, layer_pattern)
+            layer_names = fnmatch.filter(self.excl_layers, str(layer_pattern))
             if not layer_names:
                 missing.add(layer_pattern)
 
@@ -1323,4 +1323,5 @@ class FrictionMask(ExclusionMask):
 def _unix_patterns_first(layer_name):
     """Key that will put layer names with unix patterns first"""
     special_chars = {"?", "*", "!", "[", "]"}
-    return -1 * any(char in layer_name for char in special_chars), layer_name
+    return -1 * any(char in str(layer_name)
+                    for char in special_chars), layer_name

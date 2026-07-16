@@ -17,9 +17,13 @@ from reV.supply_curve.extent import SupplyCurveExtent
 from reV.supply_curve.points import (
     GenerationSupplyCurvePoint,
     SupplyCurvePoint,
+    _validate_sub_agg_factors,
+    extract_unique_area_developable_agg_factors,
 )
 from reV.supply_curve.sc_aggregation import SupplyCurveAggregation
 from reV.utilities import SupplyCurveField
+from reV.utilities.exceptions import SupplyCurveInputError
+
 
 F_EXCL = os.path.join(TESTDATADIR, "ri_exclusions/ri_exclusions.h5")
 F_GEN = os.path.join(TESTDATADIR, "gen_out/gen_ri_pv_2012_x000.h5")
@@ -36,6 +40,178 @@ EXCL_DICT = {
 F_TECHMAP = os.path.join(TESTDATADIR, "sc_out/baseline_ri_tech_map.h5")
 DSET_TM = "res_ri_pv"
 RTOL = 0.001
+
+
+def _make_generation_sc_point_for_sub_agg_stats(include_mask, resolution):
+    """Create a minimal GenerationSupplyCurvePoint for sub_agg_stats."""
+
+    point = object.__new__(GenerationSupplyCurvePoint)
+    point._resolution = resolution
+    point._incl_mask = np.array(include_mask, dtype=float)
+    point._gids = np.ones_like(include_mask).flatten()
+    point._excl_area = 1.0
+    point._incl_mask_flat = None
+    point._zone_mask = None
+    return point
+
+
+@pytest.mark.parametrize(
+    ("equations", "expected"),
+    [
+        ((), set()),
+        (("",), set()),
+        (("capacity_ac_mw + n_gids",), set()),
+        (
+            (
+                f"mean_agg2_{SupplyCurveField.AREA_SQ_KM}",
+                f"max_agg10_{SupplyCurveField.AREA_SQ_KM}",
+            ),
+            {2, 10},
+        ),
+        (
+            (
+                f"p50_agg2_{SupplyCurveField.AREA_SQ_KM} + "
+                f"std_agg2_{SupplyCurveField.AREA_SQ_KM}",
+                f"min_agg3_{SupplyCurveField.AREA_SQ_KM}",
+            ),
+            {2, 3},
+        ),
+    ],
+)
+def test_extract_unique_area_developable_agg_factors(equations, expected):
+    """Test extraction of valid unique area aggregation factors."""
+
+    assert extract_unique_area_developable_agg_factors(*equations) == expected
+
+
+@pytest.mark.parametrize(
+    "equation",
+    [
+        f"mean_agg_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg-2_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg2.5_{SupplyCurveField.AREA_SQ_KM}",
+        f"mean_agg2_{SupplyCurveField.AREA_SQ_KM}_extra",
+        "mean_agg2_area_sq_miles",
+        f"mean_value_agg2_{SupplyCurveField.AREA_SQ_KM}",
+    ],
+)
+def test_extract_unique_area_developable_agg_factors_invalid_patterns(
+    equation,
+):
+    """Test that near-matches are not extracted as aggregation factors."""
+
+    assert extract_unique_area_developable_agg_factors(equation) == set()
+
+
+@pytest.mark.parametrize("agg_factors", [set(), [], tuple()])
+def test_validate_sub_agg_factors_empty_inputs(agg_factors):
+    """Test that empty agg factor collections are accepted."""
+
+    assert _validate_sub_agg_factors(agg_factors, 64) is None
+
+
+@pytest.mark.parametrize(
+    ("agg_factors", "resolution"),
+    [
+        ({1}, 64),
+        ({2, 4, 8, 16, 32}, 64),
+        ({3, 9}, 27),
+    ],
+)
+def test_validate_sub_agg_factors_valid(agg_factors, resolution):
+    """Test that valid sub-aggregation factors pass validation."""
+
+    assert _validate_sub_agg_factors(agg_factors, resolution) is None
+
+
+@pytest.mark.parametrize("agg_factors", [{64}, {128}, {2, 64}, {2, 128}])
+def test_validate_sub_agg_factors_too_large(agg_factors):
+    """Test that factors >= resolution raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="greater than or equal to the supply curve resolution",
+    ):
+        _validate_sub_agg_factors(agg_factors, 64)
+
+
+@pytest.mark.parametrize("agg_factors", [{3}, {5}, {2, 3}, {6, 10}])
+def test_validate_sub_agg_factors_not_divisible(agg_factors):
+    """Test that non-divisible factors raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="do not divide evenly into the supply curve resolution",
+    ):
+        _validate_sub_agg_factors(agg_factors, 64)
+
+
+def test_validate_sub_agg_factors_too_large_precedes_not_divisible():
+    """Test validation order when both error classes are present."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="greater than or equal to the supply curve resolution",
+    ):
+        _validate_sub_agg_factors({65, 3}, 64)
+
+
+def test_validate_sub_agg_factors_zero_factor_invalid():
+    """Test that zero-valued factors raise the expected error."""
+
+    with pytest.raises(
+        SupplyCurveInputError,
+        match="non-positive sub-aggregation factors",
+    ):
+        _validate_sub_agg_factors({0}, 64)
+
+
+def test_sub_agg_stats_agg2():
+    """Test sub-aggregation stats for 2x2 chunking on a known mask."""
+
+    include_mask = np.arange(1, 17).reshape(4, 4)
+    point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 4)
+
+    summary = point.sub_agg_stats(2)
+    area = SupplyCurveField.AREA_SQ_KM
+    expected_chunk_sums = np.array([[14.0, 22.0], [46.0, 54.0]])
+
+    expected = {
+        f"min_agg2_{area}": expected_chunk_sums.min(),
+        f"max_agg2_{area}": expected_chunk_sums.max(),
+        f"mean_agg2_{area}": expected_chunk_sums.mean(),
+        f"std_agg2_{area}": expected_chunk_sums.std(),
+        f"p10_agg2_{area}": np.percentile(expected_chunk_sums, 10),
+        f"p25_agg2_{area}": np.percentile(expected_chunk_sums, 25),
+        f"p50_agg2_{area}": np.percentile(expected_chunk_sums, 50),
+        f"p75_agg2_{area}": np.percentile(expected_chunk_sums, 75),
+        f"p90_agg2_{area}": np.percentile(expected_chunk_sums, 90),
+    }
+
+    assert set(summary) == set(expected)
+    for key, value in expected.items():
+        assert np.isclose(summary[key], value)
+
+
+def test_sub_agg_stats_agg1_returns_pixel_stats():
+    """Test sub-aggregation stats when each chunk is a single pixel."""
+
+    include_mask = np.array([[0.0, 0.5], [1.0, 0.25]])
+    point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 2)
+
+    summary = point.sub_agg_stats(1)
+    area = SupplyCurveField.AREA_SQ_KM
+    expected_chunk_sums = include_mask
+
+    assert np.isclose(summary[f"min_agg1_{area}"], expected_chunk_sums.min())
+    assert np.isclose(summary[f"max_agg1_{area}"], expected_chunk_sums.max())
+    assert np.isclose(
+        summary[f"mean_agg1_{area}"], expected_chunk_sums.mean()
+    )
+    assert np.isclose(summary[f"std_agg1_{area}"], expected_chunk_sums.std())
+    assert np.isclose(
+        summary[f"p50_agg1_{area}"], np.percentile(expected_chunk_sums, 50)
+    )
 
 
 @pytest.mark.parametrize("resolution", [7, 32, 50, 64, 163])

@@ -442,12 +442,11 @@ def test_packing_algorithm(gid=33):
 def test_bespoke_points():
     """Test the bespoke points input options"""
     # pylint: disable=W0612
-    points = pd.DataFrame(
-        {
-            SiteDataField.GID: [33, 34, 35],
-            SiteDataField.CONFIG: ["default"] * 3,
-        }
-    )
+    points = {
+        33: {SiteDataField.CONFIG: "default"},
+        34: {SiteDataField.CONFIG: "default"},
+        35: {SiteDataField.CONFIG: "default"},
+    }
     pp = BespokeWindPlants._parse_points(points, {"default": SAM})
     assert len(pp) == 3
     for gid in pp.gids:

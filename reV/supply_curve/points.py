@@ -665,7 +665,7 @@ class SupplyCurvePoint(AbstractSupplyCurvePoint):
         n = self._resolution // agg
 
         arr = self.include_mask.copy()
-        arr[self.tm == -1] = 0.0
+        arr[~self.bool_mask.reshape(arr.shape)] = 0.0
 
         # Example for 2D:
         # (12, 8) with n=4 -> reshape to (4, 3, 4, 2)

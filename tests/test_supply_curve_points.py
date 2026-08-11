@@ -215,6 +215,22 @@ def test_sub_agg_stats_agg1_returns_pixel_stats():
     )
 
 
+def test_sub_agg_stats_excludes_invalid_generation_gids():
+    """Test sub-aggregation areas match area when a gen gid is unavailable."""
+
+    include_mask = np.array([[1.0, 0.5], [1.0, 0.25]])
+    point = _make_generation_sc_point_for_sub_agg_stats(include_mask, 2)
+    point._gids[1] = -1
+
+    summary = point.sub_agg_stats(1)
+    area = SupplyCurveField.AREA_SQ_KM
+
+    assert np.isclose(point.area, 2.25)
+    assert np.isclose(summary[f"min_agg1_{area}"], 0.0)
+    assert np.isclose(summary[f"max_agg1_{area}"], 1.0)
+    assert np.isclose(summary[f"mean_agg1_{area}"], point.area / 4)
+
+
 @pytest.mark.parametrize("resolution", [7, 32, 50, 64, 163])
 def test_points_calc(resolution):
     """Test the calculation of the SC points setup from exclusions tiff."""

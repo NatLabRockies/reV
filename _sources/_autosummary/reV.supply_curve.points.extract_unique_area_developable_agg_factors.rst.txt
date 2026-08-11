@@ -1,0 +1,6 @@
+reV.supply\_curve.points.extract\_unique\_area\_developable\_agg\_factors
+=========================================================================
+
+.. currentmodule:: reV.supply_curve.points
+
+.. autofunction:: extract_unique_area_developable_agg_factors

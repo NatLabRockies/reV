@@ -537,7 +537,9 @@ class BaseAggregation(ABC):
             gen_index = gen_index.reindex(
                 range(int(gen_index.index.max() + 1))
             )
-            gen_index = gen_index[SupplyCurveField.GEN_GIDS].values
+            gen_index = gen_index[SupplyCurveField.GEN_GIDS].to_numpy(
+                copy=True
+            )
             gen_index[np.isnan(gen_index)] = -1
             gen_index = gen_index.astype(np.int32)
         else:

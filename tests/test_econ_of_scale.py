@@ -299,7 +299,7 @@ def test_sc_agg_econ_scale(voc, fixed_eqn, voc_eqn):
                           + data['fixed_operating_cost'])
                          / aep + data['variable_operating_cost'] * 1000)
 
-        eval_inputs = {k: sc_df[k].values.flatten() for k in sc_df.columns}
+        eval_inputs = {k: sc_df[k].to_numpy().flatten() for k in sc_df.columns}
         # pylint: disable=eval-used
         cc_scalars = eval(str(cap_eqn), globals(), eval_inputs)
         foc_scalar = fixed_eqn or 1

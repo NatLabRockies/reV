@@ -785,8 +785,13 @@ def test_validate_res_fpath():
         assert _validate_res_fpath(config) == config
 
 
-def test_validate_res_fpath_with_year_pattern():
+def test_validate_res_fpath_with_year_pattern(monkeypatch):
     """Test the validate_res_fpath function with {} substitute for year."""
+
+    monkeypatch.setattr(
+        "reV.supply_curve.cli_sc_aggregation.check_res_file",
+        lambda _: pytest.fail("Local paths should not be checked via HSDS"),
+    )
 
     with tempfile.TemporaryDirectory() as td:
         tf = os.path.join(td, "gen_{}.h5")

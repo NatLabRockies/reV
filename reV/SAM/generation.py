@@ -675,7 +675,7 @@ class AbstractSamGenerationFromWeatherFile(AbstractSamGeneration, ABC):
 
         # ------- Process metadata
         m = pd.DataFrame(meta).T
-        timezone = m[ResourceMetaField.TIMEZONE]
+        timezone = meta[ResourceMetaField.TIMEZONE]
         m["Source"] = "NSRDB"
         m["Location ID"] = meta.name
         m["City"] = "-"

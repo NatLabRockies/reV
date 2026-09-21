@@ -96,7 +96,6 @@ def _check_for_file_prefer_local(res_fpath, year):
     return fp
 
 
-
 def _validate_tm(config):
     """Check that tm_dset exists or that res_fpath is given (to generate tm)"""
     paths = config["excl_fpath"]

@@ -39,7 +39,7 @@ def sample_resource_data(request):
         with Outputs(geo_res_file, "w") as f:
             f.meta = meta
             f.time_index = pd.date_range(
-                start="1/1/2018", end="1/1/2019", freq="H"
+                start="1/1/2018", end="1/1/2019", freq="h"
             )[:-1]
 
         Outputs.add_dataset(

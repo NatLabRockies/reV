@@ -238,7 +238,7 @@ class CompetitiveWindFarms:
         sc_points = sc_points[[SupplyCurveField.SC_GID,
                                SupplyCurveField.SC_POINT_GID]]
         sc_gids = sc_points.set_index(SupplyCurveField.SC_GID)
-        sc_gids = {k: int(v[0]) for k, v in sc_gids.iterrows()}
+        sc_gids = {k: int(v.iloc[0]) for k, v in sc_gids.iterrows()}
 
         groups = sc_points.groupby(SupplyCurveField.SC_POINT_GID)
         sc_point_gids = groups[SupplyCurveField.SC_GID].unique().to_frame()

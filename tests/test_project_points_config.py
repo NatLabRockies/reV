@@ -41,19 +41,19 @@ def test_parse_project_points_from_config(tmp_path, config_type):
 
     points = ProjectPoints._parse_points(config_path)
 
-    assert points[SiteDataField.GID].tolist() == [0, 1, 2]
-    assert points[SiteDataField.CONFIG].tolist() == ["default"] * 3
-    assert points[SiteDataField.CURTAILMENT].tolist() == [None, None, "curt"]
-    assert points["points_order"].tolist() == [1, 2, 0]
+    assert points[SiteDataField.GID].to_list() == [0, 1, 2]
+    assert points[SiteDataField.CONFIG].to_list() == ["default"] * 3
+    assert points[SiteDataField.CURTAILMENT].to_list() == [None, None, "curt"]
+    assert points["points_order"].to_list() == [1, 2, 0]
 
 
 def test_parse_project_points_from_gid_keyed_mapping():
     """Parse gid-keyed project points mappings passed directly as a dict."""
     points = ProjectPoints._parse_points(_project_points_config_dict())
 
-    assert points[SiteDataField.GID].tolist() == [0, 1, 2]
-    assert points[SiteDataField.CONFIG].tolist() == ["default"] * 3
-    assert points[SiteDataField.CURTAILMENT].tolist() == [None, None, "curt"]
+    assert points[SiteDataField.GID].to_list() == [0, 1, 2]
+    assert points[SiteDataField.CONFIG].to_list() == ["default"] * 3
+    assert points[SiteDataField.CURTAILMENT].to_list() == [None, None, "curt"]
 
 
 @pytest.mark.parametrize("config_type", ["json", "yaml", "toml"])
@@ -68,7 +68,7 @@ def test_project_points_init_from_config_file(tmp_path, config_type):
 
     assert project_points.sites == [0, 1, 2]
     assert project_points.get_sites_from_config("default") == [0, 1, 2]
-    assert (project_points.df[SiteDataField.CURTAILMENT].tolist()
+    assert (project_points.df[SiteDataField.CURTAILMENT].to_list()
             == [None, None, "curt"])
 
 

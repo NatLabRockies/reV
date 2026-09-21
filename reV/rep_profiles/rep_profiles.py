@@ -463,7 +463,7 @@ class RegionRepProfile:
             Either a list of numbers or strings. Lists of jsonified lists
             will be unpacked.
         """
-        data = rev_summary[attr_name].values.tolist()
+        data = rev_summary[attr_name].to_list()
 
         if any(data):
             if isinstance(data[0], str):

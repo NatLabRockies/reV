@@ -846,7 +846,7 @@ class Gen(BaseGen):
                     )
                     assert isinstance(gen_gid, int), msg1
                     assert isinstance(res_gid, int), msg1
-                    assert res_gid in res.meta.index.values, msg2
+                    assert res_gid in res.meta.index.to_numpy(), msg2
 
                 for gen_gid in self.project_points.sites:
                     msg3 = (

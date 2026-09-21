@@ -299,7 +299,7 @@ class ProjectPoints:
         site_bool = self.df[SiteDataField.GID] == site
         try:
             config_id = (self.df.loc[site_bool, SiteDataField.CONFIG]
-                         .to_numpy()[0])
+                         .values[0])
         except (KeyError, IndexError) as ex:
             msg = (
                 "Site {} not found in this instance of "
@@ -415,7 +415,7 @@ class ProjectPoints:
             List of integer sites (resource file gids) belonging to this
             instance of ProjectPoints.
         """
-        return self.df[SiteDataField.GID].to_numpy().tolist()
+        return self.df[SiteDataField.GID].to_list()
 
     @property
     def sites_as_slice(self):
@@ -472,7 +472,7 @@ class ProjectPoints:
         if self._h is None:
             if "wind" in self.tech:
                 if h_var in self.df.columns:
-                    self._h = self.df[h_var].to_numpy().tolist()
+                    self._h = self.df[h_var].to_list()
                 else:
                     self._h = [self[site][1][h_var] for site in self.sites]
 
@@ -846,7 +846,7 @@ class ProjectPoints:
         """
         return self.df.loc[
             (self.df[SiteDataField.CONFIG] == config), SiteDataField.GID
-        ].to_numpy().to_list()
+        ].to_list()
 
     def get_sites_from_curtailment(self, curtailment):
         """Get a site list that corresponds to a curtailment key.
@@ -866,7 +866,7 @@ class ProjectPoints:
         return self.df.loc[
             (self.df[SiteDataField.CURTAILMENT] == curtailment),
             SiteDataField.GID
-        ].to_numpy().tolist()
+        ].to_list()
 
     @classmethod
     def split(cls, i0, i1, project_points):

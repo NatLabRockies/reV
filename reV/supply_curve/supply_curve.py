@@ -246,7 +246,7 @@ class SupplyCurve:
 
         logger.debug(
             "Supply curve points table imported with columns: {}".format(
-                sc_points.columns.values.tolist()
+                sc_points.columns.to_list()
             )
         )
 
@@ -258,7 +258,7 @@ class SupplyCurve:
             sc_points = sc_points.merge(sc_features, on=merge_cols, how="left")
             logger.debug(
                 "Adding Supply Curve Features table with columns: {}".format(
-                    sc_features.columns.values.tolist()
+                    sc_features.columns.to_list()
                 )
             )
 
@@ -268,7 +268,7 @@ class SupplyCurve:
 
         logger.debug(
             "Final supply curve points table has columns: {}".format(
-                sc_points.columns.values.tolist()
+                sc_points.columns.to_list()
             )
         )
 
@@ -535,8 +535,8 @@ class SupplyCurve:
             Table mapping supply curve points to transmission features
             (should already be merged with SC points).
         """
-        sc_gids = set(sc_points[SupplyCurveField.SC_GID].tolist())
-        trans_sc_gids = set(trans_table[SupplyCurveField.SC_GID].tolist())
+        sc_gids = set(sc_points[SupplyCurveField.SC_GID].to_list())
+        trans_sc_gids = set(trans_table[SupplyCurveField.SC_GID].to_list())
         missing = sorted(list(sc_gids - trans_sc_gids))
         if any(missing):
             msg = (
@@ -567,7 +567,7 @@ class SupplyCurve:
         )
         logger.debug(
             "Transmission Table created with columns: {}".format(
-                trans_table.columns.values.tolist()
+                trans_table.columns.to_list()
             )
         )
 

@@ -199,7 +199,7 @@ class RevNrwal:
         self._project_points = pc.project_points
 
         self._sam_sys_inputs = self._parse_sam_sys_inputs()
-        meta_gids = self.meta_source[self._meta_gid_col].values
+        meta_gids = self.meta_source[self._meta_gid_col].to_numpy()
         logger.info(
             'Finished initializing NRWAL analysis module for "{}" '
             "{} through {} with {} total generation points and "
@@ -293,7 +293,7 @@ class RevNrwal:
         msg = (
             'Could not find "{}" column in source generation h5 file '
             "meta data! Available cols: {}".format(
-                self._meta_gid_col, meta.columns.values.tolist()
+                self._meta_gid_col, meta.columns.to_list()
             )
         )
         assert self._meta_gid_col in meta, msg
@@ -320,7 +320,7 @@ class RevNrwal:
             analysis_gids
         """
 
-        meta_gids = self.meta_source[self._meta_gid_col].values
+        meta_gids = self.meta_source[self._meta_gid_col].to_numpy()
 
         missing = ~np.isin(meta_gids, self._site_data[SiteDataField.GID])
         if any(missing):

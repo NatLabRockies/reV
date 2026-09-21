@@ -1547,6 +1547,8 @@ class SupplyCurve:
     def _merge_sc_with_connections(self, columns, conn_lists, sort_on):
         """Merge connections and SC for output"""
         connections = pd.DataFrame(conn_lists).dropna(subset=[sort_on])
+        connection_order_col = "_rev_sc_connection_order"
+        connections[connection_order_col] = range(len(connections))
 
         keep_for_merge_cols = list(columns)
         if self._sc_capacity_col not in keep_for_merge_cols:
@@ -1559,9 +1561,15 @@ class SupplyCurve:
         if SupplyCurveField.SC_GID not in keep_for_merge_cols:
             keep_for_merge_cols.append(SupplyCurveField.SC_GID)
 
+        sc_order_col = "_rev_sc_order"
+        sc_points[sc_order_col] = range(len(sc_points))
+        keep_for_merge_cols.append(connection_order_col)
         supply_curve = sc_points.merge(connections[keep_for_merge_cols],
                                        on=SupplyCurveField.SC_GID)
-        return supply_curve.reset_index(drop=True)
+        supply_curve = supply_curve.sort_values(
+            [sc_order_col, connection_order_col], kind="stable")
+        return (supply_curve.drop(columns=[sc_order_col, connection_order_col])
+                .reset_index(drop=True))
 
     def _adjust_output_columns(self, columns, consider_friction):
         """Add extra output columns, if needed."""

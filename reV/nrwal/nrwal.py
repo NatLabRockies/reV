@@ -520,7 +520,7 @@ class RevNrwal:
             )
         )
         nrwal_inputs = {
-            var: self.meta_source[var].values[self.analysis_mask]
+            var: self.meta_source[var].to_numpy()[self.analysis_mask]
             for var in meta_data_vars
         }
 
@@ -531,7 +531,7 @@ class RevNrwal:
         logger.info('Pulling the following inputs from the site_data input: {}'
                     .format(site_data_vars))
         for var in site_data_vars:
-            nrwal_inputs[var] = self._site_data[var].values
+            nrwal_inputs[var] = self._site_data[var].to_numpy()
 
         sam_sys_vars = [
             var
@@ -543,7 +543,7 @@ class RevNrwal:
             "configs: {}".format(sam_sys_vars)
         )
         for var in sam_sys_vars:
-            nrwal_inputs[var] = self._sam_sys_inputs[var].values
+            nrwal_inputs[var] = self._sam_sys_inputs[var].to_numpy()
 
         gen_vars = [
             var

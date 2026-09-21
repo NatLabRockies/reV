@@ -909,11 +909,14 @@ def make_test_file(
         shapes = res.shapes
         meta = res.meta.iloc[p_slice]
         if drop_cols is not None:
-            meta.drop(columns=drop_cols, inplace=True)
+            meta = meta.drop(columns=drop_cols)
         if duplicate_rows:
             n_rows, __ = meta.shape
             half_n_rows = n_rows // 2
-            meta.iloc[-half_n_rows:] = meta.iloc[:half_n_rows].values
+            for column_index in range(meta.shape[1]):
+                duplicate_values = (meta.iloc[:half_n_rows, column_index]
+                                    .to_numpy())
+                meta.iloc[-half_n_rows:, column_index] = duplicate_values
         if duplicate_coord_values:
             lat = meta[SupplyCurveField.LATITUDE].iloc[-1]
             meta.loc[0, SupplyCurveField.LATITUDE] = lat

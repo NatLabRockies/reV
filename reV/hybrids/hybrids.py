@@ -702,7 +702,8 @@ class MetaHybridizer:
         duplicate_cols = [n for n in self._hybrid_meta.columns if "_x" in n]
         self._propagate_duplicate_cols(duplicate_cols)
         self._drop_cols(duplicate_cols)
-        self._hybrid_meta.rename(self.__col_name_map, inplace=True, axis=1)
+        self._hybrid_meta = self._hybrid_meta.rename(self.__col_name_map,
+                                                     axis=1)
         self._hybrid_meta.index.name = HYBRIDS_GID_COL
 
     def _propagate_duplicate_cols(self, duplicate_cols):
@@ -715,12 +716,8 @@ class MetaHybridizer:
 
     def _drop_cols(self, duplicate_cols):
         """Drop any remaining duplicate and 'HYBRIDS_GID_COL' columns."""
-        self._hybrid_meta.drop(
-            duplicate_cols + [HYBRIDS_GID_COL],
-            axis=1,
-            inplace=True,
-            errors="ignore",
-        )
+        self._hybrid_meta = self._hybrid_meta.drop(
+            duplicate_cols + [HYBRIDS_GID_COL], axis=1,  errors="ignore")
 
     def _sort_hybrid_meta_cols(self):
         """Sort the columns of the hybrid meta."""
@@ -782,12 +779,14 @@ class MetaHybridizer:
         """Fill N/A values as specified by user (and internals)."""
         for col_name, fill_value in self._fillna.items():
             if col_name in self._hybrid_meta.columns:
-                self._hybrid_meta[col_name].fillna(fill_value, inplace=True)
+                new_data = self._hybrid_meta[col_name].fillna(fill_value)
+                self._hybrid_meta[col_name] = new_data
             else:
                 self.__warn_missing_col(col_name, action="fill")
 
-        self._hybrid_meta[self.__solar_rpi_n].fillna(-1, inplace=True)
-        self._hybrid_meta[self.__wind_rpi_n].fillna(-1, inplace=True)
+        for col_name in (self.__solar_rpi_n, self.__wind_rpi_n):
+            self._hybrid_meta[col_name] = (self._hybrid_meta[col_name]
+                                           .fillna(-1))
 
     @staticmethod
     def __warn_missing_col(col_name, action):
@@ -803,7 +802,8 @@ class MetaHybridizer:
         """Clip column values as specified by user."""
         for col_name, max_value in self._limits.items():
             if col_name in self._hybrid_meta.columns:
-                self._hybrid_meta[col_name].clip(upper=max_value, inplace=True)
+                self._hybrid_meta[col_name] = (self._hybrid_meta[col_name]
+                                               .clip(upper=max_value))
             else:
                 self.__warn_missing_col(col_name, action="limit")
 

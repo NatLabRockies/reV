@@ -1267,18 +1267,18 @@ class AggregationSupplyCurvePoint(SupplyCurvePoint):
             # make sure country and county are coincident
             counties = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTY
-            ].values
+            ].to_numpy()
             iloc = np.where(counties == self.county)[0][0]
             country = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTRY
-            ].values
+            ].to_numpy()
             country = country[iloc]
 
         elif ResourceMetaField.COUNTRY in self.h5.meta:
             country = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTRY
             ].mode()
-            country = country.values[0]
+            country = country.to_numpy()[0]
 
         return country
 
@@ -1290,18 +1290,18 @@ class AggregationSupplyCurvePoint(SupplyCurvePoint):
             # make sure state and county are coincident
             counties = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTY
-            ].values
+            ].to_numpy()
             iloc = np.where(counties == self.county)[0][0]
             state = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.STATE
-            ].values
+            ].to_numpy()
             state = state[iloc]
 
         elif ResourceMetaField.STATE in self.h5.meta:
             state = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.STATE
             ].mode()
-            state = state.values[0]
+            state = state.to_numpy()[0]
 
         return state
 
@@ -1313,7 +1313,7 @@ class AggregationSupplyCurvePoint(SupplyCurvePoint):
             county = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTY
             ].mode()
-            county = county.values[0]
+            county = county.to_numpy()[0]
 
         return county
 
@@ -1337,18 +1337,18 @@ class AggregationSupplyCurvePoint(SupplyCurvePoint):
             # make sure timezone flag and county are coincident
             counties = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTY
-            ].values
+            ].to_numpy()
             iloc = np.where(counties == self.county)[0][0]
             timezone = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.TIMEZONE
-            ].values
+            ].to_numpy()
             timezone = timezone[iloc]
 
         elif ResourceMetaField.TIMEZONE in self.h5.meta:
             timezone = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.TIMEZONE
             ].mode()
-            timezone = timezone.values[0]
+            timezone = timezone.to_numpy()[0]
 
         return timezone
 
@@ -1362,18 +1362,18 @@ class AggregationSupplyCurvePoint(SupplyCurvePoint):
             # make sure offshore flag and county are coincident
             counties = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.COUNTY
-            ].values
+            ].to_numpy()
             iloc = np.where(counties == self.county)[0][0]
             offshore = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.OFFSHORE
-            ].values
+            ].to_numpy()
             offshore = offshore[iloc]
 
         elif ResourceMetaField.OFFSHORE in self.h5.meta:
             offshore = self.h5.meta.loc[
                 self.h5_gid_set, ResourceMetaField.OFFSHORE
             ].mode()
-            offshore = offshore.values[0]
+            offshore = offshore.to_numpy()[0]
 
         return offshore
 
@@ -2084,7 +2084,8 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         elif isinstance(self._power_density, pd.DataFrame):
             self._pd_obj = self._power_density
 
-            missing = set(self.res_gid_set) - set(self._pd_obj.index.values)
+            missing = (set(self.res_gid_set)
+                       - set(self._pd_obj.index.to_numpy()))
             if any(missing):
                 msg = (
                     "Variable power density input is missing the "
@@ -2095,7 +2096,7 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
 
             pds = self._pd_obj.loc[
                 self._res_gids[self.bool_mask], "power_density"
-            ].values
+            ].to_numpy()
             pds = pds.astype(np.float32)
             pds *= self.include_mask_flat[self.bool_mask]
             denom = self.include_mask_flat[self.bool_mask].sum()
@@ -2140,7 +2141,8 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         elif isinstance(self._power_density_ac, pd.DataFrame):
             self._pd_obj = self._power_density_ac
 
-            missing = set(self.res_gid_set) - set(self._pd_obj.index.values)
+            missing = (set(self.res_gid_set)
+                       - set(self._pd_obj.index.to_numpy()))
             if any(missing):
                 msg = (
                     "Variable power density input is missing the "
@@ -2151,7 +2153,7 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
 
             pds = self._pd_obj.loc[
                 self._res_gids[self.bool_mask], "power_density"
-            ].values
+            ].to_numpy()
             power_density_ac = pds.astype(np.float32) / ilr
             power_density_ac *= weights
             power_density_ac = power_density_ac.sum() / weights.sum()

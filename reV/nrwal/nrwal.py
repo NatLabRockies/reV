@@ -335,7 +335,7 @@ class RevNrwal:
 
         missing = ~np.isin(self._site_data[SiteDataField.GID], meta_gids)
         if any(missing):
-            missing = self._site_data[SiteDataField.GID].values[missing]
+            missing = self._site_data[SiteDataField.GID].to_numpy()[missing]
             msg = ('{} sites from the "site_data" input were missing from the '
                    'generation meta data and will not be run through NRWAL: {}'
                    .format(len(missing), missing))
@@ -369,7 +369,7 @@ class RevNrwal:
 
         system_inputs = pd.DataFrame(system_inputs).T
         system_inputs = system_inputs.sort_index()
-        system_inputs[SiteDataField.GID] = system_inputs.index.values
+        system_inputs[SiteDataField.GID] = system_inputs.index.to_numpy()
         system_inputs.index.name = SiteDataField.GID
         mask = system_inputs[SiteDataField.GID].isin(self.analysis_gids)
         system_inputs = system_inputs[mask]
@@ -444,7 +444,7 @@ class RevNrwal:
                 logger.info(msg)
 
         available_ids = list(self._nrwal_configs.keys())
-        requested_ids = list(self._site_data[SiteDataField.CONFIG].values)
+        requested_ids = self._site_data[SiteDataField.CONFIG].to_list()
         missing = set(requested_ids) - set(available_ids)
         if any(missing):
             msg = (
@@ -455,8 +455,9 @@ class RevNrwal:
             logger.error(msg)
             raise OffshoreWindInputError(msg)
 
-        check_gid_order = (self._site_data[SiteDataField.GID].values
-                           == self._sam_sys_inputs[SiteDataField.GID].values)
+        check_gid_order = (self._site_data[SiteDataField.GID].to_numpy()
+                           == (self._sam_sys_inputs[SiteDataField.GID]
+                               .to_numpy()))
         msg = 'NRWAL site_data and system input dataframe had bad order'
         assert (check_gid_order).all(), msg
 
@@ -746,7 +747,8 @@ class RevNrwal:
         self._out = self._init_outputs()
 
         for i, (cid, nrwal_config) in enumerate(self._nrwal_configs.items()):
-            output_mask = self._site_data[SiteDataField.CONFIG].values == cid
+            output_mask = (self._site_data[SiteDataField.CONFIG].to_numpy()
+                           == cid)
             logger.info('Running NRWAL config {} of {}: "{}" and applying '
                         'to {} out of {} total sites'
                         .format(i + 1, len(self._nrwal_configs), cid,
@@ -783,7 +785,7 @@ class RevNrwal:
             elif np.isnan(arr).any():
                 mask = np.isnan(arr)
                 nan_meta = self.meta_source[self.analysis_mask][mask]
-                nan_gids = nan_meta[self._meta_gid_col].values
+                nan_gids = nan_meta[self._meta_gid_col].to_numpy()
                 msg = (
                     "NaN values ({} out of {}) persist in NRWAL "
                     'output "{}"!'.format(np.isnan(arr).sum(), len(arr), name)

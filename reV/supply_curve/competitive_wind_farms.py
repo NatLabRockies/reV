@@ -273,10 +273,10 @@ class CompetitiveWindFarms:
             if (c.endswith("_gid") and not c.startswith("sc"))
         ]
         directions = [c.split("_")[0] for c in cols]
-        upwind_gids = wind_dirs[cols].values
+        upwind_gids = wind_dirs[cols].to_numpy()
 
         cols = ["{}_pr".format(d) for d in directions]
-        neighbor_pr = wind_dirs[cols].values
+        neighbor_pr = wind_dirs[cols].to_numpy()
 
         neighbors = np.argsort(neighbor_pr)[:, :n_dirs]
         upwind_gids = np.take_along_axis(upwind_gids, neighbors, axis=1)
@@ -292,12 +292,12 @@ class CompetitiveWindFarms:
             "NW": "SE",
         }
         cols = ["{}_gid".format(downwind_map[d]) for d in directions]
-        downwind_gids = wind_dirs[cols].values
+        downwind_gids = wind_dirs[cols].to_numpy()
         downwind_gids = np.take_along_axis(downwind_gids, neighbors, axis=1)
 
         downwind = {}
         upwind = {}
-        for i, gid in enumerate(wind_dirs.index.values):
+        for i, gid in enumerate(wind_dirs.index.to_numpy()):
             downwind[gid] = downwind_gids[i]
             upwind[gid] = upwind_gids[i]
 
@@ -445,7 +445,7 @@ class CompetitiveWindFarms:
 
         sc_points = sc_points.sort_values(sort_on)
 
-        sc_point_gids = sc_points[SupplyCurveField.SC_POINT_GID].values
+        sc_point_gids = sc_points[SupplyCurveField.SC_POINT_GID].to_numpy()
         sc_point_gids = sc_point_gids.astype(int)
 
         for i in range(len(sc_points)):

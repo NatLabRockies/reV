@@ -389,7 +389,7 @@ class RegionRepProfile:
         self._gen_gids = df[self.GEN_GID_COL].to_list()
         self._res_gids = df[self.RES_GID_COL].to_list()
         if self._weight is not None:
-            self._weights = df["weights"].values
+            self._weights = df["weights"].to_numpy()
         else:
             self._weights = None
 
@@ -1221,7 +1221,7 @@ class RepProfiles(RepProfilesBase):
         )
 
         iter_chunks = np.array_split(
-            self.meta.index.values, np.ceil(len(self.meta) / pool_size)
+            self.meta.index.to_numpy(), np.ceil(len(self.meta) / pool_size)
         )
         n_complete = 0
         for iter_chunk in iter_chunks:

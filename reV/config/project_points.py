@@ -298,7 +298,8 @@ class ProjectPoints:
 
         site_bool = self.df[SiteDataField.GID] == site
         try:
-            config_id = self.df.loc[site_bool, SiteDataField.CONFIG].values[0]
+            config_id = (self.df.loc[site_bool, SiteDataField.CONFIG]
+                         .to_numpy()[0])
         except (KeyError, IndexError) as ex:
             msg = (
                 "Site {} not found in this instance of "
@@ -414,7 +415,7 @@ class ProjectPoints:
             List of integer sites (resource file gids) belonging to this
             instance of ProjectPoints.
         """
-        return self.df[SiteDataField.GID].values.tolist()
+        return self.df[SiteDataField.GID].to_numpy().tolist()
 
     @property
     def sites_as_slice(self):
@@ -471,7 +472,7 @@ class ProjectPoints:
         if self._h is None:
             if "wind" in self.tech:
                 if h_var in self.df.columns:
-                    self._h = self.df[h_var].values.tolist()
+                    self._h = self.df[h_var].to_numpy().tolist()
                 else:
                     self._h = [self[site][1][h_var] for site in self.sites]
 
@@ -555,7 +556,7 @@ class ProjectPoints:
         df[SiteDataField.CURTAILMENT] = (df[SiteDataField.CURTAILMENT]
                                          .replace({np.nan: None}))
 
-        gids = df[SiteDataField.GID].values
+        gids = df[SiteDataField.GID].to_numpy()
         if not np.array_equal(np.sort(gids), gids):
             msg = (
                 "WARNING: points are not in sequential order and will be "
@@ -564,7 +565,7 @@ class ProjectPoints:
             )
             logger.warning(msg)
             warn(msg)
-            df["points_order"] = df.index.values
+            df["points_order"] = df.index.to_numpy()
             df = df.sort_values(SiteDataField.GID).reset_index(drop=True)
 
         return df
@@ -666,7 +667,7 @@ class ProjectPoints:
         ind : int
             Row index of gid in the project points dataframe.
         """
-        if gid not in self._df[SiteDataField.GID].values:
+        if gid not in self._df[SiteDataField.GID].to_numpy():
             e = (
                 "Requested resource gid {} is not present in the project "
                 "points dataframe. Cannot return row index.".format(gid)
@@ -843,11 +844,9 @@ class ProjectPoints:
             List of sites associated with the requested configuration ID. If
             the configuration ID is not recognized, an empty list is returned.
         """
-        sites = self.df.loc[
+        return self.df.loc[
             (self.df[SiteDataField.CONFIG] == config), SiteDataField.GID
-        ].values
-
-        return list(sites)
+        ].to_numpy().to_list()
 
     def get_sites_from_curtailment(self, curtailment):
         """Get a site list that corresponds to a curtailment key.
@@ -864,12 +863,10 @@ class ProjectPoints:
             If the curtailment ID is not recognized, an empty list is
             returned.
         """
-        sites = self.df.loc[
+        return self.df.loc[
             (self.df[SiteDataField.CURTAILMENT] == curtailment),
             SiteDataField.GID
-        ].values
-
-        return list(sites)
+        ].to_numpy().tolist()
 
     @classmethod
     def split(cls, i0, i1, project_points):
@@ -928,7 +925,7 @@ class ProjectPoints:
             cols = [
                 c for c in lat_lons if c.lower().startswith(("lat", "lon"))
             ]
-            lat_lons = lat_lons[sorted(cols)].values
+            lat_lons = lat_lons[sorted(cols)].to_numpy()
         elif isinstance(lat_lons, (list, tuple)):
             lat_lons = np.array(lat_lons)
         elif isinstance(lat_lons, (int, float)):
@@ -1037,7 +1034,7 @@ class ProjectPoints:
         )
 
         if "points_order" in pp.df:
-            lat_lons = lat_lons[pp.df["points_order"].values]
+            lat_lons = lat_lons[pp.df["points_order"].to_numpy()]
 
         pp._df["latitude"] = lat_lons[:, 0]
         pp._df["longitude"] = lat_lons[:, 1]
@@ -1126,7 +1123,7 @@ class ProjectPoints:
         meta = meta.loc[pp.sites]
         cols = list(set(regions.values()))
         for c in cols:
-            pp._df[c] = meta[c].values
+            pp._df[c] = meta[c].to_numpy()
 
         return pp
 

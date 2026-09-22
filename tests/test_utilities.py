@@ -12,7 +12,7 @@ from reV.utilities.cli_functions import compile_descriptions
 from reV.cli import main
 
 
-class _EnumForTests(str, DocEnum):
+class _EnumForTests(DocEnum):
     """Test Enum with a description"""
 
     VALUE_ONE = 'value_one'

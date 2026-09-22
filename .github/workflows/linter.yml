@@ -29,13 +29,24 @@ jobs:
         uses: docker://ghcr.io/github/super-linter:slim-v4
         env:
           VALIDATE_ALL_CODEBASE: false
-          VALIDATE_PYTHON_BLACK: false
-          VALIDATE_PYTHON_ISORT: false
-          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_CHECKOV: false
+          VALIDATE_CSS: false
+          VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_JSCPD: false
           VALIDATE_JSON: false
           VALIDATE_MARKDOWN: false
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_PYINK: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_SPELL_CODESPELL: false
           VALIDATE_YAML: false
-          DEFAULT_BRANCH: main
+          VALIDATE_YAML_PRETTIER: false
+          DEFAULT_BRANCH: origin/main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

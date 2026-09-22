@@ -2,6 +2,7 @@
 """
 reV Supply Curve Aggregation CLI utility functions.
 """
+import fnmatch
 import logging
 from pathlib import Path
 
@@ -71,17 +72,28 @@ def _get_filepath_with_year(res_fpath):
     """Find first file that exists on disk with year filled in"""
 
     for year in range(1950, 2100):
-        fp = res_fpath.format(year)
-        try:
-            check_res_file(fp)
-        except FileNotFoundError:
-            continue
-        return fp
+        fp = _check_for_file_prefer_local(res_fpath, year)
+        if fp is not None:
+            return fp
 
     msg = ("Could not find any files that match the pattern"
            "{!r}".format(res_fpath.format("<year>")))
     logger.error(msg)
     raise FileNotFoundError(msg)
+
+
+def _check_for_file_prefer_local(res_fpath, year):
+    """Check for file, preferring local directory if available"""
+    parent = Path(res_fpath).parent
+    fp = res_fpath.format(year)
+    if parent.is_dir():
+        return fp if Path(fp).exists() else None
+
+    try:
+        check_res_file(fp)
+    except FileNotFoundError:
+        return None
+    return fp
 
 
 def _validate_tm(config):

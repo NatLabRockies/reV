@@ -17,9 +17,9 @@ jobs:
     permissions:
       contents: read
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7.0.1
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v7.0.0
       with:
         python-version: 3.11
     - name: Install dependencies
@@ -31,7 +31,7 @@ jobs:
       run: |
         python -m  pytest --disable-warnings --cov=./ --cov-branch --cov-report=xml:coverage.xml
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v7.1.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml

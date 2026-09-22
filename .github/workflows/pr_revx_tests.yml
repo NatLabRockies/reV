@@ -9,6 +9,8 @@ on: pull_request
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - name: checkout reV
       uses: actions/checkout@v2

@@ -614,7 +614,7 @@ class BespokeSinglePlant:
                 for annual_ti in self.annual_time_indexes:
                     year = annual_ti.year[0]
                     mask = self.res_df.index.isin(annual_ti)
-                    arr = self.res_df.loc[mask, req].values.flatten()
+                    arr = self.res_df.loc[mask, req].to_numpy().flatten()
                     self._outputs[req + f"-{year}"] = arr
 
             elif req.replace("_mean", "") in self.res_df:
@@ -1445,7 +1445,6 @@ class BespokeSinglePlant:
             self._meta[SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT] = (
                 self.plant_optimizer.noise_violations_pct
             )
-
 
         # copy dataset outputs to meta data for supply curve table summary
         # convert SAM system capacity in kW to reV supply curve cap in MW

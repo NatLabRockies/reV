@@ -329,10 +329,10 @@ def _rel_obs_locs(sc_point, obs_tiff_fp, x_locations, y_locations, buffer=0):
             maxy=src_top,
         ).squeeze(drop=True)
 
-        mask = np.isclose(subset.values, 1)
+        mask = np.isclose(subset.to_numpy(), 1)
         row_idx, col_idx = np.where(mask)
-        x_src = subset.x.values[col_idx]
-        y_src = subset.y.values[row_idx]
+        x_src = subset.x.to_numpy()[col_idx]
+        y_src = subset.y.to_numpy()[row_idx]
 
         if str(obs_raster.rio.crs) != str(excl_crs):
             x_sc, y_sc = transform(

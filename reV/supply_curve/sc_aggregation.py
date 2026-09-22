@@ -177,7 +177,7 @@ class SupplyCurveAggFileHandler(AbstractAggFileHandler):
                     msg = ('Variable power density file must include "{}" '
                            'and "power_density" columns, but received: {}'
                            .format(ResourceMetaField.GID,
-                                   self._power_density.columns.values))
+                                   self._power_density.columns.to_list()))
                     logger.error(msg)
                     raise FileInputError(msg)
             else:

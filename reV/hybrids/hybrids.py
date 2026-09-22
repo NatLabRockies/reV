@@ -321,9 +321,9 @@ class HybridsData:
         """
         mc = ColNameFormatter.fmt(MERGE_COLUMN)
         merge_col = self.solar_meta.columns[self.__solar_cols == mc].item()
-        solar_vals = set(self.solar_meta[merge_col].values)
+        solar_vals = set(self.solar_meta[merge_col].to_numpy())
         merge_col = self.wind_meta.columns[self.__wind_cols == mc].item()
-        wind_vals = set(self.wind_meta[merge_col].values)
+        wind_vals = set(self.wind_meta[merge_col].to_numpy())
         self.merge_col_overlap_values = solar_vals & wind_vals
 
         if not self.merge_col_overlap_values:
@@ -653,7 +653,7 @@ class MetaHybridizer:
         """Prepare solar and wind meta for merging."""
         self.__col_name_map = {
             ColNameFormatter.fmt(c): c
-            for c in self.data.solar_meta.columns.values
+            for c in self.data.solar_meta.columns.to_numpy()
         }
 
         self._rename_cols(self.data.solar_meta, prefix=SOLAR_PREFIX)
@@ -668,7 +668,7 @@ class MetaHybridizer:
             ColNameFormatter.fmt(col_name)
             if col_name in NON_DUPLICATE_COLS
             else "{}{}".format(prefix, col_name)
-            for col_name in df.columns.values
+            for col_name in df.columns.to_numpy()
         ]
 
     def _save_rep_prof_index_internally(self):
@@ -702,7 +702,8 @@ class MetaHybridizer:
         duplicate_cols = [n for n in self._hybrid_meta.columns if "_x" in n]
         self._propagate_duplicate_cols(duplicate_cols)
         self._drop_cols(duplicate_cols)
-        self._hybrid_meta.rename(self.__col_name_map, inplace=True, axis=1)
+        self._hybrid_meta = self._hybrid_meta.rename(self.__col_name_map,
+                                                     axis=1)
         self._hybrid_meta.index.name = HYBRIDS_GID_COL
 
     def _propagate_duplicate_cols(self, duplicate_cols):
@@ -710,17 +711,14 @@ class MetaHybridizer:
         for duplicate in duplicate_cols:
             no_suffix = "_".join(duplicate.split("_")[:-1])
             null_idx = self._hybrid_meta[no_suffix].isnull()
-            non_null_vals = self._hybrid_meta.loc[null_idx, duplicate].values
+            non_null_vals = (self._hybrid_meta.loc[null_idx, duplicate]
+                             .to_numpy())
             self._hybrid_meta.loc[null_idx, no_suffix] = non_null_vals
 
     def _drop_cols(self, duplicate_cols):
         """Drop any remaining duplicate and 'HYBRIDS_GID_COL' columns."""
-        self._hybrid_meta.drop(
-            duplicate_cols + [HYBRIDS_GID_COL],
-            axis=1,
-            inplace=True,
-            errors="ignore",
-        )
+        self._hybrid_meta = self._hybrid_meta.drop(
+            duplicate_cols + [HYBRIDS_GID_COL], axis=1,  errors="ignore")
 
     def _sort_hybrid_meta_cols(self):
         """Sort the columns of the hybrid meta."""
@@ -782,12 +780,14 @@ class MetaHybridizer:
         """Fill N/A values as specified by user (and internals)."""
         for col_name, fill_value in self._fillna.items():
             if col_name in self._hybrid_meta.columns:
-                self._hybrid_meta[col_name].fillna(fill_value, inplace=True)
+                new_data = self._hybrid_meta[col_name].fillna(fill_value)
+                self._hybrid_meta[col_name] = new_data
             else:
                 self.__warn_missing_col(col_name, action="fill")
 
-        self._hybrid_meta[self.__solar_rpi_n].fillna(-1, inplace=True)
-        self._hybrid_meta[self.__wind_rpi_n].fillna(-1, inplace=True)
+        for col_name in (self.__solar_rpi_n, self.__wind_rpi_n):
+            self._hybrid_meta[col_name] = (self._hybrid_meta[col_name]
+                                           .fillna(-1))
 
     @staticmethod
     def __warn_missing_col(col_name, action):
@@ -803,7 +803,8 @@ class MetaHybridizer:
         """Clip column values as specified by user."""
         for col_name, max_value in self._limits.items():
             if col_name in self._hybrid_meta.columns:
-                self._hybrid_meta[col_name].clip(upper=max_value, inplace=True)
+                self._hybrid_meta[col_name] = (self._hybrid_meta[col_name]
+                                               .clip(upper=max_value))
             else:
                 self.__warn_missing_col(col_name, action="limit")
 
@@ -830,16 +831,16 @@ class MetaHybridizer:
         ratio_too_high = (ratios > max_ratio) & overlap_idx
 
         numerator_vals.loc[ratio_too_high] = (
-            denominator_vals.loc[ratio_too_high].values * max_ratio
+            denominator_vals.loc[ratio_too_high].to_numpy() * max_ratio
         )
         denominator_vals.loc[ratio_too_low] = (
-            numerator_vals.loc[ratio_too_low].values / min_ratio
+            numerator_vals.loc[ratio_too_low].to_numpy() / min_ratio
         )
 
         h_num_name = "hybrid_{}".format(numerator_col)
         h_denom_name = "hybrid_{}".format(denominator_col)
-        self._hybrid_meta[h_num_name] = numerator_vals.values
-        self._hybrid_meta[h_denom_name] = denominator_vals.values
+        self._hybrid_meta[h_num_name] = numerator_vals.to_numpy()
+        self._hybrid_meta[h_denom_name] = denominator_vals.to_numpy()
 
     def _add_hybrid_cols(self):
         """Add new hybrid columns using registered hybrid methods."""
@@ -877,7 +878,7 @@ class MetaHybridizer:
         idxs = self._hybrid_meta[self.__solar_rpi_n].astype(int)
         idxs = idxs[idxs >= 0]
 
-        return idxs.index.values, idxs.values
+        return idxs.index.to_numpy(), idxs.to_numpy()
 
     @property
     def wind_profile_indices_map(self):
@@ -897,7 +898,7 @@ class MetaHybridizer:
         idxs = self._hybrid_meta[self.__wind_rpi_n].astype(int)
         idxs = idxs[idxs >= 0]
 
-        return idxs.index.values, idxs.values
+        return idxs.index.to_numpy(), idxs.to_numpy()
 
 
 class Hybridization:
@@ -1188,7 +1189,7 @@ class Hybridization:
 
         for params in self.__rep_profile_hybridization_params:
             col, (hybrid_idxs, solar_idxs), fpath, p_name, dset_name = params
-            capacity = self.hybrid_meta.loc[hybrid_idxs, col].values
+            capacity = self.hybrid_meta.loc[hybrid_idxs, col].to_numpy()
 
             with Resource(fpath) as res:
                 data = res[

@@ -545,7 +545,7 @@ class Econ(BaseGen):
         self._init_out_arrays()
 
         diff = list(set(self.points_control.sites)
-                    - set(self.meta[ResourceMetaField.GID].values))
+                    - set(self.meta[ResourceMetaField.GID].to_numpy()))
         if diff:
             raise Exception(
                 "The following analysis sites were requested "

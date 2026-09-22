@@ -227,7 +227,7 @@ def test_regions(counties):
     with Resource(res_file) as f:
         meta = f.meta
 
-    baseline = meta.loc[meta["county"].isin(counties)].index.values.tolist()
+    baseline = meta.loc[meta["county"].isin(counties)].index.to_list()
 
     regions = dict.fromkeys(counties, "county")
     pp = ProjectPoints.regions(regions, res_file, sam_files)

@@ -25,12 +25,10 @@ def check_crs(truth, test):
     truth = dict(i.split("=")
                  for i in truth.split(' '))
     truth = pd.DataFrame(truth, index=[0, ])
-    truth = truth.apply(pd.to_numeric, errors='ignore')
 
     test = dict(i.split("=")
                 for i in test.split(' '))
     test = pd.DataFrame(test, index=[0, ])
-    test = test.apply(pd.to_numeric, errors='ignore')
 
     cols = list(set(truth.columns) & set(test.columns))
     assert_frame_equal(truth[cols], test[cols],

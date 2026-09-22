@@ -80,7 +80,7 @@ def curtail(resource, curtailment, sites, random_seed=0):
     meta = resource["meta", sites]
     lat_lon_cols = get_lat_lon_cols(meta)
     solar_zenith_angle = SolarPosition(resource.time_index,
-                                       meta[lat_lon_cols].values).zenith
+                                       meta[lat_lon_cols].to_numpy()).zenith
     mask = (solar_zenith_angle > curtailment.dawn_dusk)
     curtail_mult = np.where(mask, curtail_mult, 1)
 

@@ -84,9 +84,8 @@ class EconomiesOfScale:
                 check_eval_str(str(eq))
 
         if isinstance(self._data, pd.DataFrame):
-            self._data = {
-                k: self._data[k].values.flatten() for k in self._data.columns
-            }
+            self._data = {k: self._data[k].to_numpy().flatten()
+                          for k in self._data.columns}
 
         if not isinstance(self._data, dict):
             e = (

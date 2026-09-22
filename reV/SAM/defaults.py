@@ -192,7 +192,7 @@ class DefaultMhkWave:
         res_file = os.path.join(DEFAULTSDIR, 'US_Wave.csv')
         df = pd.read_csv(res_file)
         for col in df.columns:
-            data_dict[col] = df[col].values.flatten().tolist()
+            data_dict[col] = df[col].to_numpy().flatten().tolist()
 
         obj = PySamMhkWave.default('MEwaveLCOECalculator')
         obj.MHKWave.wave_resource_model_choice = 1

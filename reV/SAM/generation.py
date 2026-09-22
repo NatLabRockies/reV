@@ -226,7 +226,7 @@ class AbstractSamGeneration(RevPySam, ScheduledLossesMixin, ABC):
         """
         if pd.isna(resource).any().any():
             bad_vars = pd.isna(resource).any(axis=0)
-            bad_vars = resource.columns[bad_vars].values.tolist()
+            bad_vars = resource.columns[bad_vars].to_list()
             msg = "Found NaN values for site {} in variables {}".format(
                 self.site, bad_vars
             )
@@ -675,7 +675,7 @@ class AbstractSamGenerationFromWeatherFile(AbstractSamGeneration, ABC):
 
         # ------- Process metadata
         m = pd.DataFrame(meta).T
-        timezone = m[ResourceMetaField.TIMEZONE]
+        timezone = meta[ResourceMetaField.TIMEZONE]
         m["Source"] = "NSRDB"
         m["Location ID"] = meta.name
         m["City"] = "-"

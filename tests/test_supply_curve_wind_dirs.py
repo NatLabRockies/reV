@@ -114,7 +114,7 @@ def test_upwind_exclusion():
     sc_out = pd.read_csv(sc_out).sort_values('total_lcoe')
     sc_out = sc_out.rename(columns=SupplyCurveField.map_from_legacy())
 
-    sc_point_gids = sc_out[SupplyCurveField.SC_POINT_GID].values.tolist()
+    sc_point_gids = sc_out[SupplyCurveField.SC_POINT_GID].to_list()
     for _, row in sc_out.iterrows():
         sc_gid = row[SupplyCurveField.SC_GID]
         sc_point_gids.remove(row[SupplyCurveField.SC_POINT_GID])
@@ -135,7 +135,7 @@ def test_upwind_downwind_exclusion():
     sc_out = pd.read_csv(sc_out).sort_values('total_lcoe')
     sc_out = sc_out.rename(columns=SupplyCurveField.map_from_legacy())
 
-    sc_point_gids = sc_out[SupplyCurveField.SC_POINT_GID].values.tolist()
+    sc_point_gids = sc_out[SupplyCurveField.SC_POINT_GID].to_list()
     for _, row in sc_out.iterrows():
         sc_gid = row[SupplyCurveField.SC_GID]
         sc_point_gids.remove(row[SupplyCurveField.SC_POINT_GID])

@@ -1446,7 +1446,6 @@ class BespokeSinglePlant:
                 self.plant_optimizer.noise_violations_pct
             )
 
-
         # copy dataset outputs to meta data for supply curve table summary
         # convert SAM system capacity in kW to reV supply curve cap in MW
         capacity_ac_mw = system_capacity_kw / 1e3

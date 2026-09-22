@@ -1,30 +1,52 @@
 name: Lint Code Base
 
+concurrency:
+  group: lints-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on:
   push:
     branches-ignore:
       - 'gh-pages'
+  pull_request:
+    branches: [main, master]
 
 jobs:
   build:
     name: Lint Code Base
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
       - name: Lint Code Base
         uses: docker://ghcr.io/github/super-linter:slim-v4
         env:
           VALIDATE_ALL_CODEBASE: false
-          VALIDATE_PYTHON_BLACK: false
-          VALIDATE_PYTHON_ISORT: false
-          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_CHECKOV: false
+          VALIDATE_CSS: false
+          VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_JSCPD: false
           VALIDATE_JSON: false
           VALIDATE_MARKDOWN: false
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_MYPY: false
+          VALIDATE_PYTHON_PYINK: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false
+          VALIDATE_SPELL_CODESPELL: false
           VALIDATE_YAML: false
-          DEFAULT_BRANCH: main
+          VALIDATE_YAML_PRETTIER: false
+          DEFAULT_BRANCH: origin/main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

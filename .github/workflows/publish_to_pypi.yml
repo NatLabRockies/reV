@@ -8,13 +8,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/NLR-reV
     permissions:
         # IMPORTANT: this permission is mandatory for trusted publishing
         id-token: write
+        contents: read
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.1
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v7.0.0
       with:
         python-version: 3.11
     - name: Install dependencies
@@ -29,4 +33,4 @@ jobs:
       run: |
         twine check dist/*
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@release/v1
+      uses: pypa/gh-action-pypi-publish@v1.14.2

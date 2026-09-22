@@ -1,25 +1,31 @@
 name: reVX Pytests
 
+concurrency:
+  group: revx-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 on: pull_request
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
     - name: checkout reV
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7.0.1
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         fetch-depth: 1
         path: reV
     - name: checkout reVX
-      uses: actions/checkout@v2
+      uses: actions/checkout@v7.0.1
       with:
         repository: NatLabRockies/reVX
         fetch-depth: 1
         path: reVX
     - name: Set up Python
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v4.0.1
       with:
         auto-update-conda: true
         python-version: 3.11

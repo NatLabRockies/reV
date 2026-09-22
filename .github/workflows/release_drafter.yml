@@ -7,8 +7,11 @@ on:
 jobs:
   update_release_draft:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Release Drafter
-        uses: release-drafter/release-drafter@v5.15.0
+        uses: release-drafter/release-drafter@v7.7.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

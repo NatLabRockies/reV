@@ -46,5 +46,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./docs/_build/html
-          force_orphan: true
-          full_commit_message: ${{ github.event.head_commit.message }}
+          # destination_dir: docs
+          # force_orphan: true
+          keep_files: true
+          full_commit_message: "${{ github.event.head_commit.message != '' && github.event.head_commit.message || format('Update docs: {0}', github.sha) }}"

@@ -106,7 +106,7 @@ class PySamVersionChecker:
     @property
     def pysam_version(self):
         """Get the PySAM distribution version"""
-        return importlib.metadata.version("nrel-pysam")
+        return importlib.metadata.version("nlr-pysam")
 
     @classmethod
     def run(cls, tech, parameters):

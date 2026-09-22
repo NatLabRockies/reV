@@ -140,7 +140,7 @@ def test_pysam_version_checker_wind():
     """
     wind_config = {'wind_farm_losses_percent': 10, 'system_capacity': 1}
 
-    pysam_version = importlib.metadata.version("nrel-pysam")
+    pysam_version = importlib.metadata.version("nlr-pysam")
     pysam_version = version.parse(pysam_version)
 
     if pysam_version > version.parse('2.1.0'):

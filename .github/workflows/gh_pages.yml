@@ -41,8 +41,10 @@ jobs:
           make clean html
       - name: deploy
         uses: peaceiris/actions-gh-pages@v4.1.0
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
           publish_dir: ./docs/_build/html
           force_orphan: true
           full_commit_message: ${{ github.event.head_commit.message }}

@@ -10,6 +10,9 @@ concurrency:
 on:
   push:
     branches: [main]
+  pull_request:
+  release:
+    types: [created, published]
   workflow_dispatch:
 
 jobs:

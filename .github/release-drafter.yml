@@ -16,8 +16,12 @@ categories:
     labels:
       - 'refactor'
       - 'documentation'
+  - title: 'Chores'
+    labels:
+      - 'dependencies'
       - 'chore'
+      - 'github_actions'
 template: |
-  ## What’s Changed
+  # What's Changed
 
   $CHANGES

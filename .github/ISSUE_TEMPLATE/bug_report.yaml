@@ -61,7 +61,7 @@ body:
         - OS: [e.g. OSX, Windows, Linux]
         - Compute hardware: [e.g. Kestrel, AWS]
         - reV Version: [e.g. 0.12.1]
-        - Python Version: [e.g. 3.13]
+        - Python Version: [e.g. 3.14]
         - Pandas Version: [e.g. 2.1.0]
         ...
 

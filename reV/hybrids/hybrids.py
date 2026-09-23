@@ -212,8 +212,6 @@ class HybridsData:
         self._solar_time_index = None
         self._wind_time_index = None
         self._hybrid_time_index = None
-        self.__rep_profile_reg_check = re.compile(REP_PROFILE_DSET_REGEX)
-        self.__bespoke_reg_check = re.compile(BESPOKE_DSET_REGEX)
         self.__solar_cols = self.solar_meta.columns.map(ColNameFormatter.fmt)
         self.__wind_cols = self.wind_meta.columns.map(ColNameFormatter.fmt)
 

@@ -30,8 +30,8 @@ from reV.utilities.cli_functions import add_to_run_attrs
 logger = logging.getLogger(__name__)
 
 MERGE_COLUMN = SupplyCurveField.SC_POINT_GID
-REP_PROFILE_DSET_REGEX = 'rep_profiles_[0-9]+$'
-BESPOKE_DSET_REGEX = r'cf_profile-(?P<year>[0-9]{4})$'
+REP_PROFILE_DSET_REGEX = '^rep_profiles_[0-9]+$'
+BESPOKE_DSET_REGEX = r'^cf_profile-(?P<year>[0-9]{4})$'
 SOLAR_PREFIX = 'solar_'
 WIND_PREFIX = 'wind_'
 NON_DUPLICATE_COLS = {

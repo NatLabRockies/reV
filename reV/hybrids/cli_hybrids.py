@@ -142,12 +142,12 @@ def _set_paths(config, out_dir, job_name):
     return config
 
 
-SPLIT_KEYS = [("solar_fpath", "wind_fpath", "fout")]
+SPLIT_KEYS = [("solar_fpath", "wind_fpath", "year", "fout")]
 hybrids_command = CLICommandFromClass(Hybridization, method="run",
                                       name=str(ModuleName.HYBRIDS),
                                       add_collect=False, split_keys=SPLIT_KEYS,
                                       config_preprocessor=_preprocessor,
-                                      skip_doc_params=["fout"])
+                                      skip_doc_params=["fout", "year"])
 main = as_click_command(hybrids_command)
 
 

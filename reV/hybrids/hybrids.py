@@ -29,7 +29,8 @@ from reV.utilities.cli_functions import add_to_run_attrs
 logger = logging.getLogger(__name__)
 
 MERGE_COLUMN = SupplyCurveField.SC_POINT_GID
-PROFILE_DSET_REGEX = 'rep_profiles_[0-9]+$'
+REP_PROFILE_DSET_REGEX = 'rep_profiles_[0-9]+$'
+BESPOKE_DSET_REGEX = r'cf_profile-(?P<year>[0-9]{4})$'
 SOLAR_PREFIX = 'solar_'
 WIND_PREFIX = 'wind_'
 NON_DUPLICATE_COLS = {
@@ -100,7 +101,8 @@ class HybridsData:
         self._solar_time_index = None
         self._wind_time_index = None
         self._hybrid_time_index = None
-        self.__profile_reg_check = re.compile(PROFILE_DSET_REGEX)
+        self.__rep_profile_reg_check = re.compile(REP_PROFILE_DSET_REGEX)
+        self.__bespoke_reg_check = re.compile(BESPOKE_DSET_REGEX)
         self.__solar_cols = self.solar_meta.columns.map(ColNameFormatter.fmt)
         self.__wind_cols = self.wind_meta.columns.map(ColNameFormatter.fmt)
 

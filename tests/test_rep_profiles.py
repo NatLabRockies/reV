@@ -14,6 +14,7 @@ from rex.resource import Resource
 
 from reV import TESTDATADIR
 from reV.cli import main
+from reV.handlers.multi_year import MultiYear
 from reV.rep_profiles.rep_profiles import (
     RegionRepProfile,
     RepProfiles,
@@ -425,6 +426,70 @@ def test_rep_profiles_cli(runner, clear_loggers):
         assert np.issubdtype(dtype, np.integer)
         assert attrs["scale_factor"] == 1000
         assert "rev_summary" not in disk_dsets
+
+        clear_loggers()
+
+
+def test_rep_profiles_cli_multi_year(runner, clear_loggers):
+    """Test rep profiles CLI with a multi-year generation file."""
+    with tempfile.TemporaryDirectory() as td:
+        years = [2012, 2013]
+        gen_fpaths = [
+            os.path.join(
+                TESTDATADIR, "gen_out/gen_ri_pv_{}_x000.h5".format(year)
+            )
+            for year in years
+        ]
+        multi_year_fpath = os.path.join(td, "multi_year.h5")
+        MultiYear.collect_profiles(
+            multi_year_fpath, gen_fpaths, "cf_profile"
+        )
+
+        sites = np.arange(100)
+        rev_summary = pd.DataFrame(
+            {
+                SupplyCurveField.GEN_GIDS: sites,
+                SupplyCurveField.RES_GIDS: sites,
+                SupplyCurveField.TIMEZONE: np.zeros(len(sites)),
+                "region": (["r0"] * 50) + (["r1"] * 50),
+            }
+        )
+        summary_fpath = os.path.join(td, "rev_summary.csv")
+        rev_summary.to_csv(summary_fpath, index=False)
+
+        config = {
+            "analysis_years": years,
+            "cf_dset": "cf_profile-{}",
+            "execution_control": {"option": "local"},
+            "gen_fpath": multi_year_fpath,
+            "log_directory": td,
+            "reg_cols": "region",
+            "rev_summary": summary_fpath,
+            "weight": None,
+        }
+        config_fpath = os.path.join(td, "config.json")
+        with open(config_fpath, "w") as f:
+            json.dump(config, f)
+
+        result = runner.invoke(
+            main, [str(ModuleName.REP_PROFILES), "-c", config_fpath]
+        )
+        assert result.exit_code == 0, result.exception
+
+        job_name = "{}_{}".format(
+            os.path.basename(td), ModuleName.REP_PROFILES
+        )
+        for year, gen_fpath in zip(years, gen_fpaths):
+            out_fpath = os.path.join(
+                td, "{}_{}.h5".format(job_name, year)
+            )
+            assert os.path.exists(out_fpath)
+            with Resource(gen_fpath) as source, Resource(out_fpath) as out:
+                assert "rep_profiles_0" in out.datasets
+                assert out.time_index.equals(source.time_index)
+                assert Path(out.h5.attrs["gen_fpath"]) == Path(
+                    multi_year_fpath
+                )
 
         clear_loggers()
 

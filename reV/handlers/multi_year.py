@@ -7,6 +7,7 @@ import glob
 import logging
 import os
 import time
+from pathlib import Path
 from warnings import warn
 
 import numpy as np
@@ -782,7 +783,8 @@ class MultiYear(Outputs):
                        config_file=config_file)
 
 
-def my_collect_groups(out_fpath, groups, clobber=True, config_file=None):
+def my_collect_groups(out_fpath, groups, clobber=True, config_file=None,
+                      purge=False):
     """Collect all groups into a single multi-year HDF5 file.
 
     ``reV`` multi-year combines ``reV`` generation data from multiple
@@ -854,6 +856,9 @@ def my_collect_groups(out_fpath, groups, clobber=True, config_file=None):
         Path to config file used for this multi-year collection run
         (if applicable). This is used to store information about the
         run in the output file attrs. By default, ``None``.
+    purge : bool, optional
+        Flag to purge the single-year source generation files after a
+        successful multi-year collection. By default, ``False``.
     """
     if not out_fpath.endswith(".h5"):
         out_fpath = '{}.h5'.format(out_fpath)
@@ -897,6 +902,16 @@ def my_collect_groups(out_fpath, groups, clobber=True, config_file=None):
         runtime = (time.time() - t0) / 60
         logger.info('- {} collection completed in: {:.2f} min.'
                     .format(group_name, runtime))
+
+    if purge:
+        source_files = {
+            Path(source_file).resolve()
+            for group in group_params.values()
+            for source_file in group["source_files"]
+        }
+        for source_file in sorted(source_files):
+            logger.info("Purging single-year source file: %s", source_file)
+            source_file.unlink()
 
     runtime = (time.time() - ts) / 60
     logger.info('Multi-year collection completed in : {:.2f} min.'

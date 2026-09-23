@@ -37,7 +37,9 @@ def test_doc_enum():
 
     assert _EnumForTests.VALUE_ONE == 'value_one'
     assert _EnumForTests.VALUE_TWO == 'value_two'
+    # pylint: disable=no-member
     assert _EnumForTests.VALUE_ONE.description == "First Value to test"
+    # pylint: disable=no-member
     assert _EnumForTests.VALUE_TWO.description is None
 
 

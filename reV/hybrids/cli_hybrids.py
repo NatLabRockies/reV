@@ -96,8 +96,9 @@ def _set_paths(config, out_dir, job_name):
 
     solar_fpaths = []
     wind_fpaths = []
+    years = []
     out_files = []
-    for year in all_years:
+    for year in sorted(all_years):
         if year not in common_years:
             msg = ("No corresponding {} file found for {} input file "
                    "(year: '{}'): {!r}. No hybridization performed for "
@@ -121,11 +122,10 @@ def _set_paths(config, out_dir, job_name):
                 warn(w)
                 break
         else:
-            solar_fpaths += solar_glob_paths[year]
-            wind_fpaths += wind_glob_paths[year]
-            out_fn = ("{}.h5".format(job_name)
-                      if year is None
-                      else "{}_{}.h5".format(job_name, year))
+            solar_fpaths.append(solar_glob_paths[year][0])
+            wind_fpaths.append(wind_glob_paths[year][0])
+            years.append(year)
+            out_fn = "{}_{}.h5".format(job_name, year)
             out_files += [os.path.join(out_dir, out_fn)]
 
     if not solar_fpaths or not wind_fpaths:

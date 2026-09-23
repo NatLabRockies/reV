@@ -313,3 +313,17 @@ class GeneticAlgorithm:
                      .format(self.optimized_function_value))
         logger.debug('The optimal design variables were: {}'
                      .format(self.optimized_design_variables))
+
+
+def make_nonzero(population, nbits):
+    """Make sure no population member has zero capacity"""
+    no_turbine_layouts = np.all(population == 0, axis=1)
+    num_no_turbine_layouts = np.sum(no_turbine_layouts)
+    if num_no_turbine_layouts == 0:
+        return
+
+    fix_layout_idx = np.where(no_turbine_layouts)[0]
+    new_turbine_idx = np.random.choice(np.arange(nbits),
+                                       size=(num_no_turbine_layouts,),
+                                       replace=True)
+    population[fix_layout_idx, new_turbine_idx] = 1

@@ -345,7 +345,6 @@ class HybridsData:
 
         """
         self._validate_time_index()
-        self._validate_num_profiles()
         self._validate_merge_col_exists()
         self._validate_unique_merge_col()
         self._validate_merge_col_overlaps()
@@ -367,38 +366,6 @@ class HybridsData:
             e = msg.format(len(self.hybrid_time_index))
             logger.error(e)
             raise FileInputError(e)
-
-    def _validate_num_profiles(self):
-        """Validate the number of input profiles.
-
-        Raises
-        ------
-        FileInputError
-            If # of rep_profiles > 1.
-        """
-        for fp in [self.solar_fpath, self.wind_fpath]:
-            with Resource(fp) as res:
-                profile_dset_names = [
-                    n for n in res.dsets if self.__profile_reg_check.match(n)
-                ]
-                if not profile_dset_names:
-                    msg = (
-                        "Did not find any data sets matching the regex: "
-                        "{!r} in {!r}. Please ensure that the profile data "
-                        "exists and that the data set is named correctly."
-                    )
-                    e = msg.format(PROFILE_DSET_REGEX, fp)
-                    logger.error(e)
-                    raise FileInputError(e)
-                if len(profile_dset_names) > 1:
-                    msg = ("Found more than one profile in {!r}: {}. "
-                           "This module is not intended for hybridization of "
-                           "multiple representative profiles. Please re-run "
-                           "on a single aggregated profile.")
-                    e = msg.format(fp, profile_dset_names)
-                    logger.error(e)
-                    raise FileInputError(e)
-                self.profile_dset_names += profile_dset_names
 
     def _validate_merge_col_exists(self):
         """Validate the existence of the merge column.

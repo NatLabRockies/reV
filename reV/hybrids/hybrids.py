@@ -1381,7 +1381,8 @@ class Hybridization:
                 pass
 
         run_attrs = {"solar_fpath": self.data.solar_fpath,
-                     "wind_fpath": self.data.wind_fpath}
+                     "wind_fpath": self.data.wind_fpath,
+                     "year": self.data.year}
         run_attrs = add_to_run_attrs(run_attrs=run_attrs,
                                      config_file=config_file,
                                      module=ModuleName.HYBRIDS)

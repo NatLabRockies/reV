@@ -44,6 +44,25 @@ def _fix_meta(fp):
         out.meta = meta.rename(columns=SupplyCurveField.map_from_legacy())
 
 
+def _make_bespoke_multiyear_file(source_fpath, out_fpath):
+    """Convert a rep-profiles fixture to a multiyear Bespoke layout."""
+    shutil.copy(source_fpath, out_fpath)
+    with h5py.File(out_fpath, mode="a") as out:
+        out.move("rep_profiles_0", "cf_profile-2012")
+        out.copy("cf_profile-2012", "cf_profile-2013")
+        out["cf_profile-2013"][:] = 0
+        out.copy("time_index", "time_index-2012")
+        out.copy("time_index", "time_index-2013")
+
+    with Outputs(out_fpath, mode="a") as out:
+        resolution = out.time_index[1] - out.time_index[0]
+        time_index_2013 = pd.date_range(
+            "2013-01-01", periods=len(out.time_index), freq=resolution,
+            tz=out.time_index.tz
+        )
+        out._set_time_index("time_index-2013", time_index_2013)
+
+
 @pytest.fixture(scope="module")
 def module_td():
     """Module-level temporaty dirsctory"""
@@ -826,6 +845,81 @@ def test_hybrids_cli_from_config(
             assert json.loads(f.h5.attrs["hybrids_config"]) == config
 
         clear_loggers()
+
+
+def test_hybrids_cli_bespoke_multiyear(
+    runner, clear_loggers, solar_fpath, wind_fpath
+):
+    """Test hybrids CLI with multiyear Bespoke profiles in single files."""
+    with tempfile.TemporaryDirectory() as td:
+        solar_bespoke = os.path.join(td, "solar_bespoke.h5")
+        wind_bespoke = os.path.join(td, "wind_bespoke.h5")
+        _make_bespoke_multiyear_file(solar_fpath, solar_bespoke)
+        _make_bespoke_multiyear_file(wind_fpath, wind_bespoke)
+
+        config = {
+            "solar_fpath": solar_bespoke,
+            "wind_fpath": wind_bespoke,
+            "log_directory": td,
+            "execution_control": {"option": "local"},
+        }
+        config_path = os.path.join(td, "config.json")
+        with open(config_path, "w") as f:
+            json.dump(config, f)
+
+        result = runner.invoke(
+            main, [str(ModuleName.HYBRIDS), "-c", config_path]
+        )
+
+        assert result.exit_code == 0, result.exception
+        job_name = "{}_{}".format(os.path.basename(td), ModuleName.HYBRIDS)
+        for year in (2012, 2013):
+            out_fpath = os.path.join(td, "{}_{}.h5".format(job_name, year))
+            with Resource(out_fpath) as out:
+                assert set(OUTPUT_PROFILE_NAMES).issubset(out.dsets)
+                assert out.time_index.year.unique().item() == year
+                profile = out["hybrid_profile"]
+                assert np.any(profile) if year == 2012 else not np.any(profile)
+
+        clear_loggers()
+
+
+def test_hybrids_cli_mixed_bespoke_and_rep_profiles(
+    runner, clear_loggers, solar_fpath, wind_fpath
+):
+    """Test year pairing between Bespoke and rep-profile inputs."""
+    with tempfile.TemporaryDirectory() as td:
+        wind_bespoke = os.path.join(td, "wind_bespoke.h5")
+        _make_bespoke_multiyear_file(wind_fpath, wind_bespoke)
+        config = {
+            "solar_fpath": solar_fpath,
+            "wind_fpath": wind_fpath,
+            "log_directory": td,
+            "execution_control": {"option": "local"},
+        }
+        config_path = os.path.join(td, "config.json")
+        with open(config_path, "w") as f:
+            json.dump(config, f)
+
+        result = runner.invoke(
+            main, [str(ModuleName.HYBRIDS), "-c", config_path]
+        )
+
+        assert result.exit_code == 0, result.exception
+        job_name = "{}_{}".format(os.path.basename(td), ModuleName.HYBRIDS)
+        out_fpath = os.path.join(td, "{}_{}.h5".format(job_name, YEAR))
+        assert os.path.exists(out_fpath)
+        assert not os.path.exists(
+            os.path.join(td, "{}_2013.h5".format(job_name))
+        )
+
+        clear_loggers()
+
+
+def test_rep_profile_year_validation(solar_fpath, wind_fpath):
+    """Test that rep-profile time indices must match the requested year."""
+    with pytest.raises(FileInputError, match="Expected year 2013"):
+        HybridsData(solar_fpath, wind_fpath, 2013).solar_profile_dset
 
 
 @pytest.mark.parametrize(

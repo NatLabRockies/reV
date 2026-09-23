@@ -217,6 +217,36 @@ class HybridsData:
         self.__solar_cols = self.solar_meta.columns.map(ColNameFormatter.fmt)
         self.__wind_cols = self.wind_meta.columns.map(ColNameFormatter.fmt)
 
+    @cached_property
+    def _solar_profile_search(self):
+        """Profile search for the solar representative profiles."""
+        return ProfileSearch(self.solar_fpath, self.year)
+
+    @cached_property
+    def _wind_profile_search(self):
+        """Profile search for the wind representative profiles."""
+        return ProfileSearch(self.wind_fpath, self.year)
+
+    @cached_property
+    def solar_ti_dset(self):
+        """str: Solar time index dataset name."""
+        return self._solar_profile_search.ti_dset
+
+    @cached_property
+    def wind_ti_dset(self):
+        """str: Wind time index dataset name."""
+        return self._wind_profile_search.ti_dset
+
+    @cached_property
+    def solar_profile_dset(self):
+        """str: Solar profile dataset name."""
+        return self._solar_profile_search.profile_dset
+
+    @cached_property
+    def wind_profile_dset(self):
+        """str: Wind profile dataset name."""
+        return self._wind_profile_search.profile_dset
+
     @property
     def solar_meta(self):
         """Summary for the solar representative profiles.

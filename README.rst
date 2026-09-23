@@ -104,11 +104,10 @@ then check out some of the `Examples <https://natlabrockies.github.io/reV/misc/e
 go straight to the `CLI Documentation <https://natlabrockies.github.io/reV/_cli/cli.html>`_!
 You can also check out the `guide on running GAPs models <https://natlabrockies.github.io/gaps/misc/examples.users.html>`_.
 
-.. inclusion-install
-
-
 Installing reV
 ==============
+
+.. inclusion-install
 
 NOTE: The installation instruction below assume that you have python installed
 on your machine and are using `conda <https://docs.conda.io/en/latest/index.html>`_
@@ -175,6 +174,8 @@ to assist with data preparation and analysis:
 
 reV command line tools
 ======================
+
+.. inclusion-command-line-tools
 
 - `reV <https://natlabrockies.github.io/reV/_cli/reV.html#reV>`_
 - `reV template-configs <https://natlabrockies.github.io/reV/_cli/reV%20template-configs.html>`_

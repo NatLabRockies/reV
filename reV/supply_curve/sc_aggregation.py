@@ -478,7 +478,15 @@ class SupplyCurveAggregation(BaseAggregation):
         h5_dsets : list, optional
             Optional list of additional datasets from the ``reV``
             generation/econ HDF5 output file to aggregate. If ``None``,
-            no extra datasets are aggregated.
+            no extra datasets are aggregated. Each requested 1D dataset
+            is mapped to the high-resolution exclusion grid using
+            `tm_dset` and output as ``mean_<dataset>``. The output value
+            is the included-area-weighted arithmetic mean over the
+            contributing exclusion pixels: ``sum(value * inclusion) /
+            sum(inclusion)``, where ``inclusion`` is the final inclusion
+            mask value from 0 to 1. Thus, generation sites mapped to
+            more included land area receive more weight, and partial
+            inclusions are weighted proportionally.
 
             .. WARNING:: This input is meant for passing through 1D
                datasets. If you specify a 2D or higher-dimensional

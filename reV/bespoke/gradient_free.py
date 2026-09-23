@@ -153,6 +153,7 @@ class GeneticAlgorithm:
             0, high=2, size=(self.population_size - 1, self.nbits)
         )
         self.parent_population = np.r_[all_bits_on, random_bits_on]
+        self.make_parent_nonzero()
         self.offspring_population = np.zeros_like(self.parent_population)
 
     def initialize_fitness(self):
@@ -222,19 +223,13 @@ class GeneticAlgorithm:
                     self.offspring_population[i][j] = \
                         (self.offspring_population[i][j] + 1) % 2
 
-    def make_nonzero(self):
+    def make_parent_nonzero(self):
+        """Make sure no parent has zero capacity"""
+        make_nonzero(self.parent_population, self.nbits)
+
+    def make_offspring_nonzero(self):
         """Make sure no offspring has zero capacity"""
-        # if any offspring scenarios have no turbines (all 0), randomly place 1
-        no_turbine_offsprings = np.all(self.offspring_population == 0, axis=1)
-        num_no_turbine_offsprings = np.sum(no_turbine_offsprings)
-        if num_no_turbine_offsprings > 0:
-            fix_offspring_idx = np.where(no_turbine_offsprings)[0]
-            new_turbine_idx = np.random.choice(
-                np.arange(self.nbits),
-                size=(num_no_turbine_offsprings,),
-                replace=True
-            )
-            self.offspring_population[fix_offspring_idx, new_turbine_idx] = 1
+        make_nonzero(self.offspring_population, self.nbits)
 
     def optimize_ga(self):
         """run the genetic algorithm"""
@@ -252,7 +247,7 @@ class GeneticAlgorithm:
                 run_time < self.max_time:
             self.crossover()
             self.mutate()
-            self.make_nonzero()
+            self.make_offspring_nonzero()
 
             # determine fitness of offspring
             for i in range(self.population_size):
@@ -313,3 +308,17 @@ class GeneticAlgorithm:
                      .format(self.optimized_function_value))
         logger.debug('The optimal design variables were: {}'
                      .format(self.optimized_design_variables))
+
+
+def make_nonzero(population, nbits):
+    """Make sure no population member has zero capacity"""
+    no_turbine_layouts = np.all(population == 0, axis=1)
+    num_no_turbine_layouts = np.sum(no_turbine_layouts)
+    if num_no_turbine_layouts == 0:
+        return
+
+    fix_layout_idx = np.where(no_turbine_layouts)[0]
+    new_turbine_idx = np.random.choice(np.arange(nbits),
+                                       size=(num_no_turbine_layouts,),
+                                       replace=True)
+    population[fix_layout_idx, new_turbine_idx] = 1

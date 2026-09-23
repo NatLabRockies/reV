@@ -1611,15 +1611,38 @@ class BespokeWindPlants(BaseAggregation):
             containing the layers. Note that each data layer must be
             uniquely defined (i.e.only appear once and in a single
             input file).
-        res_fpath : str
+        res_fpath : str | list
             Unix shell style path to wind resource HDF5 file in NLR WTK
             format. Can also be a path including a wildcard input like
             ``/h5_dir/prefix*suffix`` to run bespoke on multiple years
-            of resource data. Can also be an explicit list of resource
-            HDF5 file paths, which themselves can contain wildcards. If
-            multiple files are specified in this way, they must have the
-            same coordinates but can have different time indices (i.e.
-            different years). This input must be readable by
+            of resource data. Bespoke determines each analysis year from
+            the resource files' ``time_index`` datasets, so it does not
+            use an ``analysis_years`` input. Foe example, files that
+            share a directory and naming convention can be specified
+            using a single wildcard:
+
+            .. code-block:: json
+
+                    {
+                        "res_fpath": "/path/to/wtk/wtk_conus_*.h5"
+                    }
+
+            To combine separate datasets or directories, provide a list
+            of paths, which themselves can contain wildcards. For
+            example, a WTK and BC-HRRR run can use:
+
+            .. code-block:: json
+
+                    {
+                        "res_fpath": [
+                            "/datasets/WIND/conus/v1.0.0/wtk_conus_*.h5",
+                            "/datasets/WIND/HRRR/bchrrr_conus_*.h5"
+                        ]
+                    }
+
+            If multiple files are specified in this way, they must have
+            the same coordinates but can have different time indices
+            (i.e. different years). This input must be readable by
             :py:class:`rex.multi_year_resource.MultiYearWindResource`
             (i.e. the resource data conform to the
             `rex data format <https://tinyurl.com/3fy7v5kx>`_). This

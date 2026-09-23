@@ -92,9 +92,8 @@ class PySamVersionChecker:
                 break
 
         if corrections is not None:
-            for key in corrections:
+            for key, new_key in corrections.items():
                 if key in parameters:
-                    new_key = corrections[key]
                     parameters[new_key] = parameters.pop(key)
                     m = ('It appears old SAM v1 keys are being used. '
                          'Updated key "{}" to "{}".'.format(key, new_key))

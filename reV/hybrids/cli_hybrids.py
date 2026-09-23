@@ -16,6 +16,7 @@ from reV.utilities import ModuleName
 
 
 logger = logging.getLogger(__name__)
+BESPOKE_PROFILE_REGEX = re.compile(r"^cf_profile-(?P<year>[0-9]{4})$")
 
 
 def _preprocessor(config, out_dir, job_name):
@@ -47,15 +48,24 @@ def _glob_to_yearly_dict(fpath):
     """Map input files to the years available in each HDF5 file."""
     _raise_err_if_pipeline(fpath)
     paths = {}
-    for fp in glob.glob(fpath):
-        fname = os.path.basename(fp)
+    for fp in sorted(glob.glob(fpath)):
+        with Resource(fp) as res:
+            bespoke_years = {
+                int(match.group("year"))
+                for dset in res.dsets
+                if (match := BESPOKE_PROFILE_REGEX.match(dset)) is not None
+            }
+            if bespoke_years:
+                years = bespoke_years
+            else:
+                years = set(res.time_index.year)
+                if len(years) != 1:
+                    msg = ("Expected a single year in the time index for "
+                           "representative profile file {!r}, but found {}")
+                    raise RuntimeError(msg.format(fp, sorted(years)))
 
-        try:
-            year = parse_year(fname)
-        except RuntimeError:
-            year = None
-
-        paths.setdefault(year, []).append(fp)
+        for year in years:
+            paths.setdefault(year, []).append(fp)
 
     return paths
 

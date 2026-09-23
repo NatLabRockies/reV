@@ -2,21 +2,21 @@
 """
 reV Representative Profiles CLI utility functions.
 """
-import os
 import glob
 import logging
+import os
+import re
 from warnings import warn
 
-from rex.utilities.utilities import parse_year
-from gaps.cli import as_click_command, CLICommandFromClass
+from gaps.cli import CLICommandFromClass, as_click_command
+from rex.resource import Resource
 
-from reV.hybrids.hybrids import Hybridization
-from reV.utilities.exceptions import PipelineError
+from reV.hybrids.hybrids import Hybridization, BESPOKE_DSET_REGEX
 from reV.utilities import ModuleName
+from reV.utilities.exceptions import PipelineError
 
 
 logger = logging.getLogger(__name__)
-BESPOKE_PROFILE_REGEX = re.compile(r"^cf_profile-(?P<year>[0-9]{4})$")
 
 
 def _preprocessor(config, out_dir, job_name):
@@ -48,12 +48,13 @@ def _glob_to_yearly_dict(fpath):
     """Map input files to the years available in each HDF5 file."""
     _raise_err_if_pipeline(fpath)
     paths = {}
+    is_bespoke_dset = re.compile(BESPOKE_DSET_REGEX)
     for fp in sorted(glob.glob(fpath)):
         with Resource(fp) as res:
             bespoke_years = {
                 int(match.group("year"))
                 for dset in res.dsets
-                if (match := BESPOKE_PROFILE_REGEX.match(dset)) is not None
+                if (match := is_bespoke_dset.match(dset)) is not None
             }
             if bespoke_years:
                 years = bespoke_years

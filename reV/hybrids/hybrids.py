@@ -84,7 +84,7 @@ class ProfileSearch:
 
     def __init__(self, fp, year):
         """
-        
+
         Parameters
         ----------
         fp : str

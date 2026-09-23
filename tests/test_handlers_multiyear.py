@@ -144,7 +144,8 @@ def test_my_collection(source, dset, group):
 
 
 # pylint: disable=no-member
-def test_cli(runner, clear_loggers):
+@pytest.mark.parametrize("purge", [False, True])
+def test_cli(runner, clear_loggers, purge):
     """Test multi year collection cli with pass through of some datasets."""
 
     with tempfile.TemporaryDirectory() as temp:
@@ -156,6 +157,8 @@ def test_cli(runner, clear_loggers):
                                       "source_dir": temp,
                                       "source_prefix": "gen_ri_pv"}},
                   "log_level": "INFO"}
+        if purge:
+            config["purge"] = True
 
         dirname = os.path.basename(temp)
         fn = "{}_{}.h5".format(dirname, ModuleName.MULTI_YEAR)
@@ -219,6 +222,11 @@ def test_cli(runner, clear_loggers):
                         in json.loads(res.h5.attrs["multi-year_source_files"])}
             expected_files = {Path(p) for p in temp_h5_files}
             assert h5_paths == expected_files
+
+        if purge:
+            assert not any(Path(fp).exists() for fp in temp_h5_files)
+        else:
+            assert all(Path(fp).exists() for fp in temp_h5_files)
 
         clear_loggers()
 

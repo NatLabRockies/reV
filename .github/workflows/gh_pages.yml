@@ -32,7 +32,7 @@ jobs:
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install .[doc]
+          python -m pip install .[bespoke,doc]
       - name: build documentation
         env:
             SPHINXOPTS: "--fail-on-warning --keep-going"

@@ -79,6 +79,116 @@ class ColNameFormatter:
         return "".join(c for c in n if c in cls.ALLOWED).lower()
 
 
+class ProfileSearch:
+    """Helper class to find profile dataset names from a resource file."""
+
+    def __init__(self, fp, year):
+        """
+        
+        Parameters
+        ----------
+        fp : str
+            File path to the resource file.
+        year : int
+            Year for which to find the profile datasets.
+        """
+        self.fp = fp
+        self.year = year
+        self._res = None
+        self.__rep_profile_reg_check = re.compile(REP_PROFILE_DSET_REGEX)
+        self.__bespoke_reg_check = re.compile(BESPOKE_DSET_REGEX)
+        self._ti_dset = None
+        self._profile_dset = None
+
+    @property
+    def profile_dset(self):
+        """str: Profile dataset name."""
+        if self._profile_dset is None:
+            self._find()
+        return self._profile_dset
+
+    @property
+    def ti_dset(self):
+        """str: Time index dataset name."""
+        if self._profile_dset is None:
+            self._find()
+        return self._ti_dset
+
+    def _find(self):
+        """Resolve and validate profile/time-index datasets for ``year``."""
+        with Resource(self.fp) as self._res:
+            self._set_profile_ti_names()
+
+    def _set_profile_ti_names(self):
+        """Set the profile and time-index dataset names."""
+        rep_profiles, bespoke_profiles = self._possible_profiles_from_res()
+        self._select_dataset_names(rep_profiles, bespoke_profiles)
+        self._validate_ti_data()
+        self._validate_profile_data()
+
+    def _possible_profiles_from_res(self):
+        """Return possible rep and bespoke profile dsets from the resource."""
+        rep_profiles = [
+            dset for dset in self._res.dsets
+            if self.__rep_profile_reg_check.fullmatch(dset)
+        ]
+        bespoke_profiles = [
+            dset for dset in self._res.dsets
+            if self.__bespoke_reg_check.fullmatch(dset)
+        ]
+
+        if rep_profiles and bespoke_profiles:
+            msg = ("Found both representative-profile and Bespoke "
+                   "profile datasets in {!r}; input layout is "
+                   "ambiguous.".format(self.fp))
+            raise FileInputError(msg)
+
+        return rep_profiles, bespoke_profiles
+
+    def _select_dataset_names(self, rep_profiles, bespoke_profiles):
+        """Select the profile and time-index dset names."""
+        if bespoke_profiles:
+            self._profile_dset = "cf_profile-{}".format(self.year)
+            self._ti_dset = "time_index-{}".format(self.year)
+            missing = [dset
+                       for dset in (self._profile_dset, self._ti_dset)
+                       if dset not in self._res.dsets]
+            if missing:
+                msg = ("Could not find datasets {} for year {} in Bespoke "
+                       "input {!r}.".format(missing, self.year, self.fp))
+                raise FileInputError(msg)
+            return
+
+        if len(rep_profiles) != 1:
+            msg = ("Expected one dataset matching {!r} in {!r}, but found {}."
+                   .format(REP_PROFILE_DSET_REGEX, self.fp, rep_profiles))
+            raise FileInputError(msg)
+
+        self._profile_dset = rep_profiles[0]
+        self._ti_dset = "time_index"
+
+    def _validate_ti_data(self):
+        """Validate that the time-index dataset contains the expected year."""
+        time_index = self._res[self._ti_dset]
+        time_index_years = set(time_index.year)
+        if time_index_years != {self.year}:
+            msg = ("Expected year {} in {!r} dataset {!r}, but found {}."
+                   .format(self.year, self.fp, self._ti_dset,
+                           sorted(time_index_years)))
+            raise FileInputError(msg)
+
+    def _validate_profile_data(self):
+        """Validate that the profile dataset length matches the time-index."""
+        profile_length = self._res.shapes[self._profile_dset][0]
+        time_index = self._res[self._ti_dset]
+        if profile_length != len(time_index):
+            msg = ("Profile dataset {!r} has length {}, but time-index "
+                   "dataset {!r} has length {} in {!r}."
+                   .format(self._profile_dset, profile_length, self._ti_dset,
+                           len(time_index), self.fp))
+            raise FileInputError(msg)
+
+
 class HybridsData:
     """Hybrids input data container."""
 

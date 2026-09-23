@@ -1,0 +1,76 @@
+reV.utilities.DocEnum
+=====================
+
+.. currentmodule:: reV.utilities
+
+.. autoclass:: DocEnum
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DocEnum.encode
+      ~DocEnum.replace
+      ~DocEnum.split
+      ~DocEnum.rsplit
+      ~DocEnum.join
+      ~DocEnum.capitalize
+      ~DocEnum.casefold
+      ~DocEnum.title
+      ~DocEnum.center
+      ~DocEnum.count
+      ~DocEnum.expandtabs
+      ~DocEnum.find
+      ~DocEnum.partition
+      ~DocEnum.index
+      ~DocEnum.ljust
+      ~DocEnum.lower
+      ~DocEnum.lstrip
+      ~DocEnum.rfind
+      ~DocEnum.rindex
+      ~DocEnum.rjust
+      ~DocEnum.rstrip
+      ~DocEnum.rpartition
+      ~DocEnum.splitlines
+      ~DocEnum.strip
+      ~DocEnum.swapcase
+      ~DocEnum.translate
+      ~DocEnum.upper
+      ~DocEnum.startswith
+      ~DocEnum.endswith
+      ~DocEnum.removeprefix
+      ~DocEnum.removesuffix
+      ~DocEnum.isascii
+      ~DocEnum.islower
+      ~DocEnum.isupper
+      ~DocEnum.istitle
+      ~DocEnum.isspace
+      ~DocEnum.isdecimal
+      ~DocEnum.isdigit
+      ~DocEnum.isnumeric
+      ~DocEnum.isalpha
+      ~DocEnum.isalnum
+      ~DocEnum.isidentifier
+      ~DocEnum.isprintable
+      ~DocEnum.zfill
+      ~DocEnum.format
+      ~DocEnum.format_map
+      ~DocEnum.maketrans
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DocEnum.description
+   
+   

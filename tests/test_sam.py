@@ -18,6 +18,7 @@ from reV.config.project_points import ProjectPoints
 from reV.SAM.defaults import (
     DefaultPvWattsv5,
     DefaultPvWattsv8,
+    DefaultSingleOwner,
     DefaultWindPower,
 )
 from reV.SAM.generation import PvWattsv5, PvWattsv7, PvWattsv8
@@ -140,7 +141,7 @@ def test_pysam_version_checker_wind():
     """
     wind_config = {'wind_farm_losses_percent': 10, 'system_capacity': 1}
 
-    pysam_version = importlib.metadata.version("nrel-pysam")
+    pysam_version = importlib.metadata.version("nlr-pysam")
     pysam_version = version.parse(pysam_version)
 
     if pysam_version > version.parse('2.1.0'):
@@ -181,6 +182,13 @@ def test_default_pvwattsv8():
     """Test default pvwattsv8 execution and compare baseline annual energy"""
     default = DefaultPvWattsv8.default()
     assert round(default.Outputs.annual_energy, -1) == 173403430
+
+
+def test_default_single_owner():
+    """Test default SingleOwner execution with an annual generation profile."""
+    default = DefaultSingleOwner.default()
+    assert default.Lifetime.system_use_lifetime_output == 0
+    assert len(default.SystemOutput.gen) == 8760
 
 
 def test_default_windpower():

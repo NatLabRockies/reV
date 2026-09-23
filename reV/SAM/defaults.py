@@ -226,6 +226,7 @@ class DefaultSingleOwner:
         """Get the default PySAM object"""
         pv = DefaultPvWattsv5.default()
         obj = PySamSingleOwner.default('PVWattsSingleOwner')
+        obj.Lifetime.system_use_lifetime_output = 0
         obj.SystemOutput.gen = pv.Outputs.ac
         obj.execute()
 

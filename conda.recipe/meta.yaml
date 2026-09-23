@@ -16,7 +16,7 @@ requirements:
     - pip
     - setuptools
     - NLR-rex
-    - NREL-PySAM
+    - NLR-PySAM
     - NREL-NRWAL
     - packaging
     - plotting
@@ -26,7 +26,7 @@ requirements:
     - python
     - pip
     - NLR-rex
-    - NREL-PySAM
+    - NLR-PySAM
     - NREL-NRWAL
     - packaging
     - plotting

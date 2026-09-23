@@ -12,7 +12,7 @@ from reV.utilities.cli_functions import compile_descriptions
 from reV.cli import main
 
 
-class _EnumForTests(str, DocEnum):
+class _EnumForTests(DocEnum):
     """Test Enum with a description"""
 
     VALUE_ONE = 'value_one'
@@ -37,7 +37,9 @@ def test_doc_enum():
 
     assert _EnumForTests.VALUE_ONE == 'value_one'
     assert _EnumForTests.VALUE_TWO == 'value_two'
+    # pylint: disable=no-member
     assert _EnumForTests.VALUE_ONE.description == "First Value to test"
+    # pylint: disable=no-member
     assert _EnumForTests.VALUE_TWO.description is None
 
 

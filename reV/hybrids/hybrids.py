@@ -1021,6 +1021,7 @@ class Hybridization:
         self,
         solar_fpath,
         wind_fpath,
+        year,
         allow_solar_only=False,
         allow_wind_only=False,
         fillna=None,
@@ -1045,6 +1046,10 @@ class Hybridization:
         wind_fpath : str
             Filepath to rep profile output file to extract wind profiles
             and summaries from.
+        year : int
+            Analysis year. Representative-profile inputs are validated
+            against this year, while Bespoke inputs use it to select
+            ``cf_profile-year`` and ``time_index-year`` datasets.
         allow_solar_only : bool, optional
             Option to allow SC points with only solar capacity
             (no wind). By default, ``False``.
@@ -1126,8 +1131,9 @@ class Hybridization:
                 ratio
             )
         )
+        logger.info('Running hybridization for year: "{}"'.format(year))
 
-        self.data = HybridsData(solar_fpath, wind_fpath)
+        self.data = HybridsData(solar_fpath, wind_fpath, year)
         self.meta_hybridizer = MetaHybridizer(
             data=self.data,
             allow_solar_only=allow_solar_only,

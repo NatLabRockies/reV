@@ -2,7 +2,7 @@
 """reV utilities."""
 import ast
 import inspect
-from enum import Enum, EnumMeta
+from enum import Enum, EnumMeta, StrEnum
 
 import PySAM
 from rex.utilities.loggers import log_versions as rex_log_versions
@@ -35,7 +35,7 @@ class _DocstringEnumMeta(EnumMeta):  # noqa
                     elif (isinstance(body_item, ast.Expr)
                           and isinstance(body_item.value, ast.Constant)):
                         if prev:
-                            doc = body_item.value.s
+                            doc = body_item.value.value
                             member = cls.__members__.get(name)
                             if member:
                                 member._description = (doc.strip()
@@ -44,7 +44,7 @@ class _DocstringEnumMeta(EnumMeta):  # noqa
         return cls
 
 
-class DocEnum(Enum, metaclass=_DocstringEnumMeta):
+class DocEnum(StrEnum, metaclass=_DocstringEnumMeta):
     """Base Enum class with docstring support"""
 
     @property
@@ -53,7 +53,7 @@ class DocEnum(Enum, metaclass=_DocstringEnumMeta):
         return getattr(self, '_description', None)
 
 
-class FieldEnum(str, DocEnum):
+class FieldEnum(DocEnum):
     """Base Field enum with some mapping methods."""
 
     @classmethod

@@ -71,6 +71,8 @@
   "dcoptimizer_loss": 0,
   "en_batt": 0,
   "en_snow_model": 0,
+  "use_snow_weather_file": 1,
+  "snow_array": [],
   "enable_interconnection_limit": 0,
   "enable_mismatch_vmax_calc": 0,
   "grid_curtailment": [

@@ -192,8 +192,9 @@ class ProfileSearch:
 class HybridsData:
     """Hybrids input data container."""
 
-    def __init__(self, solar_fpath, wind_fpath):
+    def __init__(self, solar_fpath, wind_fpath, year):
         """
+
         Parameters
         ----------
         solar_fpath : str

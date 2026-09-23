@@ -1307,13 +1307,13 @@ class Hybridization:
         """Compute the resource components of the hybridized profiles."""
 
         for params in self.__rep_profile_hybridization_params:
-            col, (hybrid_idxs, solar_idxs), fpath, p_name, dset_name = params
+            col, (hybrid_idxs, solar_idxs), *names = params
+            fpath, p_name, dset_name, time_index_dset = names
             capacity = self.hybrid_meta.loc[hybrid_idxs, col].to_numpy()
 
             with Resource(fpath) as res:
-                data = res[
-                    dset_name, res.time_index.isin(self.hybrid_time_index)
-                ]
+                time_index = res[time_index_dset]
+                data = res[dset_name, time_index.isin(self.hybrid_time_index)]
                 self._profiles[p_name][:, hybrid_idxs] = (
                     data[:, solar_idxs] * capacity
                 )
@@ -1324,18 +1324,14 @@ class Hybridization:
 
         cap_col_names = [f"hybrid_solar_{SupplyCurveField.CAPACITY_AC_MW}",
                          f"hybrid_wind_{SupplyCurveField.CAPACITY_AC_MW}"]
-        idx_maps = [
-            self.meta_hybridizer.solar_profile_indices_map,
-            self.meta_hybridizer.wind_profile_indices_map,
-        ]
+        idx_maps = [self.meta_hybridizer.solar_profile_indices_map,
+                    self.meta_hybridizer.wind_profile_indices_map]
         fpaths = [self.data.solar_fpath, self.data.wind_fpath]
-        zipped = zip(
-            cap_col_names,
-            idx_maps,
-            fpaths,
-            OUTPUT_PROFILE_NAMES[1:],
-            self.data.profile_dset_names,
-        )
+        ti_dsets = [self.data.solar_ti_dset, self.data.wind_ti_dset]
+        profile_dsets = [self.data.solar_profile_dset,
+                         self.data.wind_profile_dset]
+        zipped = zip(cap_col_names, idx_maps, fpaths, OUTPUT_PROFILE_NAMES[1:],
+                     profile_dsets, ti_dsets)
         return zipped
 
     def _compute_hybridized_profiles_from_components(self):

@@ -6,6 +6,7 @@
 
 import logging
 import re
+from functools import cached_property
 from collections import namedtuple
 from string import ascii_letters
 from warnings import warn

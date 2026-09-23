@@ -57,7 +57,7 @@ dev = [
 ]
 doc = [
   "ghp-import>=2.1.0,<3",
-  "myst-parser>=5.0.0",
+  "myst-parser>=5.0.0,<6",
   "sphinx>=9.0.4,<10",
   "sphinx-click>=6.0.0,<7",
   "sphinx-copybutton>=0.5.2,<0.6",

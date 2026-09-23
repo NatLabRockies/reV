@@ -280,6 +280,31 @@ class Gen(BaseGen):
               even if you list out the years explicitly (i.e.
               ``["wtk_*_2012.h5", "wtk_*_2013.h5", ...]``)
 
+            A single generation configuration can use resource files
+            from different datasets. Set ``analysis_years`` and
+            ``resource_file`` to lists of the same length; reV pairs
+            each year with the resource file at the same position. For
+            example, a WIND Toolkit (WTK) and bias-corrected
+            High-Resolution Rapid Refresh (BC-HRRR) run can use:
+
+            .. code-block:: json
+
+                    {
+                        "analysis_years": [2012, 2013, 2015, 2016],
+                        "resource_file": [
+                            "/datasets/WIND/conus/v1.0.0/wtk_conus_2012.h5",
+                            "/datasets/WIND/conus/v1.0.0/wtk_conus_2013.h5",
+                            "/datasets/WIND/HRRR/bchrrr_conus_2015.h5",
+                            "/datasets/WIND/HRRR/bchrrr_conus_2016.h5"
+                        ]
+                    }
+
+            Each list entry can contain a wildcard when a resource for
+            one year is split across multiple HDF5 files, such as
+            ``"/path/to/wtk/wtk_*_2012.h5"``. Each wildcard must match
+            complementary files for only its paired year; it cannot combine
+            multiple analysis years into one list entry.
+
             .. Important:: If you are using custom resource data (i.e.
               not NSRDB/WTK/Sup3rCC, etc.), ensure the following:
 

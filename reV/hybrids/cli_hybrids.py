@@ -136,6 +136,7 @@ def _set_paths(config, out_dir, job_name):
 
     config["solar_fpath"] = solar_fpaths
     config["wind_fpath"] = wind_fpaths
+    config["year"] = years
     config["fout"] = out_files
 
     return config

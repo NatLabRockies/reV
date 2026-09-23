@@ -44,7 +44,7 @@ def _preprocessor(config, out_dir, job_name):
 
 
 def _glob_to_yearly_dict(fpath):
-    """Glob the filepaths into a dictionary based on years. """
+    """Map input files to the years available in each HDF5 file."""
     _raise_err_if_pipeline(fpath)
     paths = {}
     for fp in glob.glob(fpath):

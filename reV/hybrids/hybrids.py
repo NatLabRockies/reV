@@ -286,7 +286,7 @@ class HybridsData:
         """
         if self._solar_time_index is None:
             with Resource(self.solar_fpath) as res:
-                self._solar_time_index = res.time_index
+                self._solar_time_index = res[self.solar_ti_dset]
         return self._solar_time_index
 
     @property
@@ -300,7 +300,7 @@ class HybridsData:
         """
         if self._wind_time_index is None:
             with Resource(self.wind_fpath) as res:
-                self._wind_time_index = res.time_index
+                self._wind_time_index = res[self.wind_ti_dset]
         return self._wind_time_index
 
     @property

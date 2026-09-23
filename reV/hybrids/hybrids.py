@@ -202,10 +202,14 @@ class HybridsData:
         wind_fpath : str
             Filepath to rep profile output file to extract wind profiles and
             summaries from.
+        year : int
+            Analysis year. Representative-profile inputs are validated against
+            this year, while Bespoke inputs use it to select the annual profile
+            and time-index datasets.
         """
         self.solar_fpath = solar_fpath
         self.wind_fpath = wind_fpath
-        self.profile_dset_names = []
+        self.year = int(year)
         self.merge_col_overlap_values = set()
         self._solar_meta = None
         self._wind_meta = None

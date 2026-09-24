@@ -1073,6 +1073,23 @@ class ExclusionMask:
 
         return ds_slice, sub_slice
 
+    def _combine_layers(self, mask, layers, ds_slice, check_layers):
+        """Combine ordinary layers followed by force-include layers."""
+        force_include = []
+        for layer in layers:
+            if layer.force_include:
+                force_include.append(layer)
+            else:
+                mask = self._add_layer_to_mask(mask, layer, ds_slice,
+                                               check_layers,
+                                               combine_func=np.minimum)
+
+        for layer in force_include:
+            mask = self._add_layer_to_mask(mask, layer, ds_slice, check_layers,
+                                           combine_func=np.maximum)
+
+        return mask
+
     @classmethod
     def run(cls, excl_h5, layers=None, min_area=None,
             kernel='queen', hsds=False):

@@ -1017,24 +1017,14 @@ class ExclusionMask:
         ds_slice, sub_slice = self._parse_ds_slice(ds_slice)
 
         if self.layers:
-            force_include = []
-            for layer in self.layers:
-                if layer.force_include:
-                    force_include.append(layer)
-                else:
-                    mask = self._add_layer_to_mask(mask, layer, ds_slice,
-                                                   check_layers,
-                                                   combine_func=np.minimum)
-            for layer in force_include:
-                mask = self._add_layer_to_mask(mask, layer, ds_slice,
-                                               check_layers,
-                                               combine_func=np.maximum)
-
             if self._min_area is not None:
-                mask = self._area_filter(mask, self._min_area,
-                                         self._excl_h5.pixel_area,
-                                         kernel=self._kernel)
-                mask = mask[sub_slice]
+                mask = self._combine_layers_with_area_filter(mask, ds_slice,
+                                                             sub_slice,
+                                                             check_layers)
+            else:
+                mask = self._combine_layers(
+                    mask, self.layers, ds_slice, check_layers
+                )
         else:
             if self._min_area is not None:
                 ds_slice = sub_slice

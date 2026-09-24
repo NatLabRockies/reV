@@ -33,6 +33,7 @@ class LayerMask:
                  weight=1.0,
                  exclude_nodata=False,
                  nodata_value=None,
+                 exclude_from_area_filter=False,
                  extent=None,
                  **kwargs):
         """
@@ -105,6 +106,12 @@ class LayerMask:
             inferred when LayerMask is added to
             :class:`reV.supply_curve.exclusions.ExclusionMask`.
             By default, ``None``.
+        exclude_from_area_filter : bool, optional
+            Exclude this layer from the minimum contiguous area filter.
+            The layer is combined with the inclusion mask after area
+            filtering is complete. This option has no effect when
+            ``min_area`` is ``None`` or for force-inclusion layers,
+            which are always combined last. By default, ``False``.
         extent : dict, optional
             Optional dictionary with values that can be used to
             initialize this class (i.e. `layer`, `exclude_values`,
@@ -161,6 +168,7 @@ class LayerMask:
 
         self._as_weights = use_as_weights
         self._exclude_nodata = exclude_nodata
+        self.exclude_from_area_filter = exclude_from_area_filter
         self.nodata_value = nodata_value
 
         if weight > 1 or weight < 0:

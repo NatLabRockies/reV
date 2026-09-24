@@ -573,7 +573,7 @@ def test_invalid_limits_column_name(solar_fpath, wind_fpath):
     test_limits = {"un_prefixed_col": 0,
                    f"wind_{SupplyCurveField.CAPACITY_AC_MW}": 10}
     with pytest.raises(InputError) as excinfo:
-        Hybridization(solar_fpath, wind_fpath, YEAR, limits=test_limits)
+        __ = Hybridization(solar_fpath, wind_fpath, YEAR, limits=test_limits)
 
     assert "Input limits column" in str(excinfo.value)
     assert "does not start with a valid prefix" in str(excinfo.value)
@@ -612,7 +612,7 @@ def test_invalid_fillna_column_name(solar_fpath, wind_fpath):
     test_fillna = {"un_prefixed_col": 0,
                    f"wind_{SupplyCurveField.CAPACITY_AC_MW}": 10}
     with pytest.raises(InputError) as excinfo:
-        Hybridization(solar_fpath, wind_fpath, YEAR, fillna=test_fillna)
+        __ = Hybridization(solar_fpath, wind_fpath, YEAR, fillna=test_fillna)
 
     assert "Input fillna column" in str(excinfo.value)
     assert "does not start with a valid prefix" in str(excinfo.value)
@@ -712,7 +712,7 @@ def test_invalid_ratio_bounds_length_input(solar_fpath, wind_fpath):
         f"/wind_{SupplyCurveField.CAPACITY_AC_MW}"
     )
     with pytest.raises(InputError) as excinfo:
-        Hybridization(
+        __ = Hybridization(
             solar_fpath, wind_fpath, YEAR, ratio=ratio,
             ratio_bounds=(1, 2, 3)
         )
@@ -729,7 +729,7 @@ def test_ratio_column_missing(solar_fpath, wind_fpath):
 
     ratio = f"solar_col_dne/wind_{SupplyCurveField.CAPACITY_AC_MW}"
     with pytest.raises(FileInputError) as excinfo:
-        Hybridization(
+        __ = Hybridization(
             solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
@@ -742,7 +742,7 @@ def test_ratio_not_string(ratio, solar_fpath, wind_fpath):
     """Test ratio input is not string."""
 
     with pytest.raises(InputError) as excinfo:
-        Hybridization(
+        __ = Hybridization(
             solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
@@ -757,7 +757,7 @@ def test_invalid_ratio_format(ratio, solar_fpath, wind_fpath):
     """Test ratio input is not string."""
 
     with pytest.raises(InputError) as excinfo:
-        Hybridization(
+        __ = Hybridization(
             solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
@@ -774,7 +774,7 @@ def test_invalid_ratio_column_name(solar_fpath, wind_fpath):
 
     ratio = f"un_prefixed_col/wind_{SupplyCurveField.CAPACITY_AC_MW}"
     with pytest.raises(InputError) as excinfo:
-        Hybridization(
+        __ = Hybridization(
             solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
@@ -792,7 +792,7 @@ def test_no_overlap_in_merge_column_values(solar_fpath, wind_fpath):
         make_test_file(wind_fpath, fout_wind, p_slice=slice(90, 100))
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, fout_wind, YEAR)
+            __ = Hybridization(fout_solar, fout_wind, YEAR)
 
         assert "No overlap detected in the values" in str(excinfo.value)
 
@@ -805,7 +805,7 @@ def test_duplicate_merge_column_values(solar_fpath, wind_fpath):
         make_test_file(solar_fpath, fout_solar, duplicate_rows=True)
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, wind_fpath, YEAR)
+            __ = Hybridization(fout_solar, wind_fpath, YEAR)
 
         assert "Duplicate" in str(excinfo.value)
 
@@ -818,7 +818,7 @@ def test_merge_columns_missing(solar_fpath, wind_fpath):
         make_test_file(solar_fpath, fout_solar, drop_cols=[MERGE_COLUMN])
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, wind_fpath, YEAR)
+            __ = Hybridization(fout_solar, wind_fpath, YEAR)
 
         msg = "Cannot hybridize: merge column"
         assert msg in str(excinfo.value)
@@ -829,7 +829,7 @@ def test_invalid_num_profiles(solar_fpath_mult, wind_fpath):
     """Test input files with an invalid number of profiles (>1)."""
 
     with pytest.raises(FileInputError) as excinfo:
-        Hybridization(solar_fpath_mult, wind_fpath, YEAR)
+        __ = Hybridization(solar_fpath_mult, wind_fpath, YEAR)
 
         msg = (
             "This module is not intended for hybridization of "
@@ -849,7 +849,7 @@ def test_invalid_time_index_overlap(solar_fpath, wind_fpath):
         make_test_file(wind_fpath, fout_wind, t_slice=slice(1000, 3000))
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, fout_wind, YEAR)
+            __ = Hybridization(fout_solar, fout_wind, YEAR)
 
         msg = (
             "Please ensure that the input profiles have a "
@@ -1089,7 +1089,7 @@ def test_hybrids_cli_mixed_bespoke_and_rep_profiles(
 def test_rep_profile_year_validation(solar_fpath, wind_fpath):
     """Test that rep-profile time indices must match the requested year."""
     with pytest.raises(FileInputError, match="Expected year 2013"):
-        HybridsData(solar_fpath, wind_fpath, 2013).solar_profile_dset
+        __ = HybridsData(solar_fpath, wind_fpath, 2013).solar_profile_dset
 
 
 @pytest.mark.parametrize(

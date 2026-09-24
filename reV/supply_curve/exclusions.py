@@ -1073,6 +1073,33 @@ class ExclusionMask:
 
         return ds_slice, sub_slice
 
+    def _combine_layers_with_area_filter(self, mask, ds_slice, sub_slice,
+                                         check_layers):
+        """Combine layers with an area filter applied"""
+        layers = list(self.layers)
+        pre_area_filter_layers = [
+            layer for layer in layers
+            if (not layer.force_include and not layer.exclude_from_area_filter)
+        ]
+        post_area_filter_layers = [
+            layer for layer in layers
+            if (layer.force_include or layer.exclude_from_area_filter)
+        ]
+
+        mask = self._combine_layers(
+            mask, pre_area_filter_layers, ds_slice, check_layers
+        )
+        if mask is None:
+            mask = self._generate_ones_mask(ds_slice)
+
+        mask = self._area_filter(mask, self._min_area,
+                                 self._excl_h5.pixel_area,
+                                 kernel=self._kernel)
+        mask = self._combine_layers(
+            mask, post_area_filter_layers, ds_slice, check_layers
+        )
+        return mask[sub_slice]
+
     def _combine_layers(self, mask, layers, ds_slice, check_layers):
         """Combine ordinary layers followed by force-include layers."""
         force_include = []

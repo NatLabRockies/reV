@@ -6,6 +6,7 @@
 
 import logging
 import re
+from functools import cached_property
 from collections import namedtuple
 from string import ascii_letters
 from warnings import warn
@@ -29,7 +30,8 @@ from reV.utilities.cli_functions import add_to_run_attrs
 logger = logging.getLogger(__name__)
 
 MERGE_COLUMN = SupplyCurveField.SC_POINT_GID
-PROFILE_DSET_REGEX = 'rep_profiles_[0-9]+$'
+REP_PROFILE_DSET_REGEX = '^rep_profiles_[0-9]+$'
+BESPOKE_DSET_REGEX = r'^cf_profile-(?P<year>[0-9]{4})$'
 SOLAR_PREFIX = 'solar_'
 WIND_PREFIX = 'wind_'
 NON_DUPLICATE_COLS = {
@@ -77,11 +79,122 @@ class ColNameFormatter:
         return "".join(c for c in n if c in cls.ALLOWED).lower()
 
 
+class ProfileSearch:
+    """Helper class to find profile dataset names from a resource file."""
+
+    def __init__(self, fp, year):
+        """
+
+        Parameters
+        ----------
+        fp : str
+            File path to the resource file.
+        year : int
+            Year for which to find the profile datasets.
+        """
+        self.fp = fp
+        self.year = year
+        self._res = None
+        self.__rep_profile_reg_check = re.compile(REP_PROFILE_DSET_REGEX)
+        self.__bespoke_reg_check = re.compile(BESPOKE_DSET_REGEX)
+        self._ti_dset = None
+        self._profile_dset = None
+
+    @property
+    def profile_dset(self):
+        """str: Profile dataset name."""
+        if self._profile_dset is None:
+            self._find()
+        return self._profile_dset
+
+    @property
+    def ti_dset(self):
+        """str: Time index dataset name."""
+        if self._profile_dset is None:
+            self._find()
+        return self._ti_dset
+
+    def _find(self):
+        """Resolve and validate profile/time-index datasets for ``year``."""
+        with Resource(self.fp) as self._res:
+            self._set_profile_ti_names()
+
+    def _set_profile_ti_names(self):
+        """Set the profile and time-index dataset names."""
+        rep_profiles, bespoke_profiles = self._possible_profiles_from_res()
+        self._select_dataset_names(rep_profiles, bespoke_profiles)
+        self._validate_ti_data()
+        self._validate_profile_data()
+
+    def _possible_profiles_from_res(self):
+        """Return possible rep and bespoke profile dsets from the resource."""
+        rep_profiles = [
+            dset for dset in self._res.dsets
+            if self.__rep_profile_reg_check.fullmatch(dset)
+        ]
+        bespoke_profiles = [
+            dset for dset in self._res.dsets
+            if self.__bespoke_reg_check.fullmatch(dset)
+        ]
+
+        if rep_profiles and bespoke_profiles:
+            msg = ("Found both representative-profile and Bespoke "
+                   "profile datasets in {!r}; input layout is "
+                   "ambiguous.".format(self.fp))
+            raise FileInputError(msg)
+
+        return rep_profiles, bespoke_profiles
+
+    def _select_dataset_names(self, rep_profiles, bespoke_profiles):
+        """Select the profile and time-index dset names."""
+        if bespoke_profiles:
+            self._profile_dset = "cf_profile-{}".format(self.year)
+            self._ti_dset = "time_index-{}".format(self.year)
+            missing = [dset
+                       for dset in (self._profile_dset, self._ti_dset)
+                       if dset not in self._res.dsets]
+            if missing:
+                msg = ("Could not find datasets {} for year {} in Bespoke "
+                       "input {!r}.".format(missing, self.year, self.fp))
+                raise FileInputError(msg)
+            return
+
+        if len(rep_profiles) != 1:
+            msg = ("Expected one dataset matching {!r} in {!r}, but found {}."
+                   .format(REP_PROFILE_DSET_REGEX, self.fp, rep_profiles))
+            raise FileInputError(msg)
+
+        self._profile_dset = rep_profiles[0]
+        self._ti_dset = "time_index"
+
+    def _validate_ti_data(self):
+        """Validate that the time-index dataset contains the expected year."""
+        time_index = self._res[self._ti_dset]
+        time_index_years = set(time_index.year)
+        if time_index_years != {self.year}:
+            msg = ("Expected year {} in {!r} dataset {!r}, but found {}."
+                   .format(self.year, self.fp, self._ti_dset,
+                           sorted(time_index_years)))
+            raise FileInputError(msg)
+
+    def _validate_profile_data(self):
+        """Validate that the profile dataset length matches the time-index."""
+        profile_length = self._res.shapes[self._profile_dset][0]
+        time_index = self._res[self._ti_dset]
+        if profile_length != len(time_index):
+            msg = ("Profile dataset {!r} has length {}, but time-index "
+                   "dataset {!r} has length {} in {!r}."
+                   .format(self._profile_dset, profile_length, self._ti_dset,
+                           len(time_index), self.fp))
+            raise FileInputError(msg)
+
+
 class HybridsData:
     """Hybrids input data container."""
 
-    def __init__(self, solar_fpath, wind_fpath):
+    def __init__(self, solar_fpath, wind_fpath, year):
         """
+
         Parameters
         ----------
         solar_fpath : str
@@ -90,19 +203,52 @@ class HybridsData:
         wind_fpath : str
             Filepath to rep profile output file to extract wind profiles and
             summaries from.
+        year : int
+            Analysis year. Representative-profile inputs are validated against
+            this year, while Bespoke inputs use it to select the annual profile
+            and time-index datasets.
         """
         self.solar_fpath = solar_fpath
         self.wind_fpath = wind_fpath
-        self.profile_dset_names = []
+        self.year = int(year)
         self.merge_col_overlap_values = set()
         self._solar_meta = None
         self._wind_meta = None
         self._solar_time_index = None
         self._wind_time_index = None
         self._hybrid_time_index = None
-        self.__profile_reg_check = re.compile(PROFILE_DSET_REGEX)
         self.__solar_cols = self.solar_meta.columns.map(ColNameFormatter.fmt)
         self.__wind_cols = self.wind_meta.columns.map(ColNameFormatter.fmt)
+
+    @cached_property
+    def _solar_profile_search(self):
+        """Profile search for the solar representative profiles."""
+        return ProfileSearch(self.solar_fpath, self.year)
+
+    @cached_property
+    def _wind_profile_search(self):
+        """Profile search for the wind representative profiles."""
+        return ProfileSearch(self.wind_fpath, self.year)
+
+    @cached_property
+    def solar_ti_dset(self):
+        """str: Solar time index dataset name."""
+        return self._solar_profile_search.ti_dset
+
+    @cached_property
+    def wind_ti_dset(self):
+        """str: Wind time index dataset name."""
+        return self._wind_profile_search.ti_dset
+
+    @cached_property
+    def solar_profile_dset(self):
+        """str: Solar profile dataset name."""
+        return self._solar_profile_search.profile_dset
+
+    @cached_property
+    def wind_profile_dset(self):
+        """str: Wind profile dataset name."""
+        return self._wind_profile_search.profile_dset
 
     @property
     def solar_meta(self):
@@ -143,7 +289,7 @@ class HybridsData:
         """
         if self._solar_time_index is None:
             with Resource(self.solar_fpath) as res:
-                self._solar_time_index = res.time_index
+                self._solar_time_index = res[self.solar_ti_dset]
         return self._solar_time_index
 
     @property
@@ -157,7 +303,7 @@ class HybridsData:
         """
         if self._wind_time_index is None:
             with Resource(self.wind_fpath) as res:
-                self._wind_time_index = res.time_index
+                self._wind_time_index = res[self.wind_ti_dset]
         return self._wind_time_index
 
     @property
@@ -202,7 +348,6 @@ class HybridsData:
 
         """
         self._validate_time_index()
-        self._validate_num_profiles()
         self._validate_merge_col_exists()
         self._validate_unique_merge_col()
         self._validate_merge_col_overlaps()
@@ -224,38 +369,6 @@ class HybridsData:
             e = msg.format(len(self.hybrid_time_index))
             logger.error(e)
             raise FileInputError(e)
-
-    def _validate_num_profiles(self):
-        """Validate the number of input profiles.
-
-        Raises
-        ------
-        FileInputError
-            If # of rep_profiles > 1.
-        """
-        for fp in [self.solar_fpath, self.wind_fpath]:
-            with Resource(fp) as res:
-                profile_dset_names = [
-                    n for n in res.dsets if self.__profile_reg_check.match(n)
-                ]
-                if not profile_dset_names:
-                    msg = (
-                        "Did not find any data sets matching the regex: "
-                        "{!r} in {!r}. Please ensure that the profile data "
-                        "exists and that the data set is named correctly."
-                    )
-                    e = msg.format(PROFILE_DSET_REGEX, fp)
-                    logger.error(e)
-                    raise FileInputError(e)
-                if len(profile_dset_names) > 1:
-                    msg = ("Found more than one profile in {!r}: {}. "
-                           "This module is not intended for hybridization of "
-                           "multiple representative profiles. Please re-run "
-                           "on a single aggregated profile.")
-                    e = msg.format(fp, profile_dset_names)
-                    logger.error(e)
-                    raise FileInputError(e)
-                self.profile_dset_names += profile_dset_names
 
     def _validate_merge_col_exists(self):
         """Validate the existence of the merge column.
@@ -908,6 +1021,7 @@ class Hybridization:
         self,
         solar_fpath,
         wind_fpath,
+        year,
         allow_solar_only=False,
         allow_wind_only=False,
         fillna=None,
@@ -932,6 +1046,10 @@ class Hybridization:
         wind_fpath : str
             Filepath to rep profile output file to extract wind profiles
             and summaries from.
+        year : int
+            Analysis year. Representative-profile inputs are validated
+            against this year, while Bespoke inputs use it to select
+            ``cf_profile-year`` and ``time_index-year`` datasets.
         allow_solar_only : bool, optional
             Option to allow SC points with only solar capacity
             (no wind). By default, ``False``.
@@ -1013,8 +1131,9 @@ class Hybridization:
                 ratio
             )
         )
+        logger.info('Running hybridization for year: "{}"'.format(year))
 
-        self.data = HybridsData(solar_fpath, wind_fpath)
+        self.data = HybridsData(solar_fpath, wind_fpath, year)
         self.meta_hybridizer = MetaHybridizer(
             data=self.data,
             allow_solar_only=allow_solar_only,
@@ -1188,13 +1307,13 @@ class Hybridization:
         """Compute the resource components of the hybridized profiles."""
 
         for params in self.__rep_profile_hybridization_params:
-            col, (hybrid_idxs, solar_idxs), fpath, p_name, dset_name = params
+            col, (hybrid_idxs, solar_idxs), *names = params
+            fpath, p_name, dset_name, time_index_dset = names
             capacity = self.hybrid_meta.loc[hybrid_idxs, col].to_numpy()
 
             with Resource(fpath) as res:
-                data = res[
-                    dset_name, res.time_index.isin(self.hybrid_time_index)
-                ]
+                time_index = res[time_index_dset]
+                data = res[dset_name, time_index.isin(self.hybrid_time_index)]
                 self._profiles[p_name][:, hybrid_idxs] = (
                     data[:, solar_idxs] * capacity
                 )
@@ -1205,18 +1324,14 @@ class Hybridization:
 
         cap_col_names = [f"hybrid_solar_{SupplyCurveField.CAPACITY_AC_MW}",
                          f"hybrid_wind_{SupplyCurveField.CAPACITY_AC_MW}"]
-        idx_maps = [
-            self.meta_hybridizer.solar_profile_indices_map,
-            self.meta_hybridizer.wind_profile_indices_map,
-        ]
+        idx_maps = [self.meta_hybridizer.solar_profile_indices_map,
+                    self.meta_hybridizer.wind_profile_indices_map]
         fpaths = [self.data.solar_fpath, self.data.wind_fpath]
-        zipped = zip(
-            cap_col_names,
-            idx_maps,
-            fpaths,
-            OUTPUT_PROFILE_NAMES[1:],
-            self.data.profile_dset_names,
-        )
+        ti_dsets = [self.data.solar_ti_dset, self.data.wind_ti_dset]
+        profile_dsets = [self.data.solar_profile_dset,
+                         self.data.wind_profile_dset]
+        zipped = zip(cap_col_names, idx_maps, fpaths, OUTPUT_PROFILE_NAMES[1:],
+                     profile_dsets, ti_dsets)
         return zipped
 
     def _compute_hybridized_profiles_from_components(self):
@@ -1262,7 +1377,8 @@ class Hybridization:
                 pass
 
         run_attrs = {"solar_fpath": self.data.solar_fpath,
-                     "wind_fpath": self.data.wind_fpath}
+                     "wind_fpath": self.data.wind_fpath,
+                     "year": self.data.year}
         run_attrs = add_to_run_attrs(run_attrs=run_attrs,
                                      config_file=config_file,
                                      module=ModuleName.HYBRIDS)

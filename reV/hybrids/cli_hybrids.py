@@ -2,17 +2,18 @@
 """
 reV Representative Profiles CLI utility functions.
 """
-import os
 import glob
 import logging
+import os
+import re
 from warnings import warn
 
-from rex.utilities.utilities import parse_year
-from gaps.cli import as_click_command, CLICommandFromClass
+from gaps.cli import CLICommandFromClass, as_click_command
+from rex.resource import Resource
 
-from reV.hybrids.hybrids import Hybridization
-from reV.utilities.exceptions import PipelineError
+from reV.hybrids.hybrids import Hybridization, BESPOKE_DSET_REGEX
 from reV.utilities import ModuleName
+from reV.utilities.exceptions import PipelineError
 
 
 logger = logging.getLogger(__name__)
@@ -44,18 +45,28 @@ def _preprocessor(config, out_dir, job_name):
 
 
 def _glob_to_yearly_dict(fpath):
-    """Glob the filepaths into a dictionary based on years. """
+    """Map input files to the years available in each HDF5 file."""
     _raise_err_if_pipeline(fpath)
     paths = {}
-    for fp in glob.glob(fpath):
-        fname = os.path.basename(fp)
+    is_bespoke_dset = re.compile(BESPOKE_DSET_REGEX)
+    for fp in sorted(glob.glob(fpath)):
+        with Resource(fp) as res:
+            bespoke_years = {
+                int(match.group("year"))
+                for dset in res.dsets
+                if (match := is_bespoke_dset.match(dset)) is not None
+            }
+            if bespoke_years:
+                years = bespoke_years
+            else:
+                years = set(res.time_index.year)
+                if len(years) != 1:
+                    msg = ("Expected a single year in the time index for "
+                           "representative profile file {!r}, but found {}")
+                    raise RuntimeError(msg.format(fp, sorted(years)))
 
-        try:
-            year = parse_year(fname)
-        except RuntimeError:
-            year = None
-
-        paths.setdefault(year, []).append(fp)
+        for year in years:
+            paths.setdefault(year, []).append(fp)
 
     return paths
 
@@ -86,8 +97,9 @@ def _set_paths(config, out_dir, job_name):
 
     solar_fpaths = []
     wind_fpaths = []
+    years = []
     out_files = []
-    for year in all_years:
+    for year in sorted(all_years):
         if year not in common_years:
             msg = ("No corresponding {} file found for {} input file "
                    "(year: '{}'): {!r}. No hybridization performed for "
@@ -111,11 +123,10 @@ def _set_paths(config, out_dir, job_name):
                 warn(w)
                 break
         else:
-            solar_fpaths += solar_glob_paths[year]
-            wind_fpaths += wind_glob_paths[year]
-            out_fn = ("{}.h5".format(job_name)
-                      if year is None
-                      else "{}_{}.h5".format(job_name, year))
+            solar_fpaths.append(solar_glob_paths[year][0])
+            wind_fpaths.append(wind_glob_paths[year][0])
+            years.append(year)
+            out_fn = "{}_{}.h5".format(job_name, year)
             out_files += [os.path.join(out_dir, out_fn)]
 
     if not solar_fpaths or not wind_fpaths:
@@ -126,17 +137,18 @@ def _set_paths(config, out_dir, job_name):
 
     config["solar_fpath"] = solar_fpaths
     config["wind_fpath"] = wind_fpaths
+    config["year"] = years
     config["fout"] = out_files
 
     return config
 
 
-SPLIT_KEYS = [("solar_fpath", "wind_fpath", "fout")]
+SPLIT_KEYS = [("solar_fpath", "wind_fpath", "year", "fout")]
 hybrids_command = CLICommandFromClass(Hybridization, method="run",
                                       name=str(ModuleName.HYBRIDS),
                                       add_collect=False, split_keys=SPLIT_KEYS,
                                       config_preprocessor=_preprocessor,
-                                      skip_doc_params=["fout"])
+                                      skip_doc_params=["fout", "year"])
 main = as_click_command(hybrids_command)
 
 

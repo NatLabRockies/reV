@@ -7,7 +7,9 @@ import shutil
 import tempfile
 from pathlib import Path
 
+import h5py
 import numpy as np
+import pandas as pd
 import pytest
 from rex.resource import Resource
 
@@ -24,6 +26,7 @@ SOLAR_FPATH = os.path.join(
 WIND_FPATH = os.path.join(
     TESTDATADIR, "rep_profiles_out", "rep_profiles_wind.h5"
 )
+YEAR = 2012
 SOLAR_FPATH_30_MIN = os.path.join(
     TESTDATADIR, "rep_profiles_out", "rep_profiles_solar_30_min.h5"
 )
@@ -42,6 +45,25 @@ def _fix_meta(fp):
         del out._h5['meta']
         out._meta = None
         out.meta = meta.rename(columns=SupplyCurveField.map_from_legacy())
+
+
+def _make_bespoke_multiyear_file(source_fpath, out_fpath):
+    """Convert a rep-profiles fixture to a multiyear Bespoke layout."""
+    shutil.copy(source_fpath, out_fpath)
+    with h5py.File(out_fpath, mode="a") as out:
+        out.move("rep_profiles_0", "cf_profile-2012")
+        out.copy("cf_profile-2012", "cf_profile-2013")
+        out["cf_profile-2013"][:] = 0
+        out.copy("time_index", "time_index-2012")
+        out.copy("time_index", "time_index-2013")
+
+    with Outputs(out_fpath, mode="a") as out:
+        resolution = out.time_index[1] - out.time_index[0]
+        time_index_2013 = pd.date_range(
+            "2013-01-01", periods=len(out.time_index), freq=resolution,
+            tz=out.time_index.tz
+        )
+        out._set_time_index("time_index-2013", time_index_2013)
 
 
 @pytest.fixture(scope="module")
@@ -102,7 +124,7 @@ def test_hybridization_profile_output_single_resource(solar_fpath, wind_fpath):
 
     weighted_solar = solar_cap * solar_test_profile
 
-    h = Hybridization(solar_fpath, wind_fpath, allow_solar_only=True)
+    h = Hybridization(solar_fpath, wind_fpath, YEAR, allow_solar_only=True)
     h.run()
     hp, hsp, hwp = h.profiles.values()
     h_meta = h.hybrid_meta
@@ -135,6 +157,7 @@ def test_hybridization_profile_output_with_ratio_none(solar_fpath, wind_fpath):
     h = Hybridization(
         solar_fpath,
         wind_fpath,
+        YEAR,
         allow_solar_only=True,
         ratio=None,
         ratio_bounds=None,
@@ -173,7 +196,7 @@ def test_hybridization_profile_output(solar_fpath, wind_fpath):
     weighted_solar = solar_cap * solar_test_profile
     weighted_wind = wind_cap * wind_test_profile
 
-    h = Hybridization(solar_fpath, wind_fpath)
+    h = Hybridization(solar_fpath, wind_fpath, YEAR)
     h.run()
     (
         hp,
@@ -200,21 +223,22 @@ def test_hybridization_output_shapes(half_hour, solar_fpath,
         input_files = solar_fpath, wind_fpath
 
     sfp, wfp = input_files
-    h = Hybridization(sfp, wfp)
+    h = Hybridization(sfp, wfp, YEAR)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
     expected_shapes = [(8760, 53)] * 3 + [(53, 73), (8760,)]
     for arr, expected_shape in zip(out, expected_shapes):
         assert arr.shape == expected_shape
 
-    h = Hybridization(sfp, wfp, allow_solar_only=True)
+    h = Hybridization(sfp, wfp, YEAR, allow_solar_only=True)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
     expected_shapes = [(8760, 100)] * 3 + [(100, 73), (8760,)]
     for arr, expected_shape in zip(out, expected_shapes):
         assert arr.shape == expected_shape
 
-    h = Hybridization(sfp, wfp, allow_solar_only=True, allow_wind_only=True)
+    h = Hybridization(sfp, wfp, YEAR, allow_solar_only=True,
+                      allow_wind_only=True)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
     expected_shapes = [(8760, 147)] * 3 + [(147, 73), (8760,)]
@@ -239,6 +263,7 @@ def test_meta_hybridization(input_combination, expected_shape, overlap,
     h = Hybridization(
         solar_fpath,
         wind_fpath,
+        YEAR,
         allow_solar_only=allow_solar_only,
         allow_wind_only=allow_wind_only,
     )
@@ -261,6 +286,7 @@ def test_limits_and_ratios_output_values(solar_fpath, wind_fpath):
     h = Hybridization(
         solar_fpath,
         wind_fpath,
+        YEAR,
         limits=limits,
         ratio=ratio,
         ratio_bounds=ratio_bounds,
@@ -310,7 +336,7 @@ def test_ratios_input(ratio_cols, ratio_bounds, bounds, solar_fpath,
     ratio_numerator, ratio_denominator = ratio_cols
     ratio = "{}/{}".format(ratio_numerator, ratio_denominator)
     h = Hybridization(
-        solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=ratio_bounds
+        solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=ratio_bounds
     )
     h.run()
 
@@ -344,7 +370,7 @@ def test_ratios_input(ratio_cols, ratio_bounds, bounds, solar_fpath,
 
 def test_rep_profile_idx_map(solar_fpath, wind_fpath):
     """Test that rep profile index mappings are correct shape."""
-    h = Hybridization(solar_fpath, wind_fpath, allow_wind_only=True)
+    h = Hybridization(solar_fpath, wind_fpath, YEAR, allow_wind_only=True)
 
     for h_idxs, r_idxs in (
         h.meta_hybridizer.solar_profile_indices_map,
@@ -373,7 +399,7 @@ def test_limits_values(solar_fpath, wind_fpath):
     limits = {f"solar_{SupplyCurveField.CAPACITY_AC_MW}": 100,
               f"wind_{SupplyCurveField.CAPACITY_AC_MW}": 0.5}
 
-    h = Hybridization(solar_fpath, wind_fpath, limits=limits)
+    h = Hybridization(solar_fpath, wind_fpath, YEAR, limits=limits)
     h.run()
 
     assert np.all(h.hybrid_meta[f"solar_{SupplyCurveField.CAPACITY_AC_MW}"]
@@ -388,7 +414,7 @@ def test_invalid_limits_column_name(solar_fpath, wind_fpath):
     test_limits = {"un_prefixed_col": 0,
                    f"wind_{SupplyCurveField.CAPACITY_AC_MW}": 10}
     with pytest.raises(InputError) as excinfo:
-        Hybridization(solar_fpath, wind_fpath, limits=test_limits)
+        Hybridization(solar_fpath, wind_fpath, YEAR, limits=test_limits)
 
     assert "Input limits column" in str(excinfo.value)
     assert "does not start with a valid prefix" in str(excinfo.value)
@@ -403,6 +429,7 @@ def test_fillna_values(solar_fpath, wind_fpath):
     h = Hybridization(
         solar_fpath,
         wind_fpath,
+        YEAR,
         allow_solar_only=True,
         allow_wind_only=True,
         fillna=fill_vals,
@@ -426,7 +453,7 @@ def test_invalid_fillna_column_name(solar_fpath, wind_fpath):
     test_fillna = {"un_prefixed_col": 0,
                    f"wind_{SupplyCurveField.CAPACITY_AC_MW}": 10}
     with pytest.raises(InputError) as excinfo:
-        Hybridization(solar_fpath, wind_fpath, fillna=test_fillna)
+        Hybridization(solar_fpath, wind_fpath, YEAR, fillna=test_fillna)
 
     assert "Input fillna column" in str(excinfo.value)
     assert "does not start with a valid prefix" in str(excinfo.value)
@@ -449,6 +476,7 @@ def test_all_allow_solar_allow_wind_combinations(input_combination, na_vals,
     h = Hybridization(
         solar_fpath,
         wind_fpath,
+        YEAR,
         allow_solar_only=allow_solar_only,
         allow_wind_only=allow_wind_only,
     )
@@ -473,7 +501,7 @@ def test_warning_for_improper_data_output_from_hybrid_method(solar_fpath,
     HYBRID_METHODS["scaled_elevation"] = some_new_hybrid_func
 
     with pytest.warns(OutputWarning) as records:
-        h = Hybridization(solar_fpath, wind_fpath)
+        h = Hybridization(solar_fpath, wind_fpath, YEAR)
         h.run()
 
     messages = [r.message.args[0] for r in records]
@@ -491,7 +519,7 @@ def test_hybrid_col_additional_method(solar_fpath, wind_fpath):
 
     HYBRID_METHODS["scaled_elevation"] = some_new_hybrid_func
 
-    h = Hybridization(solar_fpath, wind_fpath)
+    h = Hybridization(solar_fpath, wind_fpath, YEAR)
     h.run()
 
     assert "scaled_elevation" in HYBRID_METHODS
@@ -511,7 +539,7 @@ def test_duplicate_lat_long_values(solar_fpath, wind_fpath, module_td):
     make_test_file(solar_fpath, fout_solar, duplicate_coord_values=True)
 
     with pytest.raises(FileInputError) as excinfo:
-        h = Hybridization(fout_solar, wind_fpath)
+        h = Hybridization(fout_solar, wind_fpath, YEAR)
         h.run()
 
     assert "Detected mismatched coordinate values" in str(excinfo.value)
@@ -526,7 +554,8 @@ def test_invalid_ratio_bounds_length_input(solar_fpath, wind_fpath):
     )
     with pytest.raises(InputError) as excinfo:
         Hybridization(
-            solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=(1, 2, 3)
+            solar_fpath, wind_fpath, YEAR, ratio=ratio,
+            ratio_bounds=(1, 2, 3)
         )
 
     msg = (
@@ -542,7 +571,7 @@ def test_ratio_column_missing(solar_fpath, wind_fpath):
     ratio = f"solar_col_dne/wind_{SupplyCurveField.CAPACITY_AC_MW}"
     with pytest.raises(FileInputError) as excinfo:
         Hybridization(
-            solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=(1, 1)
+            solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
     assert "Input ratios column" in str(excinfo.value)
@@ -555,7 +584,7 @@ def test_ratio_not_string(ratio, solar_fpath, wind_fpath):
 
     with pytest.raises(InputError) as excinfo:
         Hybridization(
-            solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=(1, 1)
+            solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
     assert "Ratio input type " in str(excinfo.value)
@@ -570,7 +599,7 @@ def test_invalid_ratio_format(ratio, solar_fpath, wind_fpath):
 
     with pytest.raises(InputError) as excinfo:
         Hybridization(
-            solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=(1, 1)
+            solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
     long_msg = (
@@ -587,7 +616,7 @@ def test_invalid_ratio_column_name(solar_fpath, wind_fpath):
     ratio = f"un_prefixed_col/wind_{SupplyCurveField.CAPACITY_AC_MW}"
     with pytest.raises(InputError) as excinfo:
         Hybridization(
-            solar_fpath, wind_fpath, ratio=ratio, ratio_bounds=(1, 1)
+            solar_fpath, wind_fpath, YEAR, ratio=ratio, ratio_bounds=(1, 1)
         )
 
     assert "Input ratios column" in str(excinfo.value)
@@ -604,7 +633,7 @@ def test_no_overlap_in_merge_column_values(solar_fpath, wind_fpath):
         make_test_file(wind_fpath, fout_wind, p_slice=slice(90, 100))
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, fout_wind)
+            Hybridization(fout_solar, fout_wind, YEAR)
 
         assert "No overlap detected in the values" in str(excinfo.value)
 
@@ -617,7 +646,7 @@ def test_duplicate_merge_column_values(solar_fpath, wind_fpath):
         make_test_file(solar_fpath, fout_solar, duplicate_rows=True)
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, wind_fpath)
+            Hybridization(fout_solar, wind_fpath, YEAR)
 
         assert "Duplicate" in str(excinfo.value)
 
@@ -630,7 +659,7 @@ def test_merge_columns_missing(solar_fpath, wind_fpath):
         make_test_file(solar_fpath, fout_solar, drop_cols=[MERGE_COLUMN])
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, wind_fpath)
+            Hybridization(fout_solar, wind_fpath, YEAR)
 
         msg = "Cannot hybridize: merge column"
         assert msg in str(excinfo.value)
@@ -641,7 +670,7 @@ def test_invalid_num_profiles(solar_fpath_mult, wind_fpath):
     """Test input files with an invalid number of profiles (>1)."""
 
     with pytest.raises(FileInputError) as excinfo:
-        Hybridization(solar_fpath_mult, wind_fpath)
+        Hybridization(solar_fpath_mult, wind_fpath, YEAR)
 
         msg = (
             "This module is not intended for hybridization of "
@@ -661,7 +690,7 @@ def test_invalid_time_index_overlap(solar_fpath, wind_fpath):
         make_test_file(wind_fpath, fout_wind, t_slice=slice(1000, 3000))
 
         with pytest.raises(FileInputError) as excinfo:
-            Hybridization(fout_solar, fout_wind)
+            Hybridization(fout_solar, fout_wind, YEAR)
 
         msg = (
             "Please ensure that the input profiles have a "
@@ -673,7 +702,7 @@ def test_invalid_time_index_overlap(solar_fpath, wind_fpath):
 def test_valid_time_index_overlap(solar_fpath_30_min, wind_fpath):
     """Test input files with a valid time index overlap."""
 
-    h = Hybridization(solar_fpath_30_min, wind_fpath)
+    h = Hybridization(solar_fpath_30_min, wind_fpath, YEAR)
 
     with Resource(solar_fpath_30_min) as res:
         assert np.all(res.time_index == h.solar_time_index)
@@ -687,7 +716,7 @@ def test_write_to_file(solar_fpath, wind_fpath):
     """Test hybrid rep profiles with file write."""
     with tempfile.TemporaryDirectory() as td:
         fout = os.path.join(td, "temp_hybrid_profiles.h5")
-        h = Hybridization(solar_fpath, wind_fpath)
+        h = Hybridization(solar_fpath, wind_fpath, YEAR)
         h.run(fout=fout)
 
         with Resource(fout) as res:
@@ -708,7 +737,7 @@ def test_hybrids_data_content(solar_fpath, wind_fpath):
     """Test HybridsData class content."""
 
     fv = -999
-    h_data = HybridsData(solar_fpath, wind_fpath)
+    h_data = HybridsData(solar_fpath, wind_fpath, YEAR)
 
     with Resource(solar_fpath) as sr, Resource(wind_fpath) as wr:
         assert np.all(h_data.solar_meta.fillna(fv) == sr.meta.fillna(fv))
@@ -722,7 +751,7 @@ def test_hybrids_data_content(solar_fpath, wind_fpath):
 def test_hybrids_data_contains_col(solar_fpath, wind_fpath):
     """Test the 'contains_col' method of HybridsData for accuracy."""
 
-    h_data = HybridsData(solar_fpath, wind_fpath)
+    h_data = HybridsData(solar_fpath, wind_fpath, YEAR)
     assert h_data.contains_col(SupplyCurveField.TRANS_CAPACITY)
     assert h_data.contains_col("dist_mi")
     assert h_data.contains_col(SupplyCurveField.DIST_SPUR_KM)
@@ -794,6 +823,7 @@ def test_hybrids_cli_from_config(
         h = Hybridization(
             sfp,
             wfp,
+            YEAR,
             allow_solar_only=allow_solar_only,
             allow_wind_only=allow_wind_only,
             fillna=fill_vals,
@@ -803,7 +833,7 @@ def test_hybrids_cli_from_config(
         )
         h.run()
         dirname = os.path.basename(td)
-        fn_out = "{}_{}.h5".format(dirname, ModuleName.HYBRIDS)
+        fn_out = "{}_{}_{}.h5".format(dirname, ModuleName.HYBRIDS, YEAR)
         out_fpath = os.path.join(td, fn_out)
         with Outputs(out_fpath, "r") as f:
             for dset_name in OUTPUT_PROFILE_NAMES:
@@ -826,6 +856,81 @@ def test_hybrids_cli_from_config(
             assert json.loads(f.h5.attrs["hybrids_config"]) == config
 
         clear_loggers()
+
+
+def test_hybrids_cli_bespoke_multiyear(
+    runner, clear_loggers, solar_fpath, wind_fpath
+):
+    """Test hybrids CLI with multiyear Bespoke profiles in single files."""
+    with tempfile.TemporaryDirectory() as td:
+        solar_bespoke = os.path.join(td, "solar_bespoke.h5")
+        wind_bespoke = os.path.join(td, "wind_bespoke.h5")
+        _make_bespoke_multiyear_file(solar_fpath, solar_bespoke)
+        _make_bespoke_multiyear_file(wind_fpath, wind_bespoke)
+
+        config = {
+            "solar_fpath": solar_bespoke,
+            "wind_fpath": wind_bespoke,
+            "log_directory": td,
+            "execution_control": {"option": "local"},
+        }
+        config_path = os.path.join(td, "config.json")
+        with open(config_path, "w") as f:
+            json.dump(config, f)
+
+        result = runner.invoke(
+            main, [str(ModuleName.HYBRIDS), "-c", config_path]
+        )
+
+        assert result.exit_code == 0, result.exception
+        job_name = "{}_{}".format(os.path.basename(td), ModuleName.HYBRIDS)
+        for year in (2012, 2013):
+            out_fpath = os.path.join(td, "{}_{}.h5".format(job_name, year))
+            with Resource(out_fpath) as out:
+                assert set(OUTPUT_PROFILE_NAMES).issubset(out.dsets)
+                assert out.time_index.year.unique().item() == year
+                profile = out["hybrid_profile"]
+                assert np.any(profile) if year == 2012 else not np.any(profile)
+
+        clear_loggers()
+
+
+def test_hybrids_cli_mixed_bespoke_and_rep_profiles(
+    runner, clear_loggers, solar_fpath, wind_fpath
+):
+    """Test year pairing between Bespoke and rep-profile inputs."""
+    with tempfile.TemporaryDirectory() as td:
+        wind_bespoke = os.path.join(td, "wind_bespoke.h5")
+        _make_bespoke_multiyear_file(wind_fpath, wind_bespoke)
+        config = {
+            "solar_fpath": solar_fpath,
+            "wind_fpath": wind_fpath,
+            "log_directory": td,
+            "execution_control": {"option": "local"},
+        }
+        config_path = os.path.join(td, "config.json")
+        with open(config_path, "w") as f:
+            json.dump(config, f)
+
+        result = runner.invoke(
+            main, [str(ModuleName.HYBRIDS), "-c", config_path]
+        )
+
+        assert result.exit_code == 0, result.exception
+        job_name = "{}_{}".format(os.path.basename(td), ModuleName.HYBRIDS)
+        out_fpath = os.path.join(td, "{}_{}.h5".format(job_name, YEAR))
+        assert os.path.exists(out_fpath)
+        assert not os.path.exists(
+            os.path.join(td, "{}_2013.h5".format(job_name))
+        )
+
+        clear_loggers()
+
+
+def test_rep_profile_year_validation(solar_fpath, wind_fpath):
+    """Test that rep-profile time indices must match the requested year."""
+    with pytest.raises(FileInputError, match="Expected year 2013"):
+        HybridsData(solar_fpath, wind_fpath, 2013).solar_profile_dset
 
 
 @pytest.mark.parametrize(

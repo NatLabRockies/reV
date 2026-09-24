@@ -109,9 +109,13 @@ class LayerMask:
         exclude_from_area_filter : bool, optional
             Exclude this layer from the minimum contiguous area filter.
             The layer is combined with the inclusion mask after area
-            filtering is complete. This option has no effect when
-            ``min_area`` is ``None`` or for force-inclusion layers,
-            which are always combined last. By default, ``False``.
+            filtering is complete.
+
+            .. IMPORTANT:: This option has no effect when
+               ``min_area`` is ``None`` or for force-inclusion layers,
+               which are always combined last.
+
+            By default, ``False``.
         extent : dict, optional
             Optional dictionary with values that can be used to
             initialize this class (i.e. `layer`, `exclude_values`,

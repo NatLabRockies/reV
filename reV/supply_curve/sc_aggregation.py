@@ -350,6 +350,10 @@ class SupplyCurveAggregation(BaseAggregation):
                     "slope": {
                         "include_range": [0, 20]
                     },
+                    "roads": {
+                        "exclude_values": 1,
+                        "exclude_from_area_filter": True
+                    },
                     "developable_land": {
                         "force_include_values": 42
                     },
@@ -394,10 +398,18 @@ class SupplyCurveAggregation(BaseAggregation):
                  [1,1,1]]     [0,1,0]]
 
             These filters define how neighboring pixels are "connected".
-            Once pixels in the final exclusion layer are connected, the
-            area of each resulting cluster is computed and compared
-            against the `min_area` input. Any cluster with an area
-            less than `min_area` is excluded from the final mask.
+            Once pixels in the composite exclusion layer are connected,
+            the area of each resulting cluster is computed and compared
+            against the `min_area` input. Any cluster with an area less
+            than `min_area` is excluded from the final mask. Layers with
+            ``exclude_from_area_filter=True`` are combined with the mask
+            after this filter is applied.
+
+            .. IMPORTANT:: Force-inclusion layers are always applied
+               after the area filter. Therefore,
+               ``exclude_from_area_filter`` has no effect on
+               force-inclusion layers.
+
             This argument has no effect if `min_area` is ``None``.
             By default, ``"queen"``.
         min_area : float, optional

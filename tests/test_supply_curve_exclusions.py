@@ -423,6 +423,83 @@ def test_inclusion_mask(scenario):
     assert np.allclose(truth, dict_test)
 
 
+def test_exclude_layer_from_area_filter():
+    """Test excluding a bisecting layer from contiguous area filtering."""
+    excl_h5 = os.path.join(TESTDATADIR, 'ri_exclusions', 'ri_exclusions.h5')
+
+    with tempfile.TemporaryDirectory() as td:
+        excl_fp = os.path.join(td, 'ri_exclusions.h5')
+        shutil.copy(excl_h5, excl_fp)
+
+        with ExclusionLayers(excl_fp) as f:
+            shape = f.shape
+            min_area = 15 * f.pixel_area
+
+        row_start = shape[0] // 2 - 2
+        col_start = shape[1] // 2 - 2
+        land = np.zeros(shape, dtype=np.uint8)
+        roads = np.zeros(shape, dtype=np.uint8)
+        force_include = np.zeros(shape, dtype=np.uint8)
+        land[row_start:row_start + 5, col_start:col_start + 5] = 1
+        roads[row_start:row_start + 5, col_start + 2] = 1
+        force_include[row_start + 2, col_start + 2] = 1
+
+        with h5py.File(excl_fp, mode="a") as fh:
+            profile = fh["ri_padus"].attrs["profile"]
+            test_layers = (
+                ("test_land", land),
+                ("test_roads", roads),
+                ("test_force_include", force_include),
+            )
+            for name, data in test_layers:
+                dset = fh.create_dataset(name, data=data)
+                dset.attrs["profile"] = profile
+
+        excl_dict = {
+            "test_land": {"include_values": 1},
+            "test_roads": {"exclude_values": 1},
+        }
+        mask = ExclusionMaskFromDict.run(
+            excl_fp, layers_dict=excl_dict, min_area=min_area
+        )
+        assert not mask.any()
+
+        excl_dict["test_roads"]["exclude_from_area_filter"] = True
+        expected = land.astype(np.float32)
+        expected[roads == 1] = 0
+        mask = ExclusionMaskFromDict.run(
+            excl_fp, layers_dict=excl_dict, min_area=min_area
+        )
+        assert np.array_equal(mask, expected)
+
+        row_slice = slice(row_start - 1, row_start + 6)
+        col_slice = slice(col_start - 1, col_start + 6)
+        with ExclusionMaskFromDict(
+            excl_fp, layers_dict=excl_dict, min_area=min_area
+        ) as exclusions:
+            mask_slice = exclusions[row_slice, col_slice]
+        assert np.array_equal(mask_slice, expected[row_slice, col_slice])
+
+        mask = ExclusionMaskFromDict.run(excl_fp, layers_dict=excl_dict)
+        assert np.array_equal(mask, expected)
+
+        excl_dict["test_force_include"] = {"force_include_values": 1}
+        expected[force_include == 1] = 1
+        mask = ExclusionMaskFromDict.run(
+            excl_fp, layers_dict=excl_dict, min_area=min_area
+        )
+        assert np.array_equal(mask, expected)
+
+        roads_only = {"test_roads": {
+            "exclude_values": 1,
+            "exclude_from_area_filter": True,
+        }}
+        mask = ExclusionMaskFromDict.run(
+            excl_fp, layers_dict=roads_only, min_area=min_area
+        )
+        assert np.array_equal(mask, 1 - roads)
+
+
 def test_inclusion_mask_with_wildcards():
     """Test creation of inclusion mask with wildcards"""
 

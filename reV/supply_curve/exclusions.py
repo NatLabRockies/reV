@@ -33,6 +33,7 @@ class LayerMask:
                  weight=1.0,
                  exclude_nodata=False,
                  nodata_value=None,
+                 exclude_from_area_filter=False,
                  extent=None,
                  **kwargs):
         """
@@ -105,6 +106,16 @@ class LayerMask:
             inferred when LayerMask is added to
             :class:`reV.supply_curve.exclusions.ExclusionMask`.
             By default, ``None``.
+        exclude_from_area_filter : bool, optional
+            Exclude this layer from the minimum contiguous area filter.
+            The layer is combined with the inclusion mask after area
+            filtering is complete.
+
+            .. IMPORTANT:: This option has no effect when
+               ``min_area`` is ``None`` or for force-inclusion layers,
+               which are always combined last.
+
+            By default, ``False``.
         extent : dict, optional
             Optional dictionary with values that can be used to
             initialize this class (i.e. `layer`, `exclude_values`,
@@ -161,6 +172,7 @@ class LayerMask:
 
         self._as_weights = use_as_weights
         self._exclude_nodata = exclude_nodata
+        self.exclude_from_area_filter = exclude_from_area_filter
         self.nodata_value = nodata_value
 
         if weight > 1 or weight < 0:
@@ -1017,24 +1029,14 @@ class ExclusionMask:
         ds_slice, sub_slice = self._parse_ds_slice(ds_slice)
 
         if self.layers:
-            force_include = []
-            for layer in self.layers:
-                if layer.force_include:
-                    force_include.append(layer)
-                else:
-                    mask = self._add_layer_to_mask(mask, layer, ds_slice,
-                                                   check_layers,
-                                                   combine_func=np.minimum)
-            for layer in force_include:
-                mask = self._add_layer_to_mask(mask, layer, ds_slice,
-                                               check_layers,
-                                               combine_func=np.maximum)
-
             if self._min_area is not None:
-                mask = self._area_filter(mask, self._min_area,
-                                         self._excl_h5.pixel_area,
-                                         kernel=self._kernel)
-                mask = mask[sub_slice]
+                mask = self._combine_layers_with_area_filter(mask, ds_slice,
+                                                             sub_slice,
+                                                             check_layers)
+            else:
+                mask = self._combine_layers(
+                    mask, self.layers, ds_slice, check_layers
+                )
         else:
             if self._min_area is not None:
                 ds_slice = sub_slice
@@ -1072,6 +1074,46 @@ class ExclusionMask:
             ds_slice, sub_slice = self._increase_mask_slice(ds_slice, n=1)
 
         return ds_slice, sub_slice
+
+    def _combine_layers_with_area_filter(self, mask, ds_slice, sub_slice,
+                                         check_layers):
+        """Combine layers with an area filter applied"""
+        layers = list(self.layers)
+        pre_area_filter_layers = [layer for layer in layers
+                                  if (not layer.force_include
+                                      and not layer.exclude_from_area_filter)]
+        post_area_filter_layers = [layer for layer in layers
+                                   if (layer.force_include
+                                       or layer.exclude_from_area_filter)]
+
+        mask = self._combine_layers(mask, pre_area_filter_layers, ds_slice,
+                                    check_layers)
+        if mask is None:
+            mask = self._generate_ones_mask(ds_slice)
+
+        mask = self._area_filter(mask, self._min_area,
+                                 self._excl_h5.pixel_area,
+                                 kernel=self._kernel)
+        mask = self._combine_layers(mask, post_area_filter_layers, ds_slice,
+                                    check_layers)
+        return mask[sub_slice]
+
+    def _combine_layers(self, mask, layers, ds_slice, check_layers):
+        """Combine ordinary layers followed by force-include layers."""
+        force_include = []
+        for layer in layers:
+            if layer.force_include:
+                force_include.append(layer)
+            else:
+                mask = self._add_layer_to_mask(mask, layer, ds_slice,
+                                               check_layers,
+                                               combine_func=np.minimum)
+
+        for layer in force_include:
+            mask = self._add_layer_to_mask(mask, layer, ds_slice, check_layers,
+                                           combine_func=np.maximum)
+
+        return mask
 
     @classmethod
     def run(cls, excl_h5, layers=None, min_area=None,

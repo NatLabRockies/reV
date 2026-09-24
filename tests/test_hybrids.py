@@ -47,6 +47,35 @@ def _fix_meta(fp):
         out.meta = meta.rename(columns=SupplyCurveField.map_from_legacy())
 
 
+def _set_meta_columns(fp, columns):
+    """Set controlled metadata columns in a test resource file."""
+    with Outputs(fp, mode="a") as out:
+        meta = out.meta
+        for column, values in columns.items():
+            meta[column] = values
+        del out._h5["meta"]
+        out._meta = None
+        out.meta = meta
+
+
+def _set_lcoe_meta(fp, capacity, capacity_factor, capital_cost,
+                   fixed_operating_cost, variable_operating_cost,
+                   fixed_charge_rate, lcoe):
+    """Set the metadata inputs used by the hybrid LCOE calculation."""
+    columns = {
+        SupplyCurveField.CAPACITY_AC_MW: capacity,
+        SupplyCurveField.MEAN_CF_AC: capacity_factor,
+        SupplyCurveField.COST_SITE_CC_USD_PER_AC_MW: capital_cost,
+        SupplyCurveField.COST_SITE_FOC_USD_PER_AC_MW: fixed_operating_cost,
+        SupplyCurveField.COST_SITE_VOC_USD_PER_AC_MWH: (
+            variable_operating_cost
+        ),
+        SupplyCurveField.FIXED_CHARGE_RATE: fixed_charge_rate,
+        SupplyCurveField.MEAN_LCOE: lcoe,
+    }
+    _set_meta_columns(fp, columns)
+
+
 def _make_bespoke_multiyear_file(source_fpath, out_fpath):
     """Convert a rep-profiles fixture to a multiyear Bespoke layout."""
     shutil.copy(source_fpath, out_fpath)
@@ -226,14 +255,14 @@ def test_hybridization_output_shapes(half_hour, solar_fpath,
     h = Hybridization(sfp, wfp, YEAR)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
-    expected_shapes = [(8760, 53)] * 3 + [(53, 73), (8760,)]
+    expected_shapes = [(8760, 53)] * 3 + [(53, 74), (8760,)]
     for arr, expected_shape in zip(out, expected_shapes):
         assert arr.shape == expected_shape
 
     h = Hybridization(sfp, wfp, YEAR, allow_solar_only=True)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
-    expected_shapes = [(8760, 100)] * 3 + [(100, 73), (8760,)]
+    expected_shapes = [(8760, 100)] * 3 + [(100, 74), (8760,)]
     for arr, expected_shape in zip(out, expected_shapes):
         assert arr.shape == expected_shape
 
@@ -241,7 +270,7 @@ def test_hybridization_output_shapes(half_hour, solar_fpath,
                       allow_wind_only=True)
     h.run()
     out = [*h.profiles.values(), h.hybrid_meta, h.hybrid_time_index]
-    expected_shapes = [(8760, 147)] * 3 + [(147, 73), (8760,)]
+    expected_shapes = [(8760, 147)] * 3 + [(147, 74), (8760,)]
     for arr, expected_shape in zip(out, expected_shapes):
         assert arr.shape == expected_shape
 
@@ -249,10 +278,10 @@ def test_hybridization_output_shapes(half_hour, solar_fpath,
 @pytest.mark.parametrize(
     "input_combination, expected_shape, overlap",
     [
-        ((False, False), (53, 73), SOLAR_SCPGIDS & WIND_SCPGIDS),
-        ((True, False), (100, 73), SOLAR_SCPGIDS),
-        ((False, True), (100, 73), WIND_SCPGIDS),
-        ((True, True), (147, 73), SOLAR_SCPGIDS | WIND_SCPGIDS),
+        ((False, False), (53, 74), SOLAR_SCPGIDS & WIND_SCPGIDS),
+        ((True, False), (100, 74), SOLAR_SCPGIDS),
+        ((False, True), (100, 74), WIND_SCPGIDS),
+        ((True, True), (147, 74), SOLAR_SCPGIDS | WIND_SCPGIDS),
     ],
 )
 def test_meta_hybridization(input_combination, expected_shape, overlap,
@@ -270,6 +299,136 @@ def test_meta_hybridization(input_combination, expected_shape, overlap,
     h.run()
     assert h.hybrid_meta.shape == expected_shape
     assert set(h.hybrid_meta[SupplyCurveField.SC_POINT_GID]) == overlap
+
+
+def test_hybrid_lcoe_from_cost_components(solar_fpath, wind_fpath,
+                                          tmp_path):
+    """Test hybrid LCOE from constrained capacities and component costs."""
+    test_solar = tmp_path / "lcoe_solar.h5"
+    test_wind = tmp_path / "lcoe_wind.h5"
+    shutil.copy(solar_fpath, test_solar)
+    shutil.copy(wind_fpath, test_wind)
+    _set_lcoe_meta(test_solar, 10, 0.2, 1000, 10, 1, 0.1, 30)
+    _set_lcoe_meta(test_wind, 20, 0.5, 2000, 20, 2, 0.2, 50)
+
+    solar_capacity = f"solar_{SupplyCurveField.CAPACITY_AC_MW}"
+    hybridizer = Hybridization(
+        test_solar,
+        test_wind,
+        YEAR,
+        limits={solar_capacity: 5},
+    ).run_meta()
+
+    solar_aep = 5 * 0.2 * 8760
+    wind_aep = 20 * 0.5 * 8760
+    annual_cost = (
+        5 * (0.1 * 1000 + 10)
+        + 20 * (0.2 * 2000 + 20)
+        + solar_aep * 1
+        + wind_aep * 2
+    )
+    expected_lcoe = annual_cost / (solar_aep + wind_aep)
+    lcoe_col = f"hybrid_{SupplyCurveField.MEAN_LCOE}"
+
+    assert np.allclose(hybridizer.hybrid_meta[lcoe_col], expected_lcoe)
+    assert np.allclose(
+        hybridizer.hybrid_meta[f"hybrid_{SupplyCurveField.MEAN_CF_AC}"],
+        (solar_aep + wind_aep) / (25 * 8760),
+    )
+
+
+def test_hybrid_lcoe_fallback(solar_fpath, wind_fpath):
+    """Test fallback to the energy-weighted source LCOE values."""
+    with pytest.warns(OutputWarning, match="energy-weighted source LCOE"):
+        hybridizer = Hybridization(solar_fpath, wind_fpath, YEAR).run_meta()
+
+    meta = hybridizer.hybrid_meta
+    solar_aep = (
+        meta[f"hybrid_solar_{SupplyCurveField.CAPACITY_AC_MW}"]
+        * meta[f"solar_{SupplyCurveField.MEAN_CF_AC}"]
+    )
+    wind_aep = (
+        meta[f"hybrid_wind_{SupplyCurveField.CAPACITY_AC_MW}"]
+        * meta[f"wind_{SupplyCurveField.MEAN_CF_AC}"]
+    )
+    expected_lcoe = (
+        meta[f"solar_{SupplyCurveField.MEAN_LCOE}"] * solar_aep
+        + meta[f"wind_{SupplyCurveField.MEAN_LCOE}"] * wind_aep
+    ) / (solar_aep + wind_aep)
+
+    assert np.allclose(
+        meta[f"hybrid_{SupplyCurveField.MEAN_LCOE}"], expected_lcoe
+    )
+
+
+def test_hybrid_lcoe_row_fallback(solar_fpath, wind_fpath, tmp_path):
+    """Test row-level fallback and unresolved hybrid LCOE values."""
+    test_solar = tmp_path / "fallback_solar.h5"
+    test_wind = tmp_path / "fallback_wind.h5"
+    shutil.copy(solar_fpath, test_solar)
+    shutil.copy(wind_fpath, test_wind)
+
+    common_gids = sorted(SOLAR_SCPGIDS & WIND_SCPGIDS)[:2]
+    with Resource(test_solar) as resource:
+        solar_gids = resource.meta[SupplyCurveField.SC_POINT_GID]
+    capital_cost = np.full(len(solar_gids), 1000.0)
+    source_lcoe = np.full(len(solar_gids), 30.0)
+    capital_cost[solar_gids.isin(common_gids)] = np.nan
+    source_lcoe[solar_gids == common_gids[1]] = np.nan
+
+    _set_lcoe_meta(
+        test_solar, 10, 0.2, capital_cost, 10, 1, 0.1, source_lcoe
+    )
+    _set_lcoe_meta(test_wind, 20, 0.5, 2000, 20, 2, 0.2, 50)
+
+    with pytest.warns(OutputWarning, match="fallback for 1 row"):
+        hybridizer = Hybridization(
+            test_solar, test_wind, YEAR
+        ).run_meta()
+
+    meta = hybridizer.hybrid_meta.set_index(SupplyCurveField.SC_POINT_GID)
+    lcoe_col = f"hybrid_{SupplyCurveField.MEAN_LCOE}"
+    expected_fallback = (30 * 10 * 0.2 + 50 * 20 * 0.5) / (
+        10 * 0.2 + 20 * 0.5
+    )
+
+    assert np.isclose(meta.loc[common_gids[0], lcoe_col], expected_fallback)
+    assert np.isnan(meta.loc[common_gids[1], lcoe_col])
+    assert meta[lcoe_col].notna().sum() == len(meta) - 1
+
+
+def test_hybrid_lcoe_solar_only_and_zero_generation(
+    solar_fpath, wind_fpath, tmp_path
+):
+    """Test inactive resource costs and zero hybrid generation."""
+    test_solar = tmp_path / "solar_only_lcoe.h5"
+    test_wind = tmp_path / "wind_for_solar_only_lcoe.h5"
+    shutil.copy(solar_fpath, test_solar)
+    shutil.copy(wind_fpath, test_wind)
+
+    with Resource(test_solar) as resource:
+        solar_gids = resource.meta[SupplyCurveField.SC_POINT_GID]
+    solar_cf = np.full(len(solar_gids), 0.2)
+    solar_cf[solar_gids == 40005] = 0
+    _set_lcoe_meta(test_solar, 10, solar_cf, 1000, 10, 1, 0.1, 30)
+    _set_lcoe_meta(test_wind, 20, 0.5, 2000, 20, 2, 0.2, 50)
+
+    with pytest.warns(OutputWarning, match="remains NaN for 1 row"):
+        hybridizer = Hybridization(
+            test_solar,
+            test_wind,
+            YEAR,
+            allow_solar_only=True,
+        ).run_meta()
+
+    meta = hybridizer.hybrid_meta.set_index(SupplyCurveField.SC_POINT_GID)
+    lcoe_col = f"hybrid_{SupplyCurveField.MEAN_LCOE}"
+    positive_solar_only_gid = next(
+        gid for gid in SOLAR_SCPGIDS - WIND_SCPGIDS if gid != 40005
+    )
+
+    assert np.isnan(meta.loc[40005, lcoe_col])
+    assert np.isfinite(meta.loc[positive_solar_only_gid, lcoe_col])
 
 
 def test_limits_and_ratios_output_values(solar_fpath, wind_fpath):

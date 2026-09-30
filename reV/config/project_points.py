@@ -1299,7 +1299,7 @@ def _merge_site_specific_data(project_points, site_specific_data=None):
                  if c not in project_points or c == ResourceMetaField.GID]
     return pd.merge(project_points, site_specific_data[site_cols], how="left",
                     left_on=SiteDataField.GID, right_on=ResourceMetaField.GID,
-                    copy=False, validate="1:1")
+                    validate="1:1")
 
 
 def _site_specific_data_from_config(config):

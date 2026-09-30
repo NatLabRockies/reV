@@ -23,5 +23,4 @@
     "t233_t217": "./tech_configs/wind_ppa_t233_t217.json",
     "t325_t302": "./tech_configs/wind_ppa_t325_t302.json"
   },
-  "site_data": "./project_points/site_data.csv"
 }

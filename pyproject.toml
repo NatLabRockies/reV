@@ -30,7 +30,7 @@ classifiers=[
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "NLR-GAPs>=0.11.0",
+  "NLR-GAPs>=0.11.1",
   "NREL-NRWAL>=0.0.11",
   "NLR-PySAM~=8.0.0",
   "NLR-rex>=0.6.1",

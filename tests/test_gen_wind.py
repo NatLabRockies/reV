@@ -310,8 +310,9 @@ def test_multi_file_5min_wtk():
     assert np.mean(gen_outs) > 0.55
 
 
-def test_wind_gen_site_data(points=slice(0, 5), year=2012, max_workers=1):
-    """Test site specific SAM input config via site_data arg"""
+def test_wind_gen_site_specific_data(points=slice(0, 5), year=2012,
+                                     max_workers=1):
+    """Test site specific SAM input config"""
     sam_files = TESTDATADIR + "/SAM/wind_gen_standard_losses_0.json"
     res_file = TESTDATADIR + "/wtk/ri_100_wtk_{}.h5".format(year)
 
@@ -327,9 +328,8 @@ def test_wind_gen_site_data(points=slice(0, 5), year=2012, max_workers=1):
     )
     baseline.run(max_workers=max_workers)
 
-    site_data = pd.DataFrame(
-        {ResourceMetaField.GID: np.arange(2), "turb_generic_loss": np.zeros(2)}
-    )
+    points = pd.DataFrame({ResourceMetaField.GID: np.arange(5),
+                           "turb_generic_loss": [0] * 2 + [np.nan] * 3})
     test = Gen(
         "windpower",
         points,
@@ -337,7 +337,6 @@ def test_wind_gen_site_data(points=slice(0, 5), year=2012, max_workers=1):
         res_file,
         sites_per_worker=3,
         output_request=output_request,
-        site_data=site_data,
     )
     test.run(max_workers=max_workers)
 
@@ -363,12 +362,8 @@ def test_wind_gen_site_heights(points=slice(0, 2), year=2012, max_workers=1):
     )
     baseline.run(max_workers=max_workers)
 
-    site_data = pd.DataFrame(
-        {
-            ResourceMetaField.GID: np.arange(2),
-            "wind_turbine_hub_ht": [95, 100]
-        }
-    )
+    points = pd.DataFrame({ResourceMetaField.GID: np.arange(2),
+                           "wind_turbine_hub_ht": [95, 100]})
     test = Gen(
         "windpower",
         points,
@@ -376,7 +371,6 @@ def test_wind_gen_site_heights(points=slice(0, 2), year=2012, max_workers=1):
         res_file,
         sites_per_worker=3,
         output_request=output_request,
-        site_data=site_data,
     )
     test.run(max_workers=max_workers)
 

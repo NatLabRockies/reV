@@ -1260,7 +1260,7 @@ def _merge_site_specific_data(project_points, site_specific_data=None):
             site_specific_data = _site_specific_data_from_config(
                 load_config(site_specific_data))
     elif isinstance(site_specific_data, pd.DataFrame):
-        site_specific_data = site_specific_data
+        pass
     elif isinstance(site_specific_data, dict):
         site_specific_data = _site_specific_data_from_config(
             site_specific_data)

@@ -12,9 +12,7 @@ from concurrent.futures import TimeoutError
 from warnings import warn
 
 import numpy as np
-import pandas as pd
 import psutil
-from gaps.config import load_config
 from rex.resource import Resource
 from rex.utilities.execution import SpawnProcessPool
 
@@ -22,13 +20,9 @@ from reV.config.output_request import SAMOutputRequest
 from reV.config.project_points import PointsControl, ProjectPoints
 from reV.handlers.outputs import Outputs
 from reV.SAM.version_checker import PySamVersionChecker
-from reV.utilities import ModuleName, ResourceMetaField, log_versions
-from reV.utilities.exceptions import (
-    ExecutionError,
-    OffshoreWindInputWarning,
-    OutputWarning,
-    ParallelExecutionWarning,
-)
+from reV.utilities import ModuleName, log_versions
+from reV.utilities.exceptions import (ExecutionError, OutputWarning,
+                                      ParallelExecutionWarning)
 from reV.utilities.cli_functions import add_to_run_attrs
 
 logger = logging.getLogger(__name__)
@@ -1070,7 +1064,7 @@ class BaseGen(ABC):
         As of PySAM 5+, the "gen" array is of shape 8760, but only the
         first 2920 entires are populated.
         See this line: https://github.com/NatLabRockies/ssc/blob/2098300044a9be7745c2b93b911adb2d9dc3c282/ssc/cmod_mhk_wave.cpp#L687
-        """
+        """  # noqa
         if self.tech.casefold() != "mhkwave":
             return value
         if var.casefold() not in ("gen", "cf_profile", "gen_profile"):

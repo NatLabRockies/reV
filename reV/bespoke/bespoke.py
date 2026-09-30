@@ -2335,7 +2335,7 @@ class BespokeWindPlants(BaseAggregation):
 
     def _hh_for_sc_gid(self, sc_gid):
         """Fetch the hh for a given sc_gid"""
-        config = self.sam_sys_inputs_with_site_data(sc_gid)
+        config = self.sam_sys_inputs_with_site_specific_data(sc_gid)
         return int(config["wind_turbine_hub_ht"])
 
     def _pre_loaded_data_for_sc_gid(self, sc_gid):
@@ -2435,11 +2435,11 @@ class BespokeWindPlants(BaseAggregation):
 
         return self._slice_lookup
 
-    def sam_sys_inputs_with_site_data(self, gid):
+    def sam_sys_inputs_with_site_specific_data(self, gid):
         """Update the sam_sys_inputs with site data for the given GID.
 
-        Site data is extracted from the project points DataFrame. Every
-        column in the project DataFrame becomes a key in the site_data
+        Location data is extracted from the project points DataFrame.
+        Every column in the project DataFrame becomes a key in the
         output dictionary.
 
         Parameters
@@ -2455,13 +2455,13 @@ class BespokeWindPlants(BaseAggregation):
         """
 
         gid_idx = self._project_points.index(gid)
-        site_data = self._project_points.df.iloc[gid_idx]
+        site_specific_data = self._project_points.df.iloc[gid_idx]
 
         site_sys_inputs = self._project_points[gid][1]
         site_sys_inputs.update(
             {
                 k: v
-                for k, v in site_data.to_dict().items()
+                for k, v in site_specific_data.to_dict().items()
                 if not (isinstance(v, float) and np.isnan(v))
             }
         )
@@ -2786,7 +2786,7 @@ class BespokeWindPlants(BaseAggregation):
                     self._excl_fpath,
                     self._res_fpath,
                     self._tm_dset,
-                    self.sam_sys_inputs_with_site_data(gid),
+                    self.sam_sys_inputs_with_site_specific_data(gid),
                     self._obj_fun,
                     self._cap_cost_fun,
                     self._foc_fun,
@@ -2875,7 +2875,7 @@ class BespokeWindPlants(BaseAggregation):
                     rs, cs = slice_lookup[gid]
                     gid_incl_mask = self._inclusion_mask[rs, cs]
 
-                sam_inputs = self.sam_sys_inputs_with_site_data(gid)
+                sam_inputs = self.sam_sys_inputs_with_site_specific_data(gid)
                 prior_meta = self._get_prior_meta(gid)
                 pre_loaded_data = self._pre_loaded_data_for_sc_gid(gid)
                 afk = self._area_filter_kernel

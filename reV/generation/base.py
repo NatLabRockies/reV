@@ -1064,7 +1064,7 @@ class BaseGen(ABC):
         As of PySAM 5+, the "gen" array is of shape 8760, but only the
         first 2920 entires are populated.
         See this line: https://github.com/NatLabRockies/ssc/blob/2098300044a9be7745c2b93b911adb2d9dc3c282/ssc/cmod_mhk_wave.cpp#L687
-        """  # noqa
+        """  # pylint: disable=line-too-long
         if self.tech.casefold() != "mhkwave":
             return value
         if var.casefold() not in ("gen", "cf_profile", "gen_profile"):

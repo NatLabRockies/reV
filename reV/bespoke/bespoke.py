@@ -2777,10 +2777,10 @@ class BespokeWindPlants(BaseAggregation):
                     gid_incl_mask = self._inclusion_mask[rs, cs]
 
                 gid_idx = self._project_points.index(gid)
-                site_data = self._project_points.df.iloc[gid_idx]
-                plant_noise_limit = site_data.get(
+                site_specific_data = self._project_points.df.iloc[gid_idx]
+                plant_noise_limit = site_specific_data.get(
                     "plant_noise_limit", self._plant_noise_limit)
-                spl_type = site_data.get("spl_type", self._spl_type)
+                spl_type = site_specific_data.get("spl_type", self._spl_type)
                 futures.append(exe.submit(
                     self.run_serial,
                     self._excl_fpath,
@@ -2884,10 +2884,10 @@ class BespokeWindPlants(BaseAggregation):
                 chb = self._convex_hull_buffer
 
                 gid_idx = self._project_points.index(gid)
-                site_data = self._project_points.df.iloc[gid_idx]
-                plant_noise_limit = site_data.get(
+                site_specific_data = self._project_points.df.iloc[gid_idx]
+                plant_noise_limit = site_specific_data.get(
                     "plant_noise_limit", self._plant_noise_limit)
-                spl_type = site_data.get("spl_type", self._spl_type)
+                spl_type = site_specific_data.get("spl_type", self._spl_type)
 
                 si = self.run_serial(self._excl_fpath,
                                      self._res_fpath,

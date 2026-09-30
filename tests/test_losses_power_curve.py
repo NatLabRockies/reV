@@ -142,10 +142,10 @@ def _run_gen_with_and_without_losses(
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(site_losses)
-        gen = Gen('windpower', REV_POINTS, sam_fp, RES_FILE,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(site_losses)
+        points = REV_POINTS if points is None else points
+        gen = Gen('windpower', points, sam_fp, RES_FILE,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
     gen_profiles_with_losses = gen.out['gen_profile']
 
@@ -176,16 +176,17 @@ def _run_gen_with_and_without_losses(
     return gen_profiles, gen_profiles_with_losses
 
 
-def _make_site_data_df(site_data):
+def _make_site_specific_data_df(site_specific_data):
     """Make site data DataFrame for a specific power curve loss input."""
-    if site_data is not None:
-        site_specific_losses = [json.dumps(site_data)] * len(REV_POINTS)
-        site_data_dict = {
+    if site_specific_data is not None:
+        site_specific_losses = ([json.dumps(site_specific_data)]
+                                * len(REV_POINTS))
+        site_specific_data_dict = {
             ResourceMetaField.GID: REV_POINTS,
             PowerCurveLossesMixin.POWER_CURVE_CONFIG_KEY: site_specific_losses
         }
-        site_data = pd.DataFrame(site_data_dict)
-    return site_data
+        site_specific_data = pd.DataFrame(site_specific_data_dict)
+    return site_specific_data
 
 
 def test_power_curve_losses_witch_scheduled_outages():
@@ -585,10 +586,8 @@ def test_power_curve_losses_with_generic_losses(transformation):
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(None)
         gen = Gen('windpower', REV_POINTS, sam_fp, RES_FILE,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
     gen_profiles_with_losses = gen.out['gen_profile']
 

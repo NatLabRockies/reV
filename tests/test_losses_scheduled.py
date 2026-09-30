@@ -348,10 +348,10 @@ def _run_gen_with_and_without_losses(
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(site_outages)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(site_outages)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
 
     gen_profiles_with_losses = gen.out['gen_profile']
@@ -392,16 +392,17 @@ def _run_gen_with_and_without_losses(
     return gen_profiles, gen_profiles_with_losses
 
 
-def _make_site_data_df(site_data):
+def _make_site_specific_data_df(site_specific_data):
     """Make site data DataFrame for a specific outage input."""
-    if site_data is not None:
-        site_specific_outages = [json.dumps(site_data)] * len(REV_POINTS)
-        site_data_dict = {
+    if site_specific_data is not None:
+        site_specific_outages = ([json.dumps(site_specific_data)]
+                                 * len(REV_POINTS))
+        site_specific_data_dict = {
             ResourceMetaField.GID: REV_POINTS,
             ScheduledLossesMixin.OUTAGE_CONFIG_KEY: site_specific_outages
         }
-        site_data = pd.DataFrame(site_data_dict)
-    return site_data
+        site_specific_data = pd.DataFrame(site_specific_data_dict)
+    return site_specific_data
 
 
 @pytest.mark.parametrize('generic_losses', [0, 0.2])
@@ -432,10 +433,10 @@ def test_scheduled_losses_repeatability(
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(site_outages)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(site_outages)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
         gen_profiles_first_run = gen.out['gen_profile']
 
@@ -445,10 +446,10 @@ def test_scheduled_losses_repeatability(
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(site_outages)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(site_outages)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
         gen_profiles_second_run = gen.out['gen_profile']
 
@@ -480,10 +481,10 @@ def test_scheduled_losses_repeatability_with_seed(files):
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(SINGLE_SITE_OUTAGE)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(SINGLE_SITE_OUTAGE)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
         gen_profiles_first_run = gen.out['gen_profile']
 
@@ -493,10 +494,10 @@ def test_scheduled_losses_repeatability_with_seed(files):
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(SINGLE_SITE_OUTAGE)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(SINGLE_SITE_OUTAGE)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
         gen_profiles_second_run = gen.out['gen_profile']
 
@@ -506,10 +507,10 @@ def test_scheduled_losses_repeatability_with_seed(files):
         with open(sam_fp, 'w+') as fh:
             fh.write(json.dumps(sam_config))
 
-        site_data = _make_site_data_df(SINGLE_SITE_OUTAGE)
-        gen = Gen(tech, REV_POINTS, sam_fp, res_file,
-                  output_request=('gen_profile'), site_data=site_data,
-                  sites_per_worker=3)
+        points = _make_site_specific_data_df(SINGLE_SITE_OUTAGE)
+        points = REV_POINTS if points is None else points
+        gen = Gen(tech, points, sam_fp, res_file,
+                  output_request=('gen_profile'), sites_per_worker=3)
         gen.run(max_workers=1)
         gen_profiles_third_run = gen.out['gen_profile']
 

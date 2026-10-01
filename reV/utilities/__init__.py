@@ -358,6 +358,12 @@ class SupplyCurveField(FieldEnum):
     (defaults to `None` for non-LCOE runs)
     """
 
+    DOLLAR_YEAR = "dollar_year"
+    """
+    Dollar year associated with monetary inputs. This is provenance metadata
+    only; reV does not adjust costs to this year.
+    """
+
     # ############### #
     # Bespoke outputs #
     # ############### #

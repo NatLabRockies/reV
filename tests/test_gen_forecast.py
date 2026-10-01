@@ -26,9 +26,7 @@ from reV.utilities.exceptions import SAMExecutionError
 
 
 def test_forecast():
-    """Test several forecast features implemented in reV gen including
-    site_data for timezone and elevation input and gid_map for forecast meta
-    mapping"""
+    """Test several forecast features implemented in reV gen"""
 
     res_files_source = TESTDATADIR + "/nsrdb/ri_100_nsrdb_2012.h5"
     sam_files = TESTDATADIR + "/SAM/i_pvwattsv7.json"
@@ -51,19 +49,22 @@ def test_forecast():
         with Resource(res_file) as res:
             ghi = res["ghi"]
 
+        points_no_sd = ProjectPoints(slice(0, 5), sam_files, 'pvwattsv7',
+                                     res_file=res_file)
+        site_specific_data = pd.DataFrame({ResourceMetaField.GID: np.arange(5),
+                                           ResourceMetaField.TIMEZONE: -5,
+                                           ResourceMetaField.ELEVATION: 0})
         points = ProjectPoints(slice(0, 5), sam_files, 'pvwattsv7',
-                               res_file=res_file)
+                               res_file=res_file,
+                               site_specific_data=site_specific_data)
         output_request = ('cf_mean', 'ghi_mean')
-        site_data = pd.DataFrame({ResourceMetaField.GID: np.arange(5),
-                                  ResourceMetaField.TIMEZONE: -5,
-                                  ResourceMetaField.ELEVATION: 0})
         gid_map = {0: 20, 1: 20, 2: 50, 3: 51, 4: 51}
 
         # test that this raises an error with missing timezone
         with pytest.raises(SAMExecutionError):
             gen = Gen(
                 "pvwattsv7",
-                points,
+                points_no_sd,
                 sam_files,
                 res_file,
                 sites_per_worker=3,
@@ -77,7 +78,6 @@ def test_forecast():
             sam_files,
             res_file,
             sites_per_worker=3,
-            site_data=site_data,
             output_request=output_request,
         )
         gen1.run(max_workers=1)
@@ -96,7 +96,6 @@ def test_forecast():
             sam_files,
             res_file,
             sites_per_worker=3,
-            site_data=site_data,
             gid_map=gid_map,
             output_request=output_request,
         )

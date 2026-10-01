@@ -12,9 +12,7 @@ from concurrent.futures import TimeoutError
 from warnings import warn
 
 import numpy as np
-import pandas as pd
 import psutil
-from gaps.config import load_config
 from rex.resource import Resource
 from rex.utilities.execution import SpawnProcessPool
 
@@ -22,13 +20,9 @@ from reV.config.output_request import SAMOutputRequest
 from reV.config.project_points import PointsControl, ProjectPoints
 from reV.handlers.outputs import Outputs
 from reV.SAM.version_checker import PySamVersionChecker
-from reV.utilities import ModuleName, ResourceMetaField, log_versions
-from reV.utilities.exceptions import (
-    ExecutionError,
-    OffshoreWindInputWarning,
-    OutputWarning,
-    ParallelExecutionWarning,
-)
+from reV.utilities import ModuleName, log_versions
+from reV.utilities.exceptions import (ExecutionError, OutputWarning,
+                                      ParallelExecutionWarning)
 from reV.utilities.cli_functions import add_to_run_attrs
 
 logger = logging.getLogger(__name__)
@@ -93,7 +87,6 @@ class BaseGen(ABC):
         self,
         points_control,
         output_request,
-        site_data=None,
         drop_leap=False,
         memory_utilization_limit=0.4,
         scale_outputs=True,
@@ -105,11 +98,6 @@ class BaseGen(ABC):
             Project points control instance for site and SAM config spec.
         output_request : list | tuple
             Output variables requested from SAM.
-        site_data : str | pd.DataFrame | None
-            Site-specific input data for SAM calculation. String should be a
-            filepath that points to a csv, DataFrame is pre-extracted data.
-            Rows match sites, columns are input keys. Need a "gid" column.
-            Input as None if no site-specific data.
         drop_leap : bool
             Drop leap day instead of final day of year during leap years.
         memory_utilization_limit : float
@@ -136,13 +124,10 @@ class BaseGen(ABC):
         self._run_attrs = {
             "points_control": str(points_control),
             "output_request": output_request,
-            "site_data": str(site_data),
             "drop_leap": str(drop_leap),
             "memory_utilization_limit": self.mem_util_lim,
         }
 
-        self._site_data = self._parse_site_data(site_data)
-        self.add_site_data_to_pp(self._site_data)
         output_request = SAMOutputRequest(output_request)
         self._output_request = self._parse_output_request(output_request)
 
@@ -175,18 +160,6 @@ class BaseGen(ABC):
             current data in-memory belongs in the final output.
         """
         return self._out_chunk
-
-    @property
-    def site_data(self):
-        """Get the site-specific inputs in dataframe format.
-
-        Returns
-        -------
-        _site_data : pd.DataFrame
-            Site-specific input data for gen or econ calculation. Rows match
-            sites, columns are variables.
-        """
-        return self._site_data
 
     @property
     def site_limit(self):
@@ -802,87 +775,6 @@ class BaseGen(ABC):
             within this function to the datatype specified in cls.OUT_ATTRS.
         """
 
-    def _parse_site_data(self, inp):
-        """Parse site-specific data from input arg
-
-        Parameters
-        ----------
-        inp : str | os.PathLike | dict | pd.DataFrame | None
-            Site data in .csv, json, yaml, yml, or toml format, a gid-keyed
-            mapping of site-specific inputs, or a pre-extracted dataframe.
-            None signifies that there is no extra site-specific data and that
-            everything is fully defined in the input h5 and SAM json configs.
-
-        Returns
-        -------
-        site_data : pd.DataFrame
-            Site-specific data for econ calculation. Rows correspond to sites,
-            columns are variables.
-        """
-
-        if inp is None or inp is False:
-            # no input, just initialize dataframe with site gids as index
-            site_data = pd.DataFrame(index=self.project_points.sites)
-            site_data.index.name = ResourceMetaField.GID
-        else:
-            # explicit input, initialize df
-            if isinstance(inp, (str, os.PathLike)):
-                inp = os.fspath(inp)
-                if inp.endswith(".csv"):
-                    site_data = pd.read_csv(inp)
-                else:
-                    site_data = _site_data_from_config(load_config(inp))
-            elif isinstance(inp, pd.DataFrame):
-                site_data = inp
-            elif isinstance(inp, dict):
-                site_data = _site_data_from_config(inp)
-            else:
-                # site data was not able to be set. Raise error.
-                raise Exception(
-                    "Site data input must be .csv, json, yaml, yml, toml, "
-                    "gid-keyed mapping, or dataframe, but received: {}"
-                    .format(inp)
-                )
-
-            gid_not_in_site_data = ResourceMetaField.GID not in site_data
-            index_name_not_gid = site_data.index.name != ResourceMetaField.GID
-            if gid_not_in_site_data and index_name_not_gid:
-                # require gid as column label or index
-                raise KeyError('Site data input must have '
-                               f'{ResourceMetaField.GID} column to match '
-                               'reV site gid.')
-
-            # pylint: disable=no-member
-            if site_data.index.name != ResourceMetaField.GID:
-                # make gid the dataframe index if not already
-                site_data = site_data.set_index(ResourceMetaField.GID,
-                                                drop=True)
-
-        if "offshore" in site_data:
-            if site_data["offshore"].sum() > 1:
-                w = ('Found offshore sites in econ site data input. '
-                     'This functionality has been deprecated. '
-                     'Please run the reV offshore module to '
-                     'calculate offshore wind lcoe.')
-                warn(w, OffshoreWindInputWarning)
-                logger.warning(w)
-
-        return site_data
-
-    def add_site_data_to_pp(self, site_data):
-        """Add the site df (site-specific inputs) to project points dataframe.
-
-        This ensures that only the relevant site's data will be passed through
-        to parallel workers when points_control is iterated and split.
-
-        Parameters
-        ----------
-        site_data : pd.DataFrame
-            Site-specific data for econ calculation. Rows correspond to sites,
-            columns are variables.
-        """
-        self.project_points.join_df(site_data, key=self.site_data.index.name)
-
     def _parse_output_request(self, req):
         """Set the output variables requested from the user.
 
@@ -1172,7 +1064,7 @@ class BaseGen(ABC):
         As of PySAM 5+, the "gen" array is of shape 8760, but only the
         first 2920 entires are populated.
         See this line: https://github.com/NatLabRockies/ssc/blob/2098300044a9be7745c2b93b911adb2d9dc3c282/ssc/cmod_mhk_wave.cpp#L687
-        """
+        """  # pylint: disable=line-too-long
         if self.tech.casefold() != "mhkwave":
             return value
         if var.casefold() not in ("gen", "cf_profile", "gen_profile"):
@@ -1441,14 +1333,3 @@ class BaseGen(ABC):
             warn(w, ParallelExecutionWarning)
 
         return result
-
-
-def _site_data_from_config(config):
-    """Convert a gid-keyed config mapping to the site-data DataFrame."""
-
-    site_data = pd.DataFrame.from_dict(config, orient="index")
-    site_data.index = pd.Index(
-        pd.to_numeric(site_data.index, errors="raise"),
-        name=ResourceMetaField.GID,
-    )
-    return site_data

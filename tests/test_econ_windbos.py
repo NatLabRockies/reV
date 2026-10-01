@@ -220,7 +220,6 @@ def test_run_gen_econ(points=slice(0, 10), year=2012, max_workers=1):
             points,
             sam_files,
             cf_file,
-            site_data=None,
             output_request=econ_outs,
             sites_per_worker=3,
         )
@@ -242,13 +241,13 @@ def test_run_gen_econ(points=slice(0, 10), year=2012, max_workers=1):
             assert test, msg
 
 
-def test_run_bos(points=slice(0, 5), max_workers=1):
+def test_run_bos(max_workers=1):
     """Test full reV2 gen->econ pipeline with windbos inputs and benchmark
     against baseline results."""
 
     # get full file paths.
     sam_files = TESTDATADIR + "/SAM/i_singleowner_windbos.json"
-    site_data = pd.DataFrame(
+    points = pd.DataFrame(
         {SiteDataField.GID: range(5), "sales_tax_basis": range(5)}
     )
 
@@ -262,7 +261,6 @@ def test_run_bos(points=slice(0, 5), max_workers=1):
         points,
         sam_files,
         None,
-        site_data=site_data,
         output_request=econ_outs,
         sites_per_worker=3,
     )

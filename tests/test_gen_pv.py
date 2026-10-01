@@ -552,8 +552,8 @@ def test_gen_input_pass_through():
         gen.run(max_workers=1)
 
 
-def test_gen_pv_site_data():
-    """Test site specific SAM input config via site_data arg"""
+def test_gen_pv_site_specific_data():
+    """Test site specific SAM input config"""
     output_request = ("cf_mean", "gcr", "azimuth", "losses")
     year = 2012
     rev2_points = slice(0, 5)
@@ -570,11 +570,10 @@ def test_gen_pv_site_data():
     )
     baseline.run(max_workers=1)
 
-    site_data = pd.DataFrame({SiteDataField.GID: np.arange(2),
-                              'losses': np.ones(2)})
-    test = Gen('pvwattsv7', rev2_points, sam_files, res_file,
-               sites_per_worker=1, output_request=output_request,
-               site_data=site_data)
+    points = pd.DataFrame({SiteDataField.GID: np.arange(5),
+                           'losses': [1, 1, np.nan, np.nan, np.nan]})
+    test = Gen('pvwattsv7', points, sam_files, res_file,
+               sites_per_worker=1, output_request=output_request)
     test.run(max_workers=1)
 
     assert all(test.out['cf_mean'][0:2] > baseline.out['cf_mean'][0:2])
@@ -583,16 +582,15 @@ def test_gen_pv_site_data():
     assert np.allclose(test.out['losses'][2:], 14.07566 * np.ones(3))
 
 
-def test_gen_pv_site_data_numpy_shading_matrix():
-    """Test numpy matrix site_data inputs are normalized for PySAM."""
+def test_gen_pv_numpy_shading_matrix():
+    """Test numpy matrix inputs are normalized for PySAM."""
     output_request = ("cf_mean",)
     year = 2012
-    rev2_points = slice(0, 1)
     res_file = TESTDATADIR + "/nsrdb/ri_100_nsrdb_{}.h5".format(year)
     sam_files = TESTDATADIR + "/SAM/i_pvwattsv8.json"
     shading_azal = [[0, 0, 180], [0, 0, 0], [89, 0, 0]]
 
-    list_site_data = pd.DataFrame(
+    list_point = pd.DataFrame(
         {
             SiteDataField.GID: [0],
             "shading_azal": [shading_azal],
@@ -601,7 +599,7 @@ def test_gen_pv_site_data_numpy_shading_matrix():
             "shading_en_diff": [1],
         }
     )
-    array_site_data = pd.DataFrame(
+    array_point = pd.DataFrame(
         {
             SiteDataField.GID: [0],
             "shading_azal": [np.asarray(shading_azal, dtype=float)],
@@ -613,39 +611,36 @@ def test_gen_pv_site_data_numpy_shading_matrix():
 
     baseline = Gen(
         "pvwattsv8",
-        rev2_points,
+        list_point,
         sam_files,
         res_file,
         sites_per_worker=1,
-        output_request=output_request,
-        site_data=list_site_data,
+        output_request=output_request
     )
     baseline.run(max_workers=1)
 
     test = Gen(
         "pvwattsv8",
-        rev2_points,
+        array_point,
         sam_files,
         res_file,
         sites_per_worker=1,
         output_request=output_request,
-        site_data=array_site_data,
     )
     test.run(max_workers=1)
 
     assert np.allclose(test.out["cf_mean"], baseline.out["cf_mean"])
 
 
-def test_gen_pv_site_data_shading_matrix_from_file(tmp_path):
-    """Test pvwattsv8 shading site_data can be read from disk."""
+def test_gen_pv_shading_matrix_from_file(tmp_path):
+    """Test pvwattsv8 shading can be read from disk."""
     output_request = ("cf_mean",)
     year = 2012
-    rev2_points = slice(0, 1)
     res_file = TESTDATADIR + "/nsrdb/ri_100_nsrdb_{}.h5".format(year)
     sam_files = TESTDATADIR + "/SAM/i_pvwattsv8.json"
     shading_azal = [[0, 0, 180], [0, 0, 0], [89, 0, 0]]
 
-    list_site_data = pd.DataFrame(
+    list_point = pd.DataFrame(
         {
             SiteDataField.GID: [0],
             "shading_azal": [shading_azal],
@@ -654,7 +649,7 @@ def test_gen_pv_site_data_shading_matrix_from_file(tmp_path):
             "shading_en_diff": [1],
         }
     )
-    file_site_data = pd.DataFrame(
+    file_point = pd.DataFrame(
         {
             SiteDataField.GID: [0],
             "shading_azal": [json.dumps(shading_azal)],
@@ -663,28 +658,26 @@ def test_gen_pv_site_data_shading_matrix_from_file(tmp_path):
             "shading_en_diff": [1],
         }
     )
-    site_data_fpath = tmp_path / "site_data.csv"
-    file_site_data.to_csv(site_data_fpath, index=False)
+    file_point_fpath = tmp_path / "shading_point.csv"
+    file_point.to_csv(file_point_fpath, index=False)
 
     baseline = Gen(
         "pvwattsv8",
-        rev2_points,
+        list_point,
         sam_files,
         res_file,
         sites_per_worker=1,
         output_request=output_request,
-        site_data=list_site_data,
     )
     baseline.run(max_workers=1)
 
     test = Gen(
         "pvwattsv8",
-        rev2_points,
+        file_point_fpath,
         sam_files,
         res_file,
         sites_per_worker=1,
         output_request=output_request,
-        site_data=site_data_fpath,
     )
     test.run(max_workers=1)
 
@@ -692,16 +685,15 @@ def test_gen_pv_site_data_shading_matrix_from_file(tmp_path):
 
 
 @pytest.mark.parametrize("config_type", ["json", "yaml", "toml"])
-def test_gen_pv_site_data_shading_matrix_from_config(tmp_path, config_type):
-    """Test pvwattsv8 shading site_data can be loaded from config files."""
+def test_gen_pv_shading_matrix_from_config(tmp_path, config_type):
+    """Test pvwattsv8 shading can be loaded from config files."""
     output_request = ("cf_mean",)
     year = 2012
-    rev2_points = slice(0, 1)
     res_file = TESTDATADIR + "/nsrdb/ri_100_nsrdb_{}.h5".format(year)
     sam_files = TESTDATADIR + "/SAM/i_pvwattsv8.json"
     shading_azal = [[0, 0, 180], [0, 0, 0], [89, 0, 0]]
 
-    list_site_data = pd.DataFrame(
+    list_point = pd.DataFrame(
         {
             SiteDataField.GID: [0],
             "shading_azal": [shading_azal],
@@ -718,9 +710,9 @@ def test_gen_pv_site_data_shading_matrix_from_config(tmp_path, config_type):
             "shading_en_diff": 1,
         }
     }
-    site_data_fpath = tmp_path / "site_data.{}".format(config_type)
+    config_data_fpath = tmp_path / "point_data.{}".format(config_type)
 
-    with open(site_data_fpath, "w") as fh:
+    with open(config_data_fpath, "w") as fh:
         if config_type == "json":
             json.dump(config, fh)
         elif config_type == "yaml":
@@ -730,23 +722,21 @@ def test_gen_pv_site_data_shading_matrix_from_config(tmp_path, config_type):
 
     baseline = Gen(
         "pvwattsv8",
-        rev2_points,
+        list_point,
         sam_files,
         res_file,
         sites_per_worker=1,
         output_request=output_request,
-        site_data=list_site_data,
     )
     baseline.run(max_workers=1)
 
     test = Gen(
         "pvwattsv8",
-        rev2_points,
+        config_data_fpath,
         sam_files,
         res_file,
         sites_per_worker=1,
         output_request=output_request,
-        site_data=str(site_data_fpath),
     )
     test.run(max_workers=1)
 

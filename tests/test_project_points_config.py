@@ -8,7 +8,7 @@ import toml
 import yaml
 
 from reV import TESTDATADIR
-from reV.config.project_points import ProjectPoints
+from reV.config.project_points import ProjectPoints, _parse_points
 from reV.utilities import SiteDataField
 
 
@@ -39,7 +39,7 @@ def test_parse_project_points_from_config(tmp_path, config_type):
     config_path = tmp_path / f"project_points.{config_type}"
     _write_project_points_config(config, config_type, config_path)
 
-    points = ProjectPoints._parse_points(config_path)
+    points = _parse_points(config_path)
 
     assert points[SiteDataField.GID].to_list() == [0, 1, 2]
     assert points[SiteDataField.CONFIG].to_list() == ["default"] * 3
@@ -49,7 +49,7 @@ def test_parse_project_points_from_config(tmp_path, config_type):
 
 def test_parse_project_points_from_gid_keyed_mapping():
     """Parse gid-keyed project points mappings passed directly as a dict."""
-    points = ProjectPoints._parse_points(_project_points_config_dict())
+    points = _parse_points(_project_points_config_dict())
 
     assert points[SiteDataField.GID].to_list() == [0, 1, 2]
     assert points[SiteDataField.CONFIG].to_list() == ["default"] * 3
@@ -79,7 +79,7 @@ def test_parse_project_points_column_mapping_dict():
         SiteDataField.CONFIG: ["default", "default"],
     }
 
-    parsed = ProjectPoints._parse_points(points)
+    parsed = _parse_points(points)
 
     expected = pd.DataFrame(points).sort_values(SiteDataField.GID)
     expected = expected.reset_index(drop=True)

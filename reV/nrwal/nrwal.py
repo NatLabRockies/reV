@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 from gaps.config import load_config
 
-from reV.generation.base import _site_data_from_config
+from reV.config.project_points import _site_specific_data_from_config
 from reV.generation.generation import Gen
 from reV.handlers.outputs import Outputs
 from reV.utilities import SiteDataField, ResourceMetaField, log_versions
@@ -234,11 +234,11 @@ class RevNrwal:
             if self._site_data.endswith(".csv"):
                 self._site_data = pd.read_csv(self._site_data)
             else:
-                self._site_data = _site_data_from_config(
+                self._site_data = _site_specific_data_from_config(
                     load_config(self._site_data)
                 )
         elif isinstance(self._site_data, dict):
-            self._site_data = _site_data_from_config(self._site_data)
+            self._site_data = _site_specific_data_from_config(self._site_data)
 
         msg = (
             "NRWAL site_data must be a csv/config filepath, gid-keyed "

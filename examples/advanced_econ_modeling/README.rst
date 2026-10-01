@@ -7,7 +7,7 @@ analyses.
 
 This example modifies the tax rate and PPA price inputs for each state.
 More complex input sets on a site-by-site basis can be easily generated using a
-similar site_data input method.
+similar point-by-point input method.
 
 Workflow Description
 --------------------
@@ -26,10 +26,9 @@ generic to modify ANY key-value pairs in any ``.json`` file, including other
 config files.
 
 The first module executed in each job pipeline is the econ module. This example
-shows how the site-specific input ``.csv`` can be used (see the "site_data" key
-in the ``config_econ.json`` file).
+shows how the site-specific inputs can be specified via the ``project_points.csv``.
 
-The ``site_data.csv`` file sets site-specific input data corresponding to the
-gids in the project points file. Data inputs keyed by each column header in the
-``site_data.csv`` file will be added to or replace an input in the
+Specifically, the ``project_points.csv`` file sets site-specific input data
+corresponding to each gid. Data inputs keyed by each column header in the
+``project_points.csv`` file will be added to or replace an input in the
 "tech_configs" ``.json`` files (sam_files).

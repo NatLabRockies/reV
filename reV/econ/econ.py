@@ -50,7 +50,7 @@ class Econ(BaseGen):
     # Type is scalar or array and corresponds to the SAM single-site output
     OUT_ATTRS = BaseGen.ECON_ATTRS
 
-    def __init__(self, project_points, sam_files, cf_file, site_data=None,
+    def __init__(self, project_points, sam_files, cf_file,
                  output_request=('lcoe_fcr',), sites_per_worker=100,
                  memory_utilization_limit=0.4, append=False):
         """ReV econ analysis class.
@@ -148,17 +148,6 @@ class Econ(BaseGen):
               parsing, meaning the `cf_file` input will have to be
               specified manually.
 
-        site_data : str | pd.DataFrame, optional
-            Site-specific input data for SAM calculation. If this input
-            is a string, it should be a path that points to a CSV file.
-            Otherwise, this input should be a DataFrame with
-            pre-extracted site data. Rows in this table should match
-            the input sites via a ``gid`` column. The rest of the
-            columns should match configuration input keys that will take
-            site-specific values. Note that some or all site-specific
-            inputs can be specified via the `project_points` input
-            table instead. If ``None``, no site-specific data is
-            considered. By default, ``None``.
         output_request : list | tuple, optional
             List of output variables requested from SAM. Can be any
             of the parameters in the "Outputs" group of the PySAM module
@@ -198,7 +187,6 @@ class Econ(BaseGen):
         super().__init__(
             pc,
             output_request,
-            site_data=site_data,
             memory_utilization_limit=memory_utilization_limit,
         )
 
@@ -464,8 +452,9 @@ class Econ(BaseGen):
         """Get the output array shape based on OUT_ATTRS or PySAM.Outputs.
 
         This Econ get data shape method will also first check for the dset in
-        the site_data table. If not found in site_data, the dataset will be
-        looked for in OUT_ATTRS and PySAM.Outputs as it would for Generation.
+        the project_points table. If not found in project_points, the dataset
+        will be looked for in OUT_ATTRS and PySAM.Outputs as it would for
+        Generation.
 
         Parameters
         ----------
@@ -480,13 +469,13 @@ class Econ(BaseGen):
             1D or 2D shape tuple for dset.
         """
 
-        if dset in self.site_data:
+        if dset in self.project_points.df:
             data_shape = (n_sites,)
-            data = self.site_data[dset].values[0]
+            data = self.project_points.df[dset].values[0]
 
             if isinstance(data, (list, tuple, np.ndarray, str)):
                 msg = (
-                    "Cannot pass through non-scalar site_data "
+                    "Cannot pass through non-scalar site-specific data "
                     'input key "{}" as an output_request!'.format(dset)
                 )
                 logger.error(msg)

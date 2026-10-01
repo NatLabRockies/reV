@@ -11,6 +11,7 @@ from warnings import warn
 
 import numpy as np
 import pandas as pd
+from gaps.config import load_config
 from gaps.utilities.io import parse_points_input_to_df
 from rex.multi_file_resource import MultiFileResource
 from rex.resource import Resource
@@ -22,12 +23,12 @@ from rex.utilities import check_res_file, parse_table
 
 from reV.config.curtailment import Curtailment
 from reV.config.sam_config import SAMConfig
-from reV.utilities import SiteDataField, SupplyCurveField
-from reV.utilities.exceptions import ConfigError, ConfigWarning
+from reV.utilities import SiteDataField, SupplyCurveField, ResourceMetaField
+from reV.utilities.exceptions import (ConfigError, ConfigWarning,
+                                      OffshoreWindInputWarning)
 
 logger = logging.getLogger(__name__)
 _DEFAULT_CURTAIL_KEY = "default"
-_PROJECT_POINTS_CONFIG_EXTENSIONS = (".json", ".yaml", ".yml", ".toml")
 
 
 class PointsControl:
@@ -232,9 +233,8 @@ class ProjectPoints:
     >>> h_list = pp.h
     """
 
-    def __init__(
-        self, points, sam_configs, tech=None, res_file=None, curtailment=None
-    ):
+    def __init__(self, points, sam_configs, tech=None, res_file=None,
+                 curtailment=None, site_specific_data=None):
         """
         Parameters
         ----------
@@ -268,9 +268,38 @@ class ProjectPoints:
                 - Instance of curtailment config object
                   (config.curtailment.Curtailment)
 
+        site_specific_data : str | os.PathLike | dict | pd.DataFrame, optional
+            Site-specific input data to add to project points. This
+            input can be one of the following:
+
+                - A path to a CSV file with one row per site and a
+                  ``gid`` column.
+                - A path to a JSON, YAML, YML, or TOML config file that
+                  contains site ``gid`` values as top-level keys and
+                  dictionaries of site-specific inputs as values.
+                - A gid-keyed dictionary following the same format as
+                  the JSON/YAML/TOML config input.
+                - A DataFrame with pre-extracted site data.
+
+            After loading, the rows in this table are matched to the
+            project point sites via ``gid``. The rest of the columns
+            should match configuration input keys that will take
+            site-specific values. If ``None``, no site-specific data is
+            considered.
+
+            .. Note:: This input is often used to provide site-based
+               regional capital cost multipliers. ``reV`` does not
+               ingest multipliers directly; instead, this file is
+               expected to have a ``capital_cost`` column that gives the
+               multiplier-adjusted capital cost value for each location.
+               Therefore, you *must* re-create this input file every
+               time you change your base capital cost assumption.
+
+            By default, ``None``.
         """
         # set protected attributes
-        self._df = self._parse_points(points, res_file=res_file)
+        self._df = _parse_points(points, res_file=res_file,
+                                 site_specific_data=site_specific_data)
         self._sam_config_obj = self._parse_sam_config(sam_configs)
         self._check_points_config_mapping()
         self._tech = str(tech)
@@ -510,65 +539,6 @@ class ProjectPoints:
             curtailment is being assessed.
         """
         return self._curtailment
-
-    @classmethod
-    def _parse_points(cls, points, res_file=None):
-        """Generate the project points df from inputs
-
-        Parameters
-        ----------
-        points : int | str | os.PathLike | pd.DataFrame | slice | list | dict
-            Slice specifying project points, string/path pointing to a
-            project points CSV, JSON, YAML, YML, or TOML file, or a dataframe
-            containing the effective table contents. JSON/YAML/YML/TOML
-            config files are expected to contain gid values as keys and
-            dictionaries of point-specific inputs as values. Can also be a
-            single integer site value.
-        res_file : str | NoneType
-            Optional resource file to find maximum length of project points if
-            points slice stop is None.
-
-        Returns
-        -------
-        df : pd.DataFrame
-            DataFrame mapping sites (gids) to SAM technology (config)
-        """
-        df = parse_points_input_to_df(
-            points,
-            parse_sites_callable=partial(_parse_sites, res_file=res_file)
-        )
-        df = df.rename(SupplyCurveField.map_to(SiteDataField), axis=1)
-        if SiteDataField.GID not in df.columns:
-            raise KeyError(
-                "Project points data must contain "
-                f"{SiteDataField.GID} column."
-            )
-
-        # pylint: disable=no-member
-        if SiteDataField.CONFIG not in df.columns:
-            df[SiteDataField.CONFIG] = None
-        df[SiteDataField.CONFIG] = (df[SiteDataField.CONFIG]
-                                    .replace({np.nan: None}))
-
-        # pylint: disable=no-member
-        if SiteDataField.CURTAILMENT not in df.columns:
-            df[SiteDataField.CURTAILMENT] = None
-        df[SiteDataField.CURTAILMENT] = (df[SiteDataField.CURTAILMENT]
-                                         .replace({np.nan: None}))
-
-        gids = df[SiteDataField.GID].to_numpy()
-        if not np.array_equal(np.sort(gids), gids):
-            msg = (
-                "WARNING: points are not in sequential order and will be "
-                "sorted! The original order is being preserved under "
-                'column "points_order"'
-            )
-            logger.warning(msg)
-            warn(msg)
-            df["points_order"] = df.index.to_numpy()
-            df = df.sort_values(SiteDataField.GID).reset_index(drop=True)
-
-        return df
 
     @staticmethod
     def _parse_sam_config(sam_config):
@@ -818,7 +788,7 @@ class ProjectPoints:
             instance of the project points dataframe). Primary key
             of the self._df attribute is fixed as the gid column.
         """
-        # ensure df2 doesnt have any duplicate columns for suffix reasons.
+        # ensure df2 doesn't have any duplicate columns for suffix reasons
         df2_cols = [c for c in df2.columns if c not in self._df or c == key]
         self._df = pd.merge(
             self._df,
@@ -1182,3 +1152,162 @@ def _parse_sites(points, res_file=None):
     df[SiteDataField.CONFIG] = None
 
     return df
+
+
+def _parse_points(points, res_file=None, site_specific_data=None):
+    """Generate the project points df from inputs
+
+    Parameters
+    ----------
+    points : int | str | os.PathLike | pd.DataFrame | slice | list | dict
+        Slice specifying project points, string/path pointing to a
+        project points CSV, JSON, YAML, YML, or TOML file, or a dataframe
+        containing the effective table contents. JSON/YAML/YML/TOML
+        config files are expected to contain gid values as keys and
+        dictionaries of point-specific inputs as values. Can also be a
+        single integer site value.
+    res_file : str | NoneType
+        Optional resource file to find maximum length of project points if
+        points slice stop is None.
+    site_specific_data : str | os.PathLike | dict | pd.DataFrame, optional
+        Site-specific data to add to project points. This input can be
+        one of the following:
+
+            - A path to a CSV file with one row per site and a
+              ``gid`` column.
+            - A path to a JSON, YAML, YML, or TOML config file that
+              contains site ``gid`` values as top-level keys and
+              dictionaries of site-specific inputs as values.
+            - A gid-keyed dictionary following the same format as
+              the JSON/YAML/TOML config input.
+            - A DataFrame with pre-extracted site data.
+
+        After loading, the rows in this table are matched to the
+        input sites via ``gid``. The rest of the columns should
+        match configuration input keys that will take site-specific
+        values. If ``None`` or ``False``, no site-specific data is
+        added. By default, ``None``.
+
+    Returns
+    -------
+    df : pd.DataFrame
+        DataFrame mapping sites (gids) to SAM technology (config)
+    """
+    df = parse_points_input_to_df(
+        points, parse_sites_callable=partial(_parse_sites, res_file=res_file)
+    )
+    df = df.rename(SupplyCurveField.map_to(SiteDataField), axis=1)
+    if SiteDataField.GID not in df.columns:
+        raise KeyError("Project points data must contain "
+                       f"{SiteDataField.GID} column.")
+    df = _merge_site_specific_data(df, site_specific_data=site_specific_data)
+
+    # pylint: disable=no-member
+    if SiteDataField.CONFIG not in df.columns:
+        df[SiteDataField.CONFIG] = None
+    df[SiteDataField.CONFIG] = (df[SiteDataField.CONFIG]
+                                .replace({np.nan: None}))
+
+    # pylint: disable=no-member
+    if SiteDataField.CURTAILMENT not in df.columns:
+        df[SiteDataField.CURTAILMENT] = None
+    df[SiteDataField.CURTAILMENT] = (df[SiteDataField.CURTAILMENT]
+                                        .replace({np.nan: None}))
+
+    gids = df[SiteDataField.GID].to_numpy()
+    if not np.array_equal(np.sort(gids), gids):
+        msg = (
+            "WARNING: points are not in sequential order and will be "
+            "sorted! The original order is being preserved under "
+            'column "points_order"'
+        )
+        logger.warning(msg)
+        warn(msg)
+        df["points_order"] = df.index.to_numpy()
+        df = df.sort_values(SiteDataField.GID).reset_index(drop=True)
+
+    return df
+
+
+def _merge_site_specific_data(project_points, site_specific_data=None):
+    """Parse site-specific data and merge onto project points
+
+    Parameters
+    ----------
+    project_points : pd.DataFrame
+        DataFrame containing the project points data.
+    site_specific_data : str | os.PathLike | dict | pd.DataFrame | None
+        Site data in .csv, json, yaml, yml, or toml format, a gid-keyed
+        mapping of site-specific inputs, or a pre-extracted dataframe.
+        None signifies that there is no extra site-specific data and that
+        everything is fully defined in the input h5 and SAM json configs.
+
+    Returns
+    -------
+    project_points : pd.DataFrame
+        Project points with site-specific data added as new columns.
+    """
+
+    if site_specific_data is None or site_specific_data is False:
+        return project_points
+
+    # explicit input, initialize df
+    if isinstance(site_specific_data, (str, os.PathLike)):
+        site_specific_data = os.fspath(site_specific_data)
+        if site_specific_data.endswith(".csv"):
+            site_specific_data = pd.read_csv(site_specific_data)
+        else:
+            site_specific_data = _site_specific_data_from_config(
+                load_config(site_specific_data))
+    elif isinstance(site_specific_data, pd.DataFrame):
+        pass
+    elif isinstance(site_specific_data, dict):
+        site_specific_data = _site_specific_data_from_config(
+            site_specific_data)
+    else:
+        # site data was not able to be set. Raise error.
+        raise Exception(
+            "Site data input must be .csv, json, yaml, yml, toml, "
+            "gid-keyed mapping, or dataframe, but received: {}"
+            .format(site_specific_data)
+        )
+
+    gid_not_in_sd = ResourceMetaField.GID not in site_specific_data
+    index_name_not_gid = site_specific_data.index.name != ResourceMetaField.GID
+    if gid_not_in_sd and index_name_not_gid:
+        # require gid as column label or index
+        raise KeyError('Site data input must have '
+                        f'{ResourceMetaField.GID} column to match '
+                        'reV site gid.')
+
+    # pylint: disable=no-member
+    if site_specific_data.index.name != ResourceMetaField.GID:
+        # make gid the dataframe index if not already
+        site_specific_data = site_specific_data.set_index(
+            ResourceMetaField.GID, drop=True)
+
+    if "offshore" in site_specific_data:
+        if site_specific_data["offshore"].sum() > 1:
+            w = ('Found offshore sites in econ site data input. '
+                 'This functionality has been deprecated. '
+                 'Please run the reV offshore module to '
+                 'calculate offshore wind lcoe.')
+            warn(w, OffshoreWindInputWarning)
+            logger.warning(w)
+
+    site_cols = [c for c in site_specific_data.columns
+                 if c not in project_points or c == ResourceMetaField.GID]
+    return pd.merge(project_points, site_specific_data[site_cols], how="left",
+                    left_on=SiteDataField.GID, right_on=ResourceMetaField.GID,
+                    validate="1:1")
+
+
+def _site_specific_data_from_config(config):
+    """Convert a gid-keyed config mapping to the site-data DataFrame."""
+
+    site_specific_data = pd.DataFrame.from_dict(config, orient="index")
+    site_specific_data.index = pd.Index(
+        pd.to_numeric(site_specific_data.index, errors="raise"),
+        name=ResourceMetaField.GID,
+    )
+    return site_specific_data

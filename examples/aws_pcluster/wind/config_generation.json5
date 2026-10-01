@@ -37,7 +37,6 @@
         "lcoe_fcr",
         "ws_mean"
     ],
-    "site_data": null,
     "curtailment": null,
     "gid_map": null,
     "drop_leap": false,

@@ -89,7 +89,6 @@ class Gen(BaseGen):
         resource_file,
         low_res_resource_file=None,
         output_request=("cf_mean",),
-        site_data=None,
         curtailment=None,
         gid_map=None,
         drop_leap=False,
@@ -357,35 +356,6 @@ class Gen(BaseGen):
               dataset is detected in the generation file.
 
             By default, ``('cf_mean',)``.
-        site_data : str | os.PathLike | dict | pd.DataFrame, optional
-            Site-specific input data for SAM calculation. This input can
-            be one of the following:
-
-                - A path to a CSV file with one row per site and a
-                    ``gid`` column.
-                - A path to a JSON, YAML, YML, or TOML config file that
-                    contains site ``gid`` values as top-level keys and
-                    dictionaries of site-specific inputs as values.
-                - A gid-keyed dictionary following the same format as
-                    the JSON/YAML/TOML config input.
-                - A DataFrame with pre-extracted site data.
-
-            After loading, the rows in this table are matched to the
-            input sites via ``gid``. The rest of the columns should
-            match configuration input keys that will take site-specific
-            values. Note that some or all site-specific inputs can be
-            specified via the `project_points` input table instead. If
-            ``None``, no site-specific data is considered.
-
-            .. Note:: This input is often used to provide site-based
-               regional capital cost multipliers. ``reV`` does not
-               ingest multipliers directly; instead, this file is
-               expected to have a ``capital_cost`` column that gives the
-               multiplier-adjusted capital cost value for each location.
-               Therefore, you *must* re-create this input file every
-               time you change your base capital cost assumption.
-
-            By default, ``None``.
         curtailment : dict | str, optional
             Input for curtailment parameters, which can be one of:
 
@@ -471,7 +441,6 @@ class Gen(BaseGen):
         super().__init__(
             pc,
             output_request,
-            site_data=site_data,
             drop_leap=drop_leap,
             memory_utilization_limit=memory_utilization_limit,
             scale_outputs=scale_outputs,

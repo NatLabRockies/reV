@@ -101,8 +101,6 @@ def _log_generation_cli_inputs(config):
     logger.info('The following SAM configs are available to this run:\n{}'
                 .format(pprint.pformat(config.get('sam_files', None),
                                        indent=4)))
-    logger.info('The following is being used for site specific input data: '
-                '"{}"'.format(config.get("site_data")))
 
 
 gen_command = CLICommandFromClass(Gen, method="run",

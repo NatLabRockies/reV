@@ -17,7 +17,7 @@ from reV.handlers.outputs import Outputs
 from reV.SAM.econ import LCOE as SAM_LCOE
 from reV.SAM.econ import SingleOwner
 from reV.SAM.windbos import WindBos
-from reV.utilities import ModuleName, ResourceMetaField
+from reV.utilities import ModuleName, ResourceMetaField, SupplyCurveField
 from reV.utilities.exceptions import ExecutionError, OffshoreWindInputWarning
 
 logger = logging.getLogger(__name__)
@@ -221,6 +221,16 @@ class Econ(BaseGen):
                 self._meta = cfh.meta[
                     cfh.meta[ResourceMetaField.GID].isin(
                         self.points_control.sites)]
+
+            dollar_years = pd.Series(
+                self.project_points.dollar_year.to_numpy(),
+                index=self.project_points.sites)
+            explicit_year = self._meta[ResourceMetaField.GID].map(
+                dollar_years)
+            if explicit_year.notna().any():
+                self._meta.loc[
+                    explicit_year.notna(), SupplyCurveField.DOLLAR_YEAR
+                ] = explicit_year.dropna()
 
             if ("offshore" in self._meta and self._meta["offshore"].sum() > 1):
                 w = ('Found offshore sites in econ meta data. '

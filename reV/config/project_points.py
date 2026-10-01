@@ -25,10 +25,16 @@ from reV.config.curtailment import Curtailment
 from reV.config.sam_config import SAMConfig
 from reV.utilities import SiteDataField, SupplyCurveField, ResourceMetaField
 from reV.utilities.exceptions import (ConfigError, ConfigWarning,
-                                      OffshoreWindInputWarning)
+                                      OffshoreWindInputWarning,
+                                      SAMInputWarning)
 
 logger = logging.getLogger(__name__)
 _DEFAULT_CURTAIL_KEY = "default"
+_COST_KEYS = (
+    "capital_cost",
+    "fixed_operating_cost",
+    "variable_operating_cost",
+)
 
 
 class PointsControl:
@@ -400,6 +406,72 @@ class ProjectPoints:
             equal to input names, values equal to the actual inputs.
         """
         return self.sam_config_obj.inputs
+
+    def check_dollar_year(self):
+        """Warn when monetary inputs do not have dollar-year metadata."""
+        dollar_year = self.dollar_year
+        missing_gids = []
+        for index, row in self.df.iterrows():
+            has_cost = any(
+                not pd.isna(self._effective_sam_input(row, key))
+                for key in _COST_KEYS
+            )
+            if has_cost and pd.isna(dollar_year.loc[index]):
+                missing_gids.append(row[SiteDataField.GID])
+
+        if missing_gids:
+            gid_preview = missing_gids[:10]
+            if len(missing_gids) > len(gid_preview):
+                gid_preview.append("...")
+            msg = (
+                f"Cost inputs were detected for {len(missing_gids)} project "
+                f"point(s), including gids {gid_preview}, but no "
+                '"dollar_year" was specified. Consider specifying a dollar '
+                "year in the SAM config or site-specific project points data "
+                "for cost tracking and documentation purposes."
+            )
+            logger.warning(msg)
+            warn(msg, SAMInputWarning)
+
+    def _effective_sam_input(self, row, key):
+        """Get a SAM input after applying a site-specific override."""
+        config = self.sam_inputs[row[SiteDataField.CONFIG]]
+        value = config.get(key)
+        if key in row and not pd.isna(row[key]):
+            value = row[key]
+
+        return value
+
+    @property
+    def dollar_year(self):
+        """Effective dollar year for each project point."""
+        dollar_years = []
+        for _, row in self.df.iterrows():
+            value = self._effective_sam_input(row, "dollar_year")
+            if value is None or pd.isna(value):
+                dollar_years.append(np.nan)
+                continue
+
+            if isinstance(value, (bool, np.bool_)):
+                number = np.nan
+            else:
+                try:
+                    number = float(value)
+                except (TypeError, ValueError):
+                    number = np.nan
+
+            if not np.isfinite(number) or not number.is_integer():
+                msg = (
+                    'The optional SAM input "dollar_year" must be an '
+                    "integer year, but received {!r} for gid {}."
+                    .format(value, row[SiteDataField.GID])
+                )
+                logger.error(msg)
+                raise ConfigError(msg)
+
+            dollar_years.append(int(number))
+
+        return pd.Series(dollar_years, index=self.df.index, name="dollar_year")
 
     @property
     def all_sam_input_keys(self):

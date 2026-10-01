@@ -71,17 +71,6 @@ def is_num(n):
         return False
 
 
-def _to_list(gen_out):
-    """Generation output handler that converts to the rev 1.0 format."""
-    if isinstance(gen_out, list) and len(gen_out) == 1:
-        out = [c["cf_mean"] for c in gen_out[0].values()]
-
-    if isinstance(gen_out, dict):
-        out = [c["cf_mean"] for c in gen_out.values()]
-
-    return out
-
-
 @pytest.mark.parametrize(
     ("f_rev1_out", "rev2_points", "year", "max_workers"),
     [
@@ -1120,6 +1109,25 @@ def test_bad_loc_inputs(bad_input):
         )
         with pytest.raises(ValueError):
             gen.run(max_workers=1)
+
+
+def test_generation_dollar_year_meta(tmp_path):
+    """Test that generation persists dollar-year provenance in metadata."""
+    sam_file = os.path.join(TESTDATADIR, "SAM/naris_pv_1axis_inv13.json")
+    with open(sam_file, encoding="utf-8") as file:
+        sam_inputs = json.load(file)
+    sam_inputs["dollar_year"] = 2020
+
+    out_fpath = tmp_path / "dollar_year.h5"
+    gen = Gen("pvwattsv8", [0], {"default": sam_inputs},
+              os.path.join(TESTDATADIR, "nsrdb/ri_100_nsrdb_2012.h5"))
+    gen.run(max_workers=1, out_fpath=str(out_fpath))
+
+    with Outputs(next(tmp_path.glob("*.h5")), "r") as out:
+        assert out.meta["dollar_year"].to_list() == [2020.0]
+        assert out.SAM_configs["default"]["dollar_year"] == 2020
+
+    return out
 
 
 def execute_pytest(capture="all", flags="-rapP"):

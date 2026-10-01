@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -643,7 +654,7 @@ site-data) can be used in concert to create complex spatially-variant economic
 analyses.</p>
 <p>This example modifies the tax rate and PPA price inputs for each state.
 More complex input sets on a site-by-site basis can be easily generated using a
-similar site_data input method.</p>
+similar point-by-point input method.</p>
 <section id="workflow-description">
 <h2>Workflow Description<a class="headerlink" href="#workflow-description" title="Link to this heading"></a></h2>
 <p>The batching config in this example represents the high-level executed module.
@@ -657,11 +668,10 @@ parameterized. This is the power of the batch module - it’s sufficiently
 generic to modify ANY key-value pairs in any <code class="docutils literal notranslate"><span class="pre">.json</span></code> file, including other
 config files.</p>
 <p>The first module executed in each job pipeline is the econ module. This example
-shows how the site-specific input <code class="docutils literal notranslate"><span class="pre">.csv</span></code> can be used (see the “site_data” key
-in the <code class="docutils literal notranslate"><span class="pre">config_econ.json</span></code> file).</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">site_data.csv</span></code> file sets site-specific input data corresponding to the
-gids in the project points file. Data inputs keyed by each column header in the
-<code class="docutils literal notranslate"><span class="pre">site_data.csv</span></code> file will be added to or replace an input in the
+shows how the site-specific inputs can be specified via the <code class="docutils literal notranslate"><span class="pre">project_points.csv</span></code>.</p>
+<p>Specifically, the <code class="docutils literal notranslate"><span class="pre">project_points.csv</span></code> file sets site-specific input data
+corresponding to each gid. Data inputs keyed by each column header in the
+<code class="docutils literal notranslate"><span class="pre">project_points.csv</span></code> file will be added to or replace an input in the
 “tech_configs” <code class="docutils literal notranslate"><span class="pre">.json</span></code> files (sam_files).</p>
 </section>
 </section>

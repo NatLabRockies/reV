@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -742,13 +753,16 @@ strings. Setting this to False will speed up the meta data read.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.update_dset" title="reV.handlers.multi_year.MultiYear.update_dset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_dset</span></code></a>(dset, dset_array[, dset_slice])</p></td>
 <td><p>Check to see if dset needs to be updated on disk If so write dset_array to disk</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_dataset" title="reV.handlers.multi_year.MultiYear.write_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_dataset</span></code></a>(dset_name, data, dtype[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.validate_dollar_years" title="reV.handlers.multi_year.MultiYear.validate_dollar_years"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_dollar_years</span></code></a>(source_files)</p></td>
+<td><p>Validate matching dollar-year metadata across source files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_dataset" title="reV.handlers.multi_year.MultiYear.write_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_dataset</span></code></a>(dset_name, data, dtype[, ...])</p></td>
 <td><p>Write dataset to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_means" title="reV.handlers.multi_year.MultiYear.write_means"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_means</span></code></a>(h5_file, meta, dset_name, means, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_means" title="reV.handlers.multi_year.MultiYear.write_means"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_means</span></code></a>(h5_file, meta, dset_name, means, ...)</p></td>
 <td><p>Write means array to disk</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_profiles" title="reV.handlers.multi_year.MultiYear.write_profiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_profiles</span></code></a>(h5_file, meta, time_index, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.handlers.multi_year.MultiYear.write_profiles" title="reV.handlers.multi_year.MultiYear.write_profiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_profiles</span></code></a>(h5_file, meta, time_index, ...)</p></td>
 <td><p>Write profiles to disk</p></td>
 </tr>
 </tbody>
@@ -866,6 +880,12 @@ pertains to</p>
 <dd class="field-even"><p><strong>source_files</strong> (<em>list</em>) – List of .h5 filepaths.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reV.handlers.multi_year.MultiYear.validate_dollar_years">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">validate_dollar_years</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/handlers/multi_year.html#MultiYear.validate_dollar_years"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.handlers.multi_year.MultiYear.validate_dollar_years" title="Link to this definition"></a></dt>
+<dd><p>Validate matching dollar-year metadata across source files.</p>
 </dd></dl>
 
 <dl class="py method">

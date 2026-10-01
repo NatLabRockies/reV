@@ -15,6 +15,7 @@ reV.config.project\_points.ProjectPoints
 
    .. autosummary::
    
+      ~ProjectPoints.check_dollar_year
       ~ProjectPoints.get_sites_from_config
       ~ProjectPoints.get_sites_from_curtailment
       ~ProjectPoints.index
@@ -35,6 +36,7 @@ reV.config.project\_points.ProjectPoints
       ~ProjectPoints.curtailment
       ~ProjectPoints.d
       ~ProjectPoints.df
+      ~ProjectPoints.dollar_year
       ~ProjectPoints.gids
       ~ProjectPoints.h
       ~ProjectPoints.sam_config_ids

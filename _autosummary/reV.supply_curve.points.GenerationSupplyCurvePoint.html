@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -787,139 +798,142 @@ specified, no zone mask will be applied.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.county" title="reV.supply_curve.points.GenerationSupplyCurvePoint.county"><code class="xref py py-obj docutils literal notranslate"><span class="pre">county</span></code></a></p></td>
 <td><p>Get the SC point county based on the resource meta data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.elevation" title="reV.supply_curve.points.GenerationSupplyCurvePoint.elevation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elevation</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.dollar_year" title="reV.supply_curve.points.GenerationSupplyCurvePoint.dollar_year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dollar_year</span></code></a></p></td>
+<td><p>Common dollar year for included generation sites.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.elevation" title="reV.supply_curve.points.GenerationSupplyCurvePoint.elevation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">elevation</span></code></a></p></td>
 <td><p>Get the SC point elevation based on the resource meta data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.exclusions" title="reV.supply_curve.points.GenerationSupplyCurvePoint.exclusions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclusions</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.exclusions" title="reV.supply_curve.points.GenerationSupplyCurvePoint.exclusions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclusions</span></code></a></p></td>
 <td><p>Get the exclusions object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.fixed_charge_rate" title="reV.supply_curve.points.GenerationSupplyCurvePoint.fixed_charge_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixed_charge_rate</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.fixed_charge_rate" title="reV.supply_curve.points.GenerationSupplyCurvePoint.fixed_charge_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixed_charge_rate</span></code></a></p></td>
 <td><p>Mean fixed_charge_rate, defaults to 0.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.friction_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.friction_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">friction_data</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.friction_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.friction_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">friction_data</span></code></a></p></td>
 <td><p>Get the friction data for the full SC point (no exclusions)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen</span></code></a></p></td>
 <td><p>Get the generation output object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_ac_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_ac_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ac_data</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_ac_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_ac_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_ac_data</span></code></a></p></td>
 <td><p>Get the generation ac capacity factor data array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_data</span></code></a></p></td>
 <td><p>Get the generation capacity factor data array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_gid_set</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gen_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gen_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gen_gid_set</span></code></a></p></td>
 <td><p>Get list of unique generation gids corresponding to this sc point.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gid" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gid</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gid" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gid</span></code></a></p></td>
 <td><p>Supply curve point gid</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gid_counts" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gid_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gid_counts</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.gid_counts" title="reV.supply_curve.points.GenerationSupplyCurvePoint.gid_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gid_counts</span></code></a></p></td>
 <td><p>Get the number of exclusion pixels in each resource/generation gid corresponding to this sc point.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5</span></code></a></p></td>
 <td><p>h5 Resource handler object</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5_dsets_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5_dsets_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5_dsets_data</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5_dsets_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5_dsets_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5_dsets_data</span></code></a></p></td>
 <td><p>Get any additional/supplemental h5 dataset data to summarize.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5_gid_set</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.h5_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.h5_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h5_gid_set</span></code></a></p></td>
 <td><p>Get list of unique h5 gids corresponding to this sc point.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask" title="reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_mask</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask" title="reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_mask</span></code></a></p></td>
 <td><p>[0, 1] where 1 is included and 0 is excluded).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask_flat" title="reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask_flat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_mask_flat</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask_flat" title="reV.supply_curve.points.GenerationSupplyCurvePoint.include_mask_flat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">include_mask_flat</span></code></a></p></td>
 <td><p>Get the flattened inclusion mask (normalized with expected range: [0, 1] where 1 is included and 0 is excluded).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.latitude" title="reV.supply_curve.points.GenerationSupplyCurvePoint.latitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latitude</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.latitude" title="reV.supply_curve.points.GenerationSupplyCurvePoint.latitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latitude</span></code></a></p></td>
 <td><p>Get the SC point latitude</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.lcoe_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.lcoe_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcoe_data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.lcoe_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.lcoe_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lcoe_data</span></code></a></p></td>
 <td><p>Get the LCOE data array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.longitude" title="reV.supply_curve.points.GenerationSupplyCurvePoint.longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longitude</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.longitude" title="reV.supply_curve.points.GenerationSupplyCurvePoint.longitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longitude</span></code></a></p></td>
 <td><p>Get the SC point longitude</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf</span></code></a></p></td>
 <td><p>Get the mean capacity factor for the non-excluded data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_ac" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_ac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf_ac</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_ac" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_ac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf_ac</span></code></a></p></td>
 <td><p>Get the mean AC capacity factor for the non-excluded data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_dc" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_dc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf_dc</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_dc" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_cf_dc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_cf_dc</span></code></a></p></td>
 <td><p>Get the mean DC capacity factor for the non-excluded data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_friction" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_friction</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_friction" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_friction</span></code></a></p></td>
 <td><p>Get the mean friction scalar for the non-excluded data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_h5_dsets_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_h5_dsets_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_h5_dsets_data</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_h5_dsets_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_h5_dsets_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_h5_dsets_data</span></code></a></p></td>
 <td><p>Get the mean supplemental h5 datasets data (optional)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_lcoe</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_lcoe</span></code></a></p></td>
 <td><p>Get the mean LCOE for the non-excluded data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe_friction" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_lcoe_friction</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe_friction" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_lcoe_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_lcoe_friction</span></code></a></p></td>
 <td><p>Get the mean LCOE for the non-excluded data, multiplied by the mean_friction scalar value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_res" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_res"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_res</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_res" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_res"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_res</span></code></a></p></td>
 <td><p>Get the mean resource for the non-excluded data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_wake_losses" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_wake_losses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_wake_losses</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.mean_wake_losses" title="reV.supply_curve.points.GenerationSupplyCurvePoint.mean_wake_losses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_wake_losses</span></code></a></p></td>
 <td><p>Mean wake losses, if applicable.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.n_gids" title="reV.supply_curve.points.GenerationSupplyCurvePoint.n_gids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_gids</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.n_gids" title="reV.supply_curve.points.GenerationSupplyCurvePoint.n_gids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_gids</span></code></a></p></td>
 <td><p>Get the total number of not fully excluded pixels associated with the available resource/generation gids at the given sc gid.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.offshore" title="reV.supply_curve.points.GenerationSupplyCurvePoint.offshore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">offshore</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.offshore" title="reV.supply_curve.points.GenerationSupplyCurvePoint.offshore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">offshore</span></code></a></p></td>
 <td><p>Get the SC point offshore flag based on the resource meta data (if offshore column is present).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.pixel_area" title="reV.supply_curve.points.GenerationSupplyCurvePoint.pixel_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pixel_area</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.pixel_area" title="reV.supply_curve.points.GenerationSupplyCurvePoint.pixel_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pixel_area</span></code></a></p></td>
 <td><p>The area in km2 of a single exclusion pixel.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.power_density" title="reV.supply_curve.points.GenerationSupplyCurvePoint.power_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_density</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.power_density" title="reV.supply_curve.points.GenerationSupplyCurvePoint.power_density"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_density</span></code></a></p></td>
 <td><p>Get the estimated power density either from input or infered from generation output meta.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.power_density_ac" title="reV.supply_curve.points.GenerationSupplyCurvePoint.power_density_ac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_density_ac</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.power_density_ac" title="reV.supply_curve.points.GenerationSupplyCurvePoint.power_density_ac"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_density_ac</span></code></a></p></td>
 <td><p>Get the estimated AC power density either from input or inferred from generation output meta.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.regional_multiplier" title="reV.supply_curve.points.GenerationSupplyCurvePoint.regional_multiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regional_multiplier</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.regional_multiplier" title="reV.supply_curve.points.GenerationSupplyCurvePoint.regional_multiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regional_multiplier</span></code></a></p></td>
 <td><p>Mean regional capital cost multiplier, defaults to 1.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.res_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.res_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">res_data</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.res_data" title="reV.supply_curve.points.GenerationSupplyCurvePoint.res_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">res_data</span></code></a></p></td>
 <td><p>Get the resource data array.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.res_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.res_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">res_gid_set</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.res_gid_set" title="reV.supply_curve.points.GenerationSupplyCurvePoint.res_gid_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">res_gid_set</span></code></a></p></td>
 <td><p>Get list of unique resource gids corresponding to this sc point.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.resolution" title="reV.supply_curve.points.GenerationSupplyCurvePoint.resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolution</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.resolution" title="reV.supply_curve.points.GenerationSupplyCurvePoint.resolution"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolution</span></code></a></p></td>
 <td><p>Get the supply curve grid aggregation resolution</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.rows" title="reV.supply_curve.points.GenerationSupplyCurvePoint.rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.rows" title="reV.supply_curve.points.GenerationSupplyCurvePoint.rows"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rows</span></code></a></p></td>
 <td><p>Get the rows of the exclusions layer associated with this SC point.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_col_ind" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_col_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_col_ind</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_col_ind" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_col_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_col_ind</span></code></a></p></td>
 <td><p>Supply curve column index</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_annual_energy" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_annual_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_point_annual_energy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_annual_energy" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_annual_energy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_point_annual_energy</span></code></a></p></td>
 <td><p>Get the total annual energy (MWh) for the entire SC point.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_gid" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_point_gid</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_gid" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_point_gid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_point_gid</span></code></a></p></td>
 <td><p>Supply curve point gid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_row_ind" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_row_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_row_ind</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.sc_row_ind" title="reV.supply_curve.points.GenerationSupplyCurvePoint.sc_row_ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sc_row_ind</span></code></a></p></td>
 <td><p>Supply curve row index</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.state" title="reV.supply_curve.points.GenerationSupplyCurvePoint.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.state" title="reV.supply_curve.points.GenerationSupplyCurvePoint.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state</span></code></a></p></td>
 <td><p>Get the SC point state based on the resource meta data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.summary" title="reV.supply_curve.points.GenerationSupplyCurvePoint.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.summary" title="reV.supply_curve.points.GenerationSupplyCurvePoint.summary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summary</span></code></a></p></td>
 <td><p>Supply curve point's meta data summary</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.timezone" title="reV.supply_curve.points.GenerationSupplyCurvePoint.timezone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timezone</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.timezone" title="reV.supply_curve.points.GenerationSupplyCurvePoint.timezone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timezone</span></code></a></p></td>
 <td><p>Get the SC point timezone based on the resource meta data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.zone_mask" title="reV.supply_curve.points.GenerationSupplyCurvePoint.zone_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zone_mask</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.zone_mask" title="reV.supply_curve.points.GenerationSupplyCurvePoint.zone_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zone_mask</span></code></a></p></td>
 <td><p>Get the 2D zone mask, where 1 is included and 0 is excluded.</p></td>
 </tr>
 </tbody>
@@ -1298,6 +1312,12 @@ factor is <cite>None</cite>, this value will also be <cite>None</cite>.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.14)">float</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.supply_curve.points.GenerationSupplyCurvePoint.dollar_year">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dollar_year</span></span><a class="headerlink" href="#reV.supply_curve.points.GenerationSupplyCurvePoint.dollar_year" title="Link to this definition"></a></dt>
+<dd><p>Common dollar year for included generation sites.</p>
 </dd></dl>
 
 <dl class="py property">

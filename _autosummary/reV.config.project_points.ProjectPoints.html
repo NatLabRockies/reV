@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -642,7 +653,7 @@
 <h1>reV.config.project_points.ProjectPoints<a class="headerlink" href="#rev-config-project-points-projectpoints" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reV.config.project_points.ProjectPoints">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ProjectPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sam_configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curtailment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/config/project_points.html#ProjectPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.config.project_points.ProjectPoints" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ProjectPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sam_configs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tech</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curtailment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_specific_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/config/project_points.html#ProjectPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.config.project_points.ProjectPoints" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class to manage site and SAM input configuration requests.</p>
 <p class="rubric">Examples</p>
@@ -692,31 +703,65 @@ are expected. Can be:</p>
 </ul>
 </div></blockquote>
 </li>
+<li><p><strong>site_specific_data</strong> (<em>str | os.PathLike | dict | pd.DataFrame, optional</em>) – Site-specific input data to add to project points. This
+input can be one of the following:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A path to a CSV file with one row per site and a
+<code class="docutils literal notranslate"><span class="pre">gid</span></code> column.</p></li>
+<li><p>A path to a JSON, YAML, YML, or TOML config file that
+contains site <code class="docutils literal notranslate"><span class="pre">gid</span></code> values as top-level keys and
+dictionaries of site-specific inputs as values.</p></li>
+<li><p>A gid-keyed dictionary following the same format as
+the JSON/YAML/TOML config input.</p></li>
+<li><p>A DataFrame with pre-extracted site data.</p></li>
+</ul>
+</div></blockquote>
+<p>After loading, the rows in this table are matched to the
+project point sites via <code class="docutils literal notranslate"><span class="pre">gid</span></code>. The rest of the columns
+should match configuration input keys that will take
+site-specific values. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no site-specific data is
+considered.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This input is often used to provide site-based
+regional capital cost multipliers. <code class="docutils literal notranslate"><span class="pre">reV</span></code> does not
+ingest multipliers directly; instead, this file is
+expected to have a <code class="docutils literal notranslate"><span class="pre">capital_cost</span></code> column that gives the
+multiplier-adjusted capital cost value for each location.
+Therefore, you <em>must</em> re-create this input file every
+time you change your base capital cost assumption.</p>
+</div>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.get_sites_from_config" title="reV.config.project_points.ProjectPoints.get_sites_from_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_from_config</span></code></a>(config)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.check_dollar_year" title="reV.config.project_points.ProjectPoints.check_dollar_year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_dollar_year</span></code></a>()</p></td>
+<td><p>Warn when monetary inputs do not have dollar-year metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.get_sites_from_config" title="reV.config.project_points.ProjectPoints.get_sites_from_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_from_config</span></code></a>(config)</p></td>
 <td><p>Get a site list that corresponds to a config key.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.get_sites_from_curtailment" title="reV.config.project_points.ProjectPoints.get_sites_from_curtailment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_from_curtailment</span></code></a>(curtailment)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.get_sites_from_curtailment" title="reV.config.project_points.ProjectPoints.get_sites_from_curtailment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_from_curtailment</span></code></a>(curtailment)</p></td>
 <td><p>Get a site list that corresponds to a curtailment key.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.index" title="reV.config.project_points.ProjectPoints.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(gid)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.index" title="reV.config.project_points.ProjectPoints.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a>(gid)</p></td>
 <td><p>Get the index location (iloc not loc) for a resource gid found in the project points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.join_df" title="reV.config.project_points.ProjectPoints.join_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_df</span></code></a>(df2[, key])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.join_df" title="reV.config.project_points.ProjectPoints.join_df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">join_df</span></code></a>(df2[, key])</p></td>
 <td><p>Join new df2 to the _df attribute using the _df's gid as pkey.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.lat_lon_coords" title="reV.config.project_points.ProjectPoints.lat_lon_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lat_lon_coords</span></code></a>(lat_lons, res_file, sam_configs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.lat_lon_coords" title="reV.config.project_points.ProjectPoints.lat_lon_coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lat_lon_coords</span></code></a>(lat_lons, res_file, sam_configs)</p></td>
 <td><p>Generate ProjectPoints for gids nearest to given latitude longitudes</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.regions" title="reV.config.project_points.ProjectPoints.regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regions</span></code></a>(regions, res_file, sam_configs[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.regions" title="reV.config.project_points.ProjectPoints.regions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regions</span></code></a>(regions, res_file, sam_configs[, ...])</p></td>
 <td><p>Generate ProjectPoints for gids nearest to given latitude longitudes</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.split" title="reV.config.project_points.ProjectPoints.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split</span></code></a>(i0, i1, project_points)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.split" title="reV.config.project_points.ProjectPoints.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">split</span></code></a>(i0, i1, project_points)</p></td>
 <td><p>Return split instance of a ProjectPoints instance w/ site subset.</p></td>
 </tr>
 </tbody>
@@ -736,28 +781,31 @@ are expected. Can be:</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.df" title="reV.config.project_points.ProjectPoints.df"><code class="xref py py-obj docutils literal notranslate"><span class="pre">df</span></code></a></p></td>
 <td><p>Get the project points dataframe property.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.gids" title="reV.config.project_points.ProjectPoints.gids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gids</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.dollar_year" title="reV.config.project_points.ProjectPoints.dollar_year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dollar_year</span></code></a></p></td>
+<td><p>Effective dollar year for each project point.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.gids" title="reV.config.project_points.ProjectPoints.gids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gids</span></code></a></p></td>
 <td><p>Get the list of gids (resource file index values) belonging to this instance of ProjectPoints.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.h" title="reV.config.project_points.ProjectPoints.h"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.h" title="reV.config.project_points.ProjectPoints.h"><code class="xref py py-obj docutils literal notranslate"><span class="pre">h</span></code></a></p></td>
 <td><p>Get the hub heights corresponding to the site list.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_config_ids" title="reV.config.project_points.ProjectPoints.sam_config_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_config_ids</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_config_ids" title="reV.config.project_points.ProjectPoints.sam_config_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_config_ids</span></code></a></p></td>
 <td><p>Get the SAM configs dictionary property.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_config_obj" title="reV.config.project_points.ProjectPoints.sam_config_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_config_obj</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_config_obj" title="reV.config.project_points.ProjectPoints.sam_config_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_config_obj</span></code></a></p></td>
 <td><p>Get the SAM config object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_inputs" title="reV.config.project_points.ProjectPoints.sam_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_inputs</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sam_inputs" title="reV.config.project_points.ProjectPoints.sam_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_inputs</span></code></a></p></td>
 <td><p>Get the SAM configuration inputs dictionary property.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sites" title="reV.config.project_points.ProjectPoints.sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sites" title="reV.config.project_points.ProjectPoints.sites"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites</span></code></a></p></td>
 <td><p>Get the list of sites (resource file gids) belonging to this instance of ProjectPoints.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sites_as_slice" title="reV.config.project_points.ProjectPoints.sites_as_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_as_slice</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.sites_as_slice" title="reV.config.project_points.ProjectPoints.sites_as_slice"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sites_as_slice</span></code></a></p></td>
 <td><p>Get the sites in slice format.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.tech" title="reV.config.project_points.ProjectPoints.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.config.project_points.ProjectPoints.tech" title="reV.config.project_points.ProjectPoints.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
 <td><p>Get the tech property from the config.</p></td>
 </tr>
 </tbody>
@@ -810,6 +858,18 @@ value is the SAM config. Each SAM config is a dictionary with keys
 equal to input names, values equal to the actual inputs.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="reV.config.project_points.ProjectPoints.check_dollar_year">
+<span class="sig-name descname"><span class="pre">check_dollar_year</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/config/project_points.html#ProjectPoints.check_dollar_year"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.config.project_points.ProjectPoints.check_dollar_year" title="Link to this definition"></a></dt>
+<dd><p>Warn when monetary inputs do not have dollar-year metadata.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.config.project_points.ProjectPoints.dollar_year">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">dollar_year</span></span><a class="headerlink" href="#reV.config.project_points.ProjectPoints.dollar_year" title="Link to this definition"></a></dt>
+<dd><p>Effective dollar year for each project point.</p>
 </dd></dl>
 
 <dl class="py property">

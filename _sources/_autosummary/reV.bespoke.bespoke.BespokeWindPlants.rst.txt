@@ -18,7 +18,7 @@ reV.bespoke.bespoke.BespokeWindPlants
       ~BespokeWindPlants.run
       ~BespokeWindPlants.run_parallel
       ~BespokeWindPlants.run_serial
-      ~BespokeWindPlants.sam_sys_inputs_with_site_data
+      ~BespokeWindPlants.sam_sys_inputs_with_site_specific_data
       ~BespokeWindPlants.save_outputs
    
    

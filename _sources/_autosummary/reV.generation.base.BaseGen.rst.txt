@@ -15,7 +15,6 @@ reV.generation.base.BaseGen
 
    .. autosummary::
    
-      ~BaseGen.add_site_data_to_pp
       ~BaseGen.flush
       ~BaseGen.get_pc
       ~BaseGen.get_sites_per_worker
@@ -46,7 +45,6 @@ reV.generation.base.BaseGen
       ~BaseGen.sam_configs
       ~BaseGen.sam_metas
       ~BaseGen.sam_module
-      ~BaseGen.site_data
       ~BaseGen.site_limit
       ~BaseGen.site_mem
       ~BaseGen.tech

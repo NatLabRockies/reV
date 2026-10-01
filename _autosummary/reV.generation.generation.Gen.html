@@ -55,13 +55,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -241,7 +234,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -343,6 +352,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -352,6 +362,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -791,6 +802,11 @@ completely. See the documentation for the <code class="docutils literal notransl
 <a class="reference internal" href="reV.SAM.generation.PvWattsv8.html#reV.SAM.generation.PvWattsv8" title="reV.SAM.generation.PvWattsv8"><code class="xref py py-class docutils literal notranslate"><span class="pre">reV.SAM.generation.PvWattsv8</span></code></a>,
 <a class="reference internal" href="reV.SAM.generation.Geothermal.html#reV.SAM.generation.Geothermal" title="reV.SAM.generation.Geothermal"><code class="xref py py-class docutils literal notranslate"><span class="pre">reV.SAM.generation.Geothermal</span></code></a>, etc.) for
 info on the allowed and/or required SAM config file inputs.</p>
+<p>SAM configurations may include an optional integer
+<code class="docutils literal notranslate"><span class="pre">dollar_year</span></code> for monetary input provenance. If standard reV
+cost inputs are present without it, reV emits a warning. This
+value is tracked in generation and supply-curve outputs but does
+not cause reV to inflate or otherwise adjust costs.</p>
 </li>
 <li><p><strong>resource_file</strong> (<em>str</em>) – Filepath to resource data. This input can be path to a
 single resource HDF5 file or a path including a wildcard
@@ -826,6 +842,28 @@ second analysis year, and so on). Wild cards are allowed,
 even if you list out the years explicitly (i.e.
 <code class="docutils literal notranslate"><span class="pre">[&quot;wtk_*_2012.h5&quot;,</span> <span class="pre">&quot;wtk_*_2013.h5&quot;,</span> <span class="pre">...]</span></code>)</p>
 </div>
+<p>A single generation configuration can use resource files
+from different datasets. Set <code class="docutils literal notranslate"><span class="pre">analysis_years</span></code> and
+<code class="docutils literal notranslate"><span class="pre">resource_file</span></code> to lists of the same length; reV pairs
+each year with the resource file at the same position. For
+example, a WIND Toolkit (WTK) and bias-corrected
+High-Resolution Rapid Refresh (BC-HRRR) run can use:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"analysis_years"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">2012</span><span class="p">,</span><span class="w"> </span><span class="mi">2013</span><span class="p">,</span><span class="w"> </span><span class="mi">2015</span><span class="p">,</span><span class="w"> </span><span class="mi">2016</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"resource_file"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/conus/v1.0.0/wtk_conus_2012.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/conus/v1.0.0/wtk_conus_2013.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/HRRR/bchrrr_conus_2015.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/HRRR/bchrrr_conus_2016.h5"</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each list entry can contain a wildcard when a resource for
+one year is split across multiple HDF5 files, such as
+<code class="docutils literal notranslate"><span class="pre">&quot;/path/to/wtk/wtk_*_2012.h5&quot;</span></code>. Each wildcard must match
+complementary files for only its paired year; it cannot combine
+multiple analysis years into one list entry.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>If you are using custom resource data (i.e.
@@ -884,47 +922,6 @@ aggregation/supply curve step if the <code class="docutils literal notranslate">
 dataset is detected in the generation file.</p>
 </div>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">('cf_mean',)</span></code>.</p>
-</li>
-<li><p><strong>site_data</strong> (<em>str | os.PathLike | dict | pd.DataFrame, optional</em>) – Site-specific input data for SAM calculation. This input can
-be one of the following:</p>
-<blockquote>
-<div><ul class="simple">
-<li><dl class="simple">
-<dt>A path to a CSV file with one row per site and a</dt><dd><p><code class="docutils literal notranslate"><span class="pre">gid</span></code> column.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>A path to a JSON, YAML, YML, or TOML config file that</dt><dd><p>contains site <code class="docutils literal notranslate"><span class="pre">gid</span></code> values as top-level keys and
-dictionaries of site-specific inputs as values.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>A gid-keyed dictionary following the same format as</dt><dd><p>the JSON/YAML/TOML config input.</p>
-</dd>
-</dl>
-</li>
-<li><p>A DataFrame with pre-extracted site data.</p></li>
-</ul>
-</div></blockquote>
-<p>After loading, the rows in this table are matched to the
-input sites via <code class="docutils literal notranslate"><span class="pre">gid</span></code>. The rest of the columns should
-match configuration input keys that will take site-specific
-values. Note that some or all site-specific inputs can be
-specified via the <cite>project_points</cite> input table instead. If
-<code class="docutils literal notranslate"><span class="pre">None</span></code>, no site-specific data is considered.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This input is often used to provide site-based
-regional capital cost multipliers. <code class="docutils literal notranslate"><span class="pre">reV</span></code> does not
-ingest multipliers directly; instead, this file is
-expected to have a <code class="docutils literal notranslate"><span class="pre">capital_cost</span></code> column that gives the
-multiplier-adjusted capital cost value for each location.
-Therefore, you <em>must</em> re-create this input file every
-time you change your base capital cost assumption.</p>
-</div>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </li>
 <li><p><strong>curtailment</strong> (<em>dict | str, optional</em>) –</p>
 <p>Input for curtailment parameters, which can be one of:</p>
@@ -1002,34 +999,31 @@ corrections are applied. By default, <code class="docutils literal notranslate">
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.add_site_data_to_pp" title="reV.generation.generation.Gen.add_site_data_to_pp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_site_data_to_pp</span></code></a>(site_data)</p></td>
-<td><p>Add the site df (site-specific inputs) to project points dataframe.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.flush" title="reV.generation.generation.Gen.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.flush" title="reV.generation.generation.Gen.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
 <td><p>Flush the output data in self.out attribute to disk in .h5 format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.get_pc" title="reV.generation.generation.Gen.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, tech)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.get_pc" title="reV.generation.generation.Gen.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, tech)</p></td>
 <td><p>Get a PointsControl instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.get_sites_per_worker" title="reV.generation.generation.Gen.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.get_sites_per_worker" title="reV.generation.generation.Gen.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
 <td><p>Get the nominal sites per worker (x-chunk size) for a given file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.handle_leap_ti" title="reV.generation.generation.Gen.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.handle_leap_ti" title="reV.generation.generation.Gen.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
 <td><p>Handle a time index for a leap year by dropping a day.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.handle_lifetime_index" title="reV.generation.generation.Gen.handle_lifetime_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_lifetime_index</span></code></a>(ti)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.handle_lifetime_index" title="reV.generation.generation.Gen.handle_lifetime_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_lifetime_index</span></code></a>(ti)</p></td>
 <td><p>Adjust the time index if modeling full system lifetime.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.run" title="reV.generation.generation.Gen.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([out_fpath, max_workers, timeout, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.run" title="reV.generation.generation.Gen.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([out_fpath, max_workers, timeout, ...])</p></td>
 <td><p>Execute a parallel reV generation run with smart data flushing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_index" title="reV.generation.generation.Gen.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_index" title="reV.generation.generation.Gen.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
 <td><p>Get the index corresponding to the site gid.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.unpack_futures" title="reV.generation.generation.Gen.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.unpack_futures" title="reV.generation.generation.Gen.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
 <td><p>Combine list of futures results into their native dict format/type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.unpack_output" title="reV.generation.generation.Gen.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.unpack_output" title="reV.generation.generation.Gen.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
 <td><p>Unpack a SAM SiteOutput object to the output attribute.</p></td>
 </tr>
 </tbody>
@@ -1085,22 +1079,19 @@ corrections are applied. By default, <code class="docutils literal notranslate">
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.sam_module" title="reV.generation.generation.Gen.sam_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_module</span></code></a></p></td>
 <td><p>Get the SAM module class to be used for SAM simulations.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_data" title="reV.generation.generation.Gen.site_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_data</span></code></a></p></td>
-<td><p>Get the site-specific inputs in dataframe format.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_limit" title="reV.generation.generation.Gen.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_limit" title="reV.generation.generation.Gen.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
 <td><p>Get the number of sites results that can be stored in memory at once</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_mem" title="reV.generation.generation.Gen.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.site_mem" title="reV.generation.generation.Gen.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
 <td><p>Get the memory (MB) required to store all results for a single site.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.tech" title="reV.generation.generation.Gen.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.tech" title="reV.generation.generation.Gen.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
 <td><p>Get the reV technology string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.time_index" title="reV.generation.generation.Gen.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.time_index" title="reV.generation.generation.Gen.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
 <td><p>Get the generation resource time index data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.year" title="reV.generation.generation.Gen.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.generation.Gen.year" title="reV.generation.generation.Gen.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
 <td><p>Get the resource year.</p></td>
 </tr>
 </tbody>
@@ -1170,20 +1161,6 @@ column is added.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ti</strong> (<em>pandas.DatetimeIndex</em>) – Time-series datetime index.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reV.generation.generation.Gen.add_site_data_to_pp">
-<span class="sig-name descname"><span class="pre">add_site_data_to_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reV.generation.generation.Gen.add_site_data_to_pp" title="Link to this definition"></a></dt>
-<dd><p>Add the site df (site-specific inputs) to project points dataframe.</p>
-<p>This ensures that only the relevant site’s data will be passed through
-to parallel workers when points_control is iterated and split.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>site_data</strong> (<em>pd.DataFrame</em>) – Site-specific data for econ calculation. Rows correspond to sites,
-columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1418,18 +1395,6 @@ at runtime</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sam_module</strong> (<em>object</em>) – SAM object like PySAM.Pvwattsv7 or PySAM.Lcoefcr</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="reV.generation.generation.Gen.site_data">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">site_data</span></span><a class="headerlink" href="#reV.generation.generation.Gen.site_data" title="Link to this definition"></a></dt>
-<dd><p>Get the site-specific inputs in dataframe format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>_site_data</strong> (<em>pd.DataFrame</em>) – Site-specific input data for gen or econ calculation. Rows match
-sites, columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>

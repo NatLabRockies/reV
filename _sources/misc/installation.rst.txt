@@ -4,12 +4,13 @@ Installation
 ============
 
 .. include:: ../../../README.rst
-   :start-after: Installing reV
+   :start-after: .. inclusion-install
+   :end-before: reV Ecosystem
 
 
 Command Line Tools
 ==================
 
 .. include:: ../../../README.rst
-   :start-after: reV command line tools
+   :start-after: .. inclusion-command-line-tools
    :end-before: Launching a run

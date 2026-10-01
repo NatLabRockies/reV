@@ -15,7 +15,6 @@ reV.econ.econ.Econ
 
    .. autosummary::
    
-      ~Econ.add_site_data_to_pp
       ~Econ.flush
       ~Econ.get_pc
       ~Econ.get_sites_per_worker
@@ -48,7 +47,6 @@ reV.econ.econ.Econ
       ~Econ.sam_configs
       ~Econ.sam_metas
       ~Econ.sam_module
-      ~Econ.site_data
       ~Econ.site_limit
       ~Econ.site_mem
       ~Econ.tech

@@ -1,0 +1,30 @@
+reV.hybrids.hybrids.ProfileSearch
+=================================
+
+.. currentmodule:: reV.hybrids.hybrids
+
+.. autoclass:: ProfileSearch
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ProfileSearch.profile_dset
+      ~ProfileSearch.ti_dset
+   
+   

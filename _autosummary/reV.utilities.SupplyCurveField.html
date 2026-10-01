@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -938,121 +949,124 @@ TBA for details.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.FIXED_CHARGE_RATE" title="reV.utilities.SupplyCurveField.FIXED_CHARGE_RATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FIXED_CHARGE_RATE</span></code></a></p></td>
 <td><p>Fixed charge rate used for LCOE computation (defaults to <cite>None</cite> for non-LCOE runs)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POSSIBLE_X_COORDS" title="reV.utilities.SupplyCurveField.POSSIBLE_X_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POSSIBLE_X_COORDS</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.DOLLAR_YEAR" title="reV.utilities.SupplyCurveField.DOLLAR_YEAR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOLLAR_YEAR</span></code></a></p></td>
+<td><p>Dollar year associated with monetary inputs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POSSIBLE_X_COORDS" title="reV.utilities.SupplyCurveField.POSSIBLE_X_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POSSIBLE_X_COORDS</span></code></a></p></td>
 <td><p>List of turbine x coordinates considered during layout optimization (in meters relative to grid-cell)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POSSIBLE_Y_COORDS" title="reV.utilities.SupplyCurveField.POSSIBLE_Y_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POSSIBLE_Y_COORDS</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POSSIBLE_Y_COORDS" title="reV.utilities.SupplyCurveField.POSSIBLE_Y_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POSSIBLE_Y_COORDS</span></code></a></p></td>
 <td><p>List of turbine y coordinates considered during layout optimization (in meters relative to grid-cell)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TURBINE_X_COORDS" title="reV.utilities.SupplyCurveField.TURBINE_X_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TURBINE_X_COORDS</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TURBINE_X_COORDS" title="reV.utilities.SupplyCurveField.TURBINE_X_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TURBINE_X_COORDS</span></code></a></p></td>
 <td><p>List of optimized layout turbine x coordinates (in meters relative to grid-cell)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TURBINE_Y_COORDS" title="reV.utilities.SupplyCurveField.TURBINE_Y_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TURBINE_Y_COORDS</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TURBINE_Y_COORDS" title="reV.utilities.SupplyCurveField.TURBINE_Y_COORDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TURBINE_Y_COORDS</span></code></a></p></td>
 <td><p>List of optimized layout turbine y coordinates (in meters relative to grid-cell)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.N_TURBINES" title="reV.utilities.SupplyCurveField.N_TURBINES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">N_TURBINES</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.N_TURBINES" title="reV.utilities.SupplyCurveField.N_TURBINES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">N_TURBINES</span></code></a></p></td>
 <td><p>Number of turbines in the optimized layout for this supply curve grid-cell</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.INCLUDED_AREA" title="reV.utilities.SupplyCurveField.INCLUDED_AREA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INCLUDED_AREA</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.INCLUDED_AREA" title="reV.utilities.SupplyCurveField.INCLUDED_AREA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INCLUDED_AREA</span></code></a></p></td>
 <td><p>Area available for wind turbine layout optimization</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.INCLUDED_AREA_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.INCLUDED_AREA_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INCLUDED_AREA_CAPACITY_DENSITY</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.INCLUDED_AREA_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.INCLUDED_AREA_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INCLUDED_AREA_CAPACITY_DENSITY</span></code></a></p></td>
 <td><p>Capacity density of the optimized wind plant layout defined using the area available after removing the exclusions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONVEX_HULL_AREA" title="reV.utilities.SupplyCurveField.CONVEX_HULL_AREA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONVEX_HULL_AREA</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONVEX_HULL_AREA" title="reV.utilities.SupplyCurveField.CONVEX_HULL_AREA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONVEX_HULL_AREA</span></code></a></p></td>
 <td><p>Area of the convex hull of the optimized wind plant layout</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONVEX_HULL_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.CONVEX_HULL_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONVEX_HULL_CAPACITY_DENSITY</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONVEX_HULL_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.CONVEX_HULL_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONVEX_HULL_CAPACITY_DENSITY</span></code></a></p></td>
 <td><p>Capacity density of the optimized wind plant layout defined using the convex hull area of the layout</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.FULL_CELL_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.FULL_CELL_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FULL_CELL_CAPACITY_DENSITY</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.FULL_CELL_CAPACITY_DENSITY" title="reV.utilities.SupplyCurveField.FULL_CELL_CAPACITY_DENSITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FULL_CELL_CAPACITY_DENSITY</span></code></a></p></td>
 <td><p>Capacity density of the optimized wind plant layout defined using the full non-excluded area of the supply curve grid-cell</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_AEP" title="reV.utilities.SupplyCurveField.BESPOKE_AEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_AEP</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_AEP" title="reV.utilities.SupplyCurveField.BESPOKE_AEP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_AEP</span></code></a></p></td>
 <td><p>Annual energy production of the optimized wind plant layout computed using wind speed/direction joint probability distribution (as opposed to historical weather data)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_OBJECTIVE" title="reV.utilities.SupplyCurveField.BESPOKE_OBJECTIVE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_OBJECTIVE</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_OBJECTIVE" title="reV.utilities.SupplyCurveField.BESPOKE_OBJECTIVE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_OBJECTIVE</span></code></a></p></td>
 <td><p>Objective function value of the optimized wind plant layout.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_CAPITAL_COST" title="reV.utilities.SupplyCurveField.BESPOKE_CAPITAL_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_CAPITAL_COST</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_CAPITAL_COST" title="reV.utilities.SupplyCurveField.BESPOKE_CAPITAL_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_CAPITAL_COST</span></code></a></p></td>
 <td><p>Capital cost of the optimized wind plant layout</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_FIXED_OPERATING_COST" title="reV.utilities.SupplyCurveField.BESPOKE_FIXED_OPERATING_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_FIXED_OPERATING_COST</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_FIXED_OPERATING_COST" title="reV.utilities.SupplyCurveField.BESPOKE_FIXED_OPERATING_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_FIXED_OPERATING_COST</span></code></a></p></td>
 <td><p>Annual fixed operating cost of the optimized wind plant layout</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_VARIABLE_OPERATING_COST" title="reV.utilities.SupplyCurveField.BESPOKE_VARIABLE_OPERATING_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_VARIABLE_OPERATING_COST</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_VARIABLE_OPERATING_COST" title="reV.utilities.SupplyCurveField.BESPOKE_VARIABLE_OPERATING_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_VARIABLE_OPERATING_COST</span></code></a></p></td>
 <td><p>Variable operating cost of the optimized wind plant layout</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_BALANCE_OF_SYSTEM_COST" title="reV.utilities.SupplyCurveField.BESPOKE_BALANCE_OF_SYSTEM_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_BALANCE_OF_SYSTEM_COST</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_BALANCE_OF_SYSTEM_COST" title="reV.utilities.SupplyCurveField.BESPOKE_BALANCE_OF_SYSTEM_COST"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_BALANCE_OF_SYSTEM_COST</span></code></a></p></td>
 <td><p>Balance of system cost of the optimized wind plant layout</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_LIMIT_DB" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_LIMIT_DB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_LIMIT_DB</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_LIMIT_DB" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_LIMIT_DB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_LIMIT_DB</span></code></a></p></td>
 <td><p>Plant noise limit used to model this SC point</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_VIOLATIONS_COUNT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_COUNT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_VIOLATIONS_COUNT</span></code></a></p></td>
 <td><p>Number of observers for which the plant noise exceeds the limit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_OBSERVER_COUNT</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_OBSERVER_COUNT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_OBSERVER_COUNT</span></code></a></p></td>
 <td><p>Number of observers (structures) for wind plant noise</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_VIOLATIONS_PCT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT" title="reV.utilities.SupplyCurveField.BESPOKE_NOISE_VIOLATIONS_PCT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BESPOKE_NOISE_VIOLATIONS_PCT</span></code></a></p></td>
 <td><p>Percentage of observers for which the plant noise exceeds the limit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TRANS_GID" title="reV.utilities.SupplyCurveField.TRANS_GID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_GID</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TRANS_GID" title="reV.utilities.SupplyCurveField.TRANS_GID"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_GID</span></code></a></p></td>
 <td><p>Transmission connection feature GID</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TRANS_TYPE" title="reV.utilities.SupplyCurveField.TRANS_TYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_TYPE</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TRANS_TYPE" title="reV.utilities.SupplyCurveField.TRANS_TYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_TYPE</span></code></a></p></td>
 <td><p>Transmission connection feature type</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_LCOE_FRICTION</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_LCOE_FRICTION</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_CAPACITY</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRANS_CAPACITY</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.DIST_SPUR_KM" title="reV.utilities.SupplyCurveField.DIST_SPUR_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIST_SPUR_KM</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.DIST_SPUR_KM" title="reV.utilities.SupplyCurveField.DIST_SPUR_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIST_SPUR_KM</span></code></a></p></td>
 <td><p>Distance between the grid-cell centroid and cheapest available electrical substation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.DIST_EXPORT_KM" title="reV.utilities.SupplyCurveField.DIST_EXPORT_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIST_EXPORT_KM</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.DIST_EXPORT_KM" title="reV.utilities.SupplyCurveField.DIST_EXPORT_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIST_EXPORT_KM</span></code></a></p></td>
 <td><p>Length of the offshore export cable</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_DIST_KM" title="reV.utilities.SupplyCurveField.REINFORCEMENT_DIST_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_DIST_KM</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_DIST_KM" title="reV.utilities.SupplyCurveField.REINFORCEMENT_DIST_KM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_DIST_KM</span></code></a></p></td>
 <td><p>Distance between the connected substation and nearest regional load center.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TIE_LINE_COST_PER_MW" title="reV.utilities.SupplyCurveField.TIE_LINE_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TIE_LINE_COST_PER_MW</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TIE_LINE_COST_PER_MW" title="reV.utilities.SupplyCurveField.TIE_LINE_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TIE_LINE_COST_PER_MW</span></code></a></p></td>
 <td><p>Cost of the spur line used to connect the grid-cell centroid with the cheapest available electrical substation</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONNECTION_COST_PER_MW" title="reV.utilities.SupplyCurveField.CONNECTION_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONNECTION_COST_PER_MW</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.CONNECTION_COST_PER_MW" title="reV.utilities.SupplyCurveField.CONNECTION_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CONNECTION_COST_PER_MW</span></code></a></p></td>
 <td><p>Substation connection/upgrade/installation cost</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.EXPORT_COST_PER_MW" title="reV.utilities.SupplyCurveField.EXPORT_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EXPORT_COST_PER_MW</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.EXPORT_COST_PER_MW" title="reV.utilities.SupplyCurveField.EXPORT_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EXPORT_COST_PER_MW</span></code></a></p></td>
 <td><p>Cost of the offshore export cable</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_COST_PER_MW" title="reV.utilities.SupplyCurveField.REINFORCEMENT_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_COST_PER_MW</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_COST_PER_MW" title="reV.utilities.SupplyCurveField.REINFORCEMENT_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_COST_PER_MW</span></code></a></p></td>
 <td><p>Non-levelized reinforcement transmission capital costs</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TOTAL_TRANS_CAP_COST_PER_MW" title="reV.utilities.SupplyCurveField.TOTAL_TRANS_CAP_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_TRANS_CAP_COST_PER_MW</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TOTAL_TRANS_CAP_COST_PER_MW" title="reV.utilities.SupplyCurveField.TOTAL_TRANS_CAP_COST_PER_MW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_TRANS_CAP_COST_PER_MW</span></code></a></p></td>
 <td><p>Non-levelized spur and point-of-interconnection transmission capital costs</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.LCOT" title="reV.utilities.SupplyCurveField.LCOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LCOT</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.LCOT" title="reV.utilities.SupplyCurveField.LCOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LCOT</span></code></a></p></td>
 <td><p>Levelized cost of transmission.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TOTAL_LCOE" title="reV.utilities.SupplyCurveField.TOTAL_LCOE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_LCOE</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.TOTAL_LCOE" title="reV.utilities.SupplyCurveField.TOTAL_LCOE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TOTAL_LCOE</span></code></a></p></td>
 <td><p>All-in LCOE.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.N_PARALLEL_TRANS" title="reV.utilities.SupplyCurveField.N_PARALLEL_TRANS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">N_PARALLEL_TRANS</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.N_PARALLEL_TRANS" title="reV.utilities.SupplyCurveField.N_PARALLEL_TRANS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">N_PARALLEL_TRANS</span></code></a></p></td>
 <td><p>Number of parallel transmission lines connecting the grid-cell centroid with the cheapest available electrical substation</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POI_LAT" title="reV.utilities.SupplyCurveField.POI_LAT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POI_LAT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POI_LAT" title="reV.utilities.SupplyCurveField.POI_LAT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POI_LAT</span></code></a></p></td>
 <td><p>Latitude of the cheapest available electrical substation for the supply curve grid-cell</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POI_LON" title="reV.utilities.SupplyCurveField.POI_LON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POI_LON</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.POI_LON" title="reV.utilities.SupplyCurveField.POI_LON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POI_LON</span></code></a></p></td>
 <td><p>Longitude of the cheapest available electrical substation for the supply curve grid-cell</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LAT" title="reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LAT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_POI_LAT</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LAT" title="reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LAT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_POI_LAT</span></code></a></p></td>
 <td><p>Latitude of the nearest regional load center for the supply curve grid-cell</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LON" title="reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_POI_LON</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LON" title="reV.utilities.SupplyCurveField.REINFORCEMENT_POI_LON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">REINFORCEMENT_POI_LON</span></code></a></p></td>
 <td><p>Longitude of the nearest regional load center for the supply curve grid-cell</p></td>
 </tr>
 </tbody>
@@ -1304,6 +1318,13 @@ non-LCOE runs)</p>
 <span class="sig-name descname"><span class="pre">FIXED_CHARGE_RATE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'fixed_charge_rate'</span></span><a class="headerlink" href="#reV.utilities.SupplyCurveField.FIXED_CHARGE_RATE" title="Link to this definition"></a></dt>
 <dd><p>Fixed charge rate used for LCOE computation
 (defaults to <cite>None</cite> for non-LCOE runs)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="reV.utilities.SupplyCurveField.DOLLAR_YEAR">
+<span class="sig-name descname"><span class="pre">DOLLAR_YEAR</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dollar_year'</span></span><a class="headerlink" href="#reV.utilities.SupplyCurveField.DOLLAR_YEAR" title="Link to this definition"></a></dt>
+<dd><p>Dollar year associated with monetary inputs. This is provenance metadata
+only; reV does not adjust costs to this year.</p>
 </dd></dl>
 
 <dl class="py attribute">

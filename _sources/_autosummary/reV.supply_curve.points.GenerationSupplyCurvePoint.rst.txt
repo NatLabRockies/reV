@@ -48,6 +48,7 @@ reV.supply\_curve.points.GenerationSupplyCurvePoint
       ~GenerationSupplyCurvePoint.cols
       ~GenerationSupplyCurvePoint.country
       ~GenerationSupplyCurvePoint.county
+      ~GenerationSupplyCurvePoint.dollar_year
       ~GenerationSupplyCurvePoint.elevation
       ~GenerationSupplyCurvePoint.exclusions
       ~GenerationSupplyCurvePoint.fixed_charge_rate

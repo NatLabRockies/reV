@@ -56,13 +56,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -242,7 +235,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -344,6 +353,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -353,6 +363,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -686,6 +697,7 @@ on an error metric).</p>
     <span class="s2">"weight"</span><span class="p">:</span> <span class="s2">"gid_counts"</span><span class="p">,</span>
     <span class="s2">"n_profiles"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">"aggregate_profiles"</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">"scale_profiles"</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
     <span class="s2">"save_rev_summary"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
     <span class="s2">"scaled_precision"</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
     <span class="s2">"analysis_years"</span><span class="p">:</span> <span class="n">null</span>
@@ -717,6 +729,7 @@ on an error metric).</p>
 <span class="n">weight</span><span class="p">:</span> <span class="n">gid_counts</span>
 <span class="n">n_profiles</span><span class="p">:</span> <span class="mi">1</span>
 <span class="n">aggregate_profiles</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">scale_profiles</span><span class="p">:</span> <span class="n">null</span>
 <span class="n">save_rev_summary</span><span class="p">:</span> <span class="n">true</span>
 <span class="n">scaled_precision</span><span class="p">:</span> <span class="n">false</span>
 <span class="n">analysis_years</span><span class="p">:</span> <span class="n">null</span>
@@ -839,7 +852,7 @@ outputs look reasonable). By default, <code class="docutils literal notranslate"
 which submits all node jobs.</p>
 </dd>
 </dl>
-<p>Only the <cite>option</cite> key is required for local execution. For execution on the HPC, the <cite>allocation</cite> and <cite>walltime</cite> keys are also required. All other options are populated with default values, as seen above.</p>
+<p>Only the <cite>option</cite> key is required for local execution. For execution on the HPC, the <cite>allocation</cite> and <cite>walltime</cite> keys are also required. All other options are populated with default values, as seen above. For HPC runs, configured execution parameters are also exported to the job environment. Variable names are uppercase and prefixed with the CLI name; non-alphanumeric characters are replaced by underscores. For example, the <code class="docutils literal notranslate"><span class="pre">walltime</span></code> parameter for a CLI named <code class="docutils literal notranslate"><span class="pre">reV</span></code> is available as <code class="docutils literal notranslate"><span class="pre">REV_WALLTIME</span></code>. These variables can be used by <code class="docutils literal notranslate"><span class="pre">sh_script</span></code> or by the command running on the node. The submitted job name is also available as <code class="docutils literal notranslate"><span class="pre">REV_JOB_NAME</span></code>.</p>
 </dd>
 <dt>log_directory<span class="classifier">str</span></dt><dd><p>Path to directory where logs should be written. Path can be relative and does not have to exist on disk (it will be created if missing). By default, <code class="docutils literal notranslate"><span class="pre">&quot;./logs&quot;</span></code>.</p>
 </dd>
@@ -919,6 +932,8 @@ specified.</p>
 <dt>n_profiles<span class="classifier">int, optional</span></dt><dd><p>Number of representative profiles to save to the output file. By default, <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 </dd>
 <dt>aggregate_profiles<span class="classifier">bool, optional</span></dt><dd><p>Flag to calculate the aggregate (weighted meanoid) profile for each supply curve point. This behavior is in lieu of finding the single profile per region closest to the meanoid. If you set this flag to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the <cite>rep_method</cite>, <cite>err_method</cite>, and <cite>n_profiles</cite> inputs will be forcibly set to the default values. By default, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt>scale_profiles<span class="classifier">str, optional</span></dt><dd><p>Column in <cite>rev_summary</cite> containing the target capacity factor for each supply curve point, for example <code class="docutils literal notranslate"><span class="pre">&quot;capacity_factor_ac&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;capacity_factor_dc&quot;</span></code>. Each output profile is multiplied by the target capacity factor divided by its temporal mean. This preserves profile shape while matching capacity factors adjusted after supply curve aggregation (e.g. by NRWAL or manual post-processing). For regions containing multiple supply curve points, targets are averaged using the sum of each point’s <cite>weight</cite> values, or equally if <cite>weight</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. Targets must be finite and nonnegative. A zero target produces a zero profile; a zero-mean profile cannot be scaled to a positive target. Profiles are not clipped, so scaled values may exceed one. By default, <code class="docutils literal notranslate"><span class="pre">None</span></code> (no scaling).</p>
 </dd>
 <dt>save_rev_summary<span class="classifier">bool, optional</span></dt><dd><p>Flag to save full <code class="docutils literal notranslate"><span class="pre">reV</span></code> supply curve table to rep profile output. By default, <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>

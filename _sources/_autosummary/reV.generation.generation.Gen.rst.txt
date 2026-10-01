@@ -15,7 +15,6 @@ reV.generation.generation.Gen
 
    .. autosummary::
    
-      ~Gen.add_site_data_to_pp
       ~Gen.flush
       ~Gen.get_pc
       ~Gen.get_sites_per_worker
@@ -50,7 +49,6 @@ reV.generation.generation.Gen
       ~Gen.sam_configs
       ~Gen.sam_metas
       ~Gen.sam_module
-      ~Gen.site_data
       ~Gen.site_limit
       ~Gen.site_mem
       ~Gen.tech

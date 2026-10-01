@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -642,7 +653,7 @@
 <h1>reV.hybrids.hybrids.HybridsData<a class="headerlink" href="#rev-hybrids-hybrids-hybridsdata" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">HybridsData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solar_fpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_fpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/hybrids/hybrids.html#HybridsData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">HybridsData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solar_fpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_fpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/hybrids/hybrids.html#HybridsData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Hybrids input data container.</p>
 <dl class="field-list simple">
@@ -652,6 +663,9 @@
 summaries from.</p></li>
 <li><p><strong>wind_fpath</strong> (<em>str</em>) – Filepath to rep profile output file to extract wind profiles and
 summaries from.</p></li>
+<li><p><strong>year</strong> (<em>int</em>) – Analysis year. Representative-profile inputs are validated against
+this year, while Bespoke inputs use it to select the annual profile
+and time-index datasets.</p></li>
 </ul>
 </dd>
 </dl>
@@ -675,17 +689,73 @@ summaries from.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.solar_meta" title="reV.hybrids.hybrids.HybridsData.solar_meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_meta</span></code></a></p></td>
 <td><p>Summary for the solar representative profiles.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.solar_profile_dset" title="reV.hybrids.hybrids.HybridsData.solar_profile_dset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_profile_dset</span></code></a></p></td>
+<td><p>Solar profile dataset name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.solar_ti_dset" title="reV.hybrids.hybrids.HybridsData.solar_ti_dset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_ti_dset</span></code></a></p></td>
+<td><p>Solar time index dataset name.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.solar_time_index" title="reV.hybrids.hybrids.HybridsData.solar_time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solar_time_index</span></code></a></p></td>
 <td><p>Get the time index for the solar rep profiles.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.wind_meta" title="reV.hybrids.hybrids.HybridsData.wind_meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_meta</span></code></a></p></td>
 <td><p>Summary for the wind representative profiles.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.wind_profile_dset" title="reV.hybrids.hybrids.HybridsData.wind_profile_dset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_profile_dset</span></code></a></p></td>
+<td><p>Wind profile dataset name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.wind_ti_dset" title="reV.hybrids.hybrids.HybridsData.wind_ti_dset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_ti_dset</span></code></a></p></td>
+<td><p>Wind time index dataset name.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.hybrids.hybrids.HybridsData.wind_time_index" title="reV.hybrids.hybrids.HybridsData.wind_time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wind_time_index</span></code></a></p></td>
 <td><p>Get the time index for the wind rep profiles.</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData.solar_ti_dset">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solar_ti_dset</span></span><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData.solar_ti_dset" title="Link to this definition"></a></dt>
+<dd><p>Solar time index dataset name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData.wind_ti_dset">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">wind_ti_dset</span></span><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData.wind_ti_dset" title="Link to this definition"></a></dt>
+<dd><p>Wind time index dataset name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData.solar_profile_dset">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solar_profile_dset</span></span><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData.solar_profile_dset" title="Link to this definition"></a></dt>
+<dd><p>Solar profile dataset name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData.wind_profile_dset">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">wind_profile_dset</span></span><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData.wind_profile_dset" title="Link to this definition"></a></dt>
+<dd><p>Wind profile dataset name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="reV.hybrids.hybrids.HybridsData.solar_meta">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">solar_meta</span></span><a class="headerlink" href="#reV.hybrids.hybrids.HybridsData.solar_meta" title="Link to this definition"></a></dt>

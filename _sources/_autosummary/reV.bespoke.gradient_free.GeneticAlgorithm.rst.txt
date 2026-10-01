@@ -21,7 +21,8 @@ reV.bespoke.gradient\_free.GeneticAlgorithm
       ~GeneticAlgorithm.initialize_design_variables
       ~GeneticAlgorithm.initialize_fitness
       ~GeneticAlgorithm.initialize_population
-      ~GeneticAlgorithm.make_nonzero
+      ~GeneticAlgorithm.make_offspring_nonzero
+      ~GeneticAlgorithm.make_parent_nonzero
       ~GeneticAlgorithm.mutate
       ~GeneticAlgorithm.optimize_ga
    

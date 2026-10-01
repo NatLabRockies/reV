@@ -9,6 +9,13 @@ reV.bespoke.gradient\_free
 
    
    
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      make_nonzero
+   
    
 
    

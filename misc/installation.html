@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -638,7 +649,6 @@
              
   <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
-<hr class="docutils" />
 <p>NOTE: The installation instruction below assume that you have python installed
 on your machine and are using <a class="reference external" href="https://docs.conda.io/en/latest/index.html">conda</a>
 as your package/environment manager.</p>
@@ -712,87 +722,8 @@ help pages for the CLI’s.</p>
 </ol>
 </section>
 </section>
-<section id="rev-ecosystem">
-<h1>reV Ecosystem<a class="headerlink" href="#rev-ecosystem" title="Link to this heading"></a></h1>
-<p>The reV model suite comes with a set of tools that can be used alongside the core model
-to assist with data preparation and analysis:</p>
-<ul class="simple">
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reVX/">reVX</a> - Collection of helper methods to pre- and post- process geospatial reV data (e.g. setback layers, inclusion masks, etc.)</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/rex/">rex</a> - Library to assist with reV-style data I/O, especially resource data</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reVRt/">reVRt</a> - reV routing tool used to compute transmission costs</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/NRWAL/">NRWAL</a> - Equation Library for detailed cost analysis (offshore, hydrogen, etc.)</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reVeal/">reVeal</a> - reV extension for load analysis and land characterization</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reVReports/">reVReports</a> - Tool for generating publication-ready maps of reV supply curve outputs</p></li>
-<li><p><a class="reference external" href="https://github.com/NatLabRockies/reView">reView</a> - Dashboard for interactive visualization of reV supply curve outputs</p></li>
-<li><p><a class="reference external" href="https://github.com/NatLabRockies/reV-tutorial">reV tutorial</a> - Collection of tutorials for learning how to use reV</p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/gaps/">gaps</a> - Underlying reV pipeline job submission and management system</p></li>
-</ul>
-</section>
-<section id="rev-command-line-tools">
-<h1>reV command line tools<a class="headerlink" href="#rev-command-line-tools" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV.html#reV">reV</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20template-configs.html">reV template-configs</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20batch.html">reV batch</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20pipeline.html">reV pipeline</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20project-points.html">reV project-points</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20bespoke.html">reV bespoke</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20generation.html">reV generation</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20econ.html">reV econ</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20collect.html">reV collect</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20multiyear.html">reV multiyear</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20supply-curve-aggregation.html">reV supply-curve-aggregation</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20supply-curve.html">reV supply-curve</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20rep-profiles.html">reV rep-profiles</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20hybrids.html">reV hybrids</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20nrwal.html">reV nrwal</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20qa-qc.html">reV qa-qc</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20script.html">reV script</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20status.html">reV status</a></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20reset-status.html">reV reset-status</a></p></li>
-</ul>
-<section id="launching-a-run">
-<h2>Launching a run<a class="headerlink" href="#launching-a-run" title="Link to this heading"></a></h2>
-<p>Tips</p>
-<ul class="simple">
-<li><p>Only use a screen session if running the pipeline module: <cite>screen -S rev</cite></p></li>
-<li><p><a class="reference external" href="https://natlabrockies.github.io/reV/misc/examples.full_pipeline_execution.html">Full pipeline execution</a></p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>reV<span class="w"> </span>pipeline<span class="w"> </span>-c<span class="w"> </span><span class="s2">"/scratch/user/rev/config_pipeline.json"</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>Running simply generation or econ can just be done from the console:</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>reV<span class="w"> </span>generation<span class="w"> </span>-c<span class="w"> </span><span class="s2">"/scratch/user/rev/config_gen.json"</span>
-</pre></div>
-</div>
-</section>
-<section id="general-run-times-and-node-configuration-on-eagle">
-<h2>General Run times and Node configuration on Eagle<a class="headerlink" href="#general-run-times-and-node-configuration-on-eagle" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>WTK Conus: 10-20 nodes per year walltime 1-4 hours</p></li>
-<li><p>NSRDB Conus: 5 nodes walltime 2 hours</p></li>
-</ul>
-<p><a class="reference external" href="https://natlabrockies.github.io/reV/misc/examples.eagle_node_requests.html">Eagle node requests</a></p>
-</section>
-</section>
-<section id="recommended-citation">
-<h1>Recommended Citation<a class="headerlink" href="#recommended-citation" title="Link to this heading"></a></h1>
-<p>Please cite both the technical paper and the software with the version and
-DOI you used:</p>
-<p>Maclaurin, Galen J., Nicholas W. Grue, Anthony J. Lopez, Donna M. Heimiller,
-Michael Rossol, Grant Buster, and Travis Williams. 2019. “The Renewable Energy
-Potential (reV) Model: A Geospatial Platform for Technical Potential and Supply
-Curve Modeling.” Golden, Colorado, United States: National Renewable Energy
-Laboratory. NREL/TP-6A20-73067. <a class="reference external" href="https://doi.org/10.2172/1563140">https://doi.org/10.2172/1563140</a>.</p>
-<p>Buster, G., Pinchuk, P., Rossol, M., Benton, B., Gleason, M., Stanley, A. P.,
-Spencer, R., Bannister, M., &amp; Williams, T. (2020). reV (Version 0.14.5)
-[Computer software]. <a class="reference external" href="https://github.com/NatLabRockies/reV">https://github.com/NatLabRockies/reV</a></p>
-</section>
 <section id="command-line-tools">
 <h1>Command Line Tools<a class="headerlink" href="#command-line-tools" title="Link to this heading"></a></h1>
-<hr class="docutils" />
 <ul class="simple">
 <li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV.html#reV">reV</a></p></li>
 <li><p><a class="reference external" href="https://natlabrockies.github.io/reV/_cli/reV%20template-configs.html">reV template-configs</a></p></li>

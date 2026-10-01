@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -642,7 +653,7 @@
 <h1>reV.generation.base.BaseGen<a class="headerlink" href="#rev-generation-base-basegen" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="reV.generation.base.BaseGen">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BaseGen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_leap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_utilization_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/generation/base.html#BaseGen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.generation.base.BaseGen" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BaseGen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_leap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_utilization_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/generation/base.html#BaseGen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.generation.base.BaseGen" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
 <p>Base class for reV gen and econ classes to run SAM simulations.</p>
 <dl class="field-list simple">
@@ -650,10 +661,6 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>points_control</strong> (<em>reV.config.project_points.PointsControl</em>) – Project points control instance for site and SAM config spec.</p></li>
 <li><p><strong>output_request</strong> (<em>list | tuple</em>) – Output variables requested from SAM.</p></li>
-<li><p><strong>site_data</strong> (<em>str | pd.DataFrame | None</em>) – Site-specific input data for SAM calculation. String should be a
-filepath that points to a csv, DataFrame is pre-extracted data.
-Rows match sites, columns are input keys. Need a “gid” column.
-Input as None if no site-specific data.</p></li>
 <li><p><strong>drop_leap</strong> (<em>bool</em>) – Drop leap day instead of final day of year during leap years.</p></li>
 <li><p><strong>memory_utilization_limit</strong> (<em>float</em>) – Memory utilization limit (fractional). This sets how many site
 results will be stored in-memory at any given time before flushing
@@ -665,28 +672,25 @@ to disk.</p></li>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.add_site_data_to_pp" title="reV.generation.base.BaseGen.add_site_data_to_pp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_site_data_to_pp</span></code></a>(site_data)</p></td>
-<td><p>Add the site df (site-specific inputs) to project points dataframe.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.flush" title="reV.generation.base.BaseGen.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.flush" title="reV.generation.base.BaseGen.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
 <td><p>Flush the output data in self.out attribute to disk in .h5 format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.get_pc" title="reV.generation.base.BaseGen.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, tech)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.get_pc" title="reV.generation.base.BaseGen.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, tech)</p></td>
 <td><p>Get a PointsControl instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.get_sites_per_worker" title="reV.generation.base.BaseGen.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.get_sites_per_worker" title="reV.generation.base.BaseGen.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
 <td><p>Get the nominal sites per worker (x-chunk size) for a given file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.handle_leap_ti" title="reV.generation.base.BaseGen.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.handle_leap_ti" title="reV.generation.base.BaseGen.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
 <td><p>Handle a time index for a leap year by dropping a day.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_index" title="reV.generation.base.BaseGen.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_index" title="reV.generation.base.BaseGen.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
 <td><p>Get the index corresponding to the site gid.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.unpack_futures" title="reV.generation.base.BaseGen.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.unpack_futures" title="reV.generation.base.BaseGen.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
 <td><p>Combine list of futures results into their native dict format/type.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.unpack_output" title="reV.generation.base.BaseGen.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.unpack_output" title="reV.generation.base.BaseGen.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
 <td><p>Unpack a SAM SiteOutput object to the output attribute.</p></td>
 </tr>
 </tbody>
@@ -736,22 +740,19 @@ to disk.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.sam_module" title="reV.generation.base.BaseGen.sam_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_module</span></code></a></p></td>
 <td><p>Get the SAM module class to be used for SAM simulations.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_data" title="reV.generation.base.BaseGen.site_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_data</span></code></a></p></td>
-<td><p>Get the site-specific inputs in dataframe format.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_limit" title="reV.generation.base.BaseGen.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_limit" title="reV.generation.base.BaseGen.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
 <td><p>Get the number of sites results that can be stored in memory at once</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_mem" title="reV.generation.base.BaseGen.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.site_mem" title="reV.generation.base.BaseGen.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
 <td><p>Get the memory (MB) required to store all results for a single site.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.tech" title="reV.generation.base.BaseGen.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.tech" title="reV.generation.base.BaseGen.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
 <td><p>Get the reV technology string.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.time_index" title="reV.generation.base.BaseGen.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.time_index" title="reV.generation.base.BaseGen.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
 <td><p>Get the resource time index data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.year" title="reV.generation.base.BaseGen.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.generation.base.BaseGen.year" title="reV.generation.base.BaseGen.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
 <td><p>Get the resource year.</p></td>
 </tr>
 </tbody>
@@ -775,18 +776,6 @@ to disk.</p></li>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>_out_chunk</strong> (<em>tuple</em>) – Two entry tuple (start, end) indicies (inclusive) for where the
 current data in-memory belongs in the final output.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="reV.generation.base.BaseGen.site_data">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">site_data</span></span><a class="headerlink" href="#reV.generation.base.BaseGen.site_data" title="Link to this definition"></a></dt>
-<dd><p>Get the site-specific inputs in dataframe format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>_site_data</strong> (<em>pd.DataFrame</em>) – Site-specific input data for gen or econ calculation. Rows match
-sites, columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1042,20 +1031,6 @@ data, respectively.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> (<em>dict</em>) – Compiled results of the native future results type (dict).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reV.generation.base.BaseGen.add_site_data_to_pp">
-<span class="sig-name descname"><span class="pre">add_site_data_to_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/generation/base.html#BaseGen.add_site_data_to_pp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.generation.base.BaseGen.add_site_data_to_pp" title="Link to this definition"></a></dt>
-<dd><p>Add the site df (site-specific inputs) to project points dataframe.</p>
-<p>This ensures that only the relevant site’s data will be passed through
-to parallel workers when points_control is iterated and split.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>site_data</strong> (<em>pd.DataFrame</em>) – Site-specific data for econ calculation. Rows correspond to sites,
-columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>

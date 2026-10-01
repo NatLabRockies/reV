@@ -16,6 +16,7 @@ reV.hybrids.hybrid\_methods
    
       aggregate_capacity
       aggregate_capacity_factor
+      aggregate_lcoe
       aggregate_solar_capacity
       aggregate_wind_capacity
    

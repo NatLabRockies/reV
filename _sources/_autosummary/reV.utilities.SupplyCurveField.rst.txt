@@ -117,6 +117,7 @@ reV.utilities.SupplyCurveField
       ~SupplyCurveField.COST_BASE_VOC_USD_PER_AC_MWH
       ~SupplyCurveField.COST_SITE_VOC_USD_PER_AC_MWH
       ~SupplyCurveField.FIXED_CHARGE_RATE
+      ~SupplyCurveField.DOLLAR_YEAR
       ~SupplyCurveField.POSSIBLE_X_COORDS
       ~SupplyCurveField.POSSIBLE_Y_COORDS
       ~SupplyCurveField.TURBINE_X_COORDS

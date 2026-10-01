@@ -23,6 +23,7 @@ reV.hybrids.hybrids
       Hybridization
       HybridsData
       MetaHybridizer
+      ProfileSearch
       RatioColumns
    
    

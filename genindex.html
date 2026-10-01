@@ -51,13 +51,6 @@
 <li class="toctree-l3"><a class="reference internal" href="misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -237,7 +230,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -339,6 +348,7 @@
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -348,6 +358,7 @@
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="_autosummary/reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -1161,14 +1172,6 @@
         <li><a href="_autosummary/reV.SAM.generation.WindPowerPD.html#reV.SAM.generation.WindPowerPD.add_scheduled_losses">(WindPowerPD method)</a>
 </li>
       </ul></li>
-      <li><a href="_autosummary/reV.generation.base.BaseGen.html#reV.generation.base.BaseGen.add_site_data_to_pp">add_site_data_to_pp() (BaseGen method)</a>
-
-      <ul>
-        <li><a href="_autosummary/reV.econ.econ.Econ.html#reV.econ.econ.Econ.add_site_data_to_pp">(Econ method)</a>
-</li>
-        <li><a href="_autosummary/reV.generation.generation.Gen.html#reV.generation.generation.Gen.add_site_data_to_pp">(Gen method)</a>
-</li>
-      </ul></li>
       <li><a href="_autosummary/reV.supply_curve.supply_curve.SupplyCurve.html#reV.supply_curve.supply_curve.SupplyCurve.add_sum_cols">add_sum_cols() (SupplyCurve static method)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.cli_functions.add_to_run_attrs.html#reV.utilities.cli_functions.add_to_run_attrs">add_to_run_attrs() (in module reV.utilities.cli_functions)</a>
@@ -1182,7 +1185,11 @@
       <li><a href="_autosummary/reV.losses.power_curve.adjust_power_curve.html#reV.losses.power_curve.adjust_power_curve">adjust_power_curve() (in module reV.losses.power_curve)</a>
 </li>
       <li><a href="_autosummary/reV.econ.economies_of_scale.EconomiesOfScale.html#reV.econ.economies_of_scale.EconomiesOfScale.aep">aep (EconomiesOfScale property)</a>
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.aep">(PlaceTurbines property)</a>
 </li>
+      </ul></li>
       <li><a href="_autosummary/reV.SAM.generation.AbstractSamPv.html#reV.SAM.generation.AbstractSamPv.agg_albedo">agg_albedo() (AbstractSamPv static method)</a>
 
       <ul>
@@ -1225,6 +1232,8 @@
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html#reV.hybrids.hybrid_methods.aggregate_capacity_factor">aggregate_capacity_factor() (in module reV.hybrids.hybrid_methods)</a>
 </li>
+      <li><a href="_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html#reV.hybrids.hybrid_methods.aggregate_lcoe">aggregate_lcoe() (in module reV.hybrids.hybrid_methods)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html#reV.hybrids.hybrid_methods.aggregate_solar_capacity">aggregate_solar_capacity() (in module reV.hybrids.hybrid_methods)</a>
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html#reV.hybrids.hybrid_methods.aggregate_wind_capacity">aggregate_wind_capacity() (in module reV.hybrids.hybrid_methods)</a>
@@ -1253,8 +1262,6 @@
 </li>
       <li><a href="_autosummary/reV.config.base_analysis_config.AnalysisConfig.html#reV.config.base_analysis_config.AnalysisConfig.analysis_years">analysis_years (AnalysisConfig property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.config.base_analysis_config.AnalysisConfig.html#reV.config.base_analysis_config.AnalysisConfig">AnalysisConfig (class in reV.config.base_analysis_config)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.generation.AbstractSamGeneration.html#reV.SAM.generation.AbstractSamGeneration.annual_energy">annual_energy() (AbstractSamGeneration method)</a>
@@ -1291,6 +1298,8 @@
         <li><a href="_autosummary/reV.SAM.generation.WindPowerPD.html#reV.SAM.generation.WindPowerPD.annual_energy">(WindPowerPD method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLosses.html#reV.losses.power_curve.PowerCurveLosses.annual_losses_with_transformed_power_curve">annual_losses_with_transformed_power_curve() (PowerCurveLosses method)</a>
 </li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.annual_time_indexes">annual_time_indexes (BespokeSinglePlant property)</a>
@@ -1315,6 +1324,8 @@
 
       <ul>
         <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.area">(GenerationSupplyCurvePoint property)</a>
+</li>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.area">(PlaceTurbines property)</a>
 </li>
         <li><a href="_autosummary/reV.supply_curve.points.SupplyCurvePoint.html#reV.supply_curve.points.SupplyCurvePoint.area">(SupplyCurvePoint property)</a>
 </li>
@@ -1433,12 +1444,18 @@
         <li><a href="_autosummary/reV.handlers.transmission.TransmissionFeatures.html#reV.handlers.transmission.TransmissionFeatures.available_capacity">(TransmissionFeatures method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.avg_sl_dist_to_center_m">avg_sl_dist_to_center_m (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.avg_sl_dist_to_medoid_m">avg_sl_dist_to_medoid_m (PlaceTurbines property)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.balance_of_system_cost">balance_of_system_cost (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.supply_curve.aggregation.BaseAggregation.html#reV.supply_curve.aggregation.BaseAggregation">BaseAggregation (class in reV.supply_curve.aggregation)</a>
 </li>
       <li><a href="_autosummary/reV.config.base_config.BaseConfig.html#reV.config.base_config.BaseConfig">BaseConfig (class in reV.config.base_config)</a>
@@ -1501,6 +1518,8 @@
         <li><a href="_autosummary/reV.losses.power_curve.LinearStretching.html#reV.losses.power_curve.LinearStretching.bounds">(LinearStretching property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs.build_for_sc_point">build_for_sc_point() (PlantNoiseInputs method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1520,7 +1539,11 @@
 </li>
       </ul></li>
       <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.capacity">capacity (GenerationSupplyCurvePoint property)</a>
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.capacity">(PlaceTurbines property)</a>
 </li>
+      </ul></li>
       <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.capacity_ac">capacity_ac (GenerationSupplyCurvePoint property)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.CAPACITY_AC_MW">CAPACITY_AC_MW (SupplyCurveField attribute)</a>
@@ -1528,6 +1551,12 @@
       <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.capacity_dc">capacity_dc (GenerationSupplyCurvePoint property)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.CAPACITY_DC_MW">CAPACITY_DC_MW (SupplyCurveField attribute)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.capacity_density">capacity_density (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.capital_cost">capital_cost (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.capital_cost_per_kw">capital_cost_per_kw() (PlaceTurbines method)</a>
 </li>
       <li><a href="_autosummary/reV.econ.economies_of_scale.EconomiesOfScale.html#reV.econ.economies_of_scale.EconomiesOfScale.capital_cost_scalar">capital_cost_scalar (EconomiesOfScale property)</a>
 </li>
@@ -1687,6 +1716,8 @@
       </ul></li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.check_dependencies">check_dependencies() (BespokeSinglePlant class method)</a>
 </li>
+      <li><a href="_autosummary/reV.config.project_points.ProjectPoints.html#reV.config.project_points.ProjectPoints.check_dollar_year">check_dollar_year() (ProjectPoints method)</a>
+</li>
       <li><a href="_autosummary/reV.handlers.transmission.POIFeatures.html#reV.handlers.transmission.POIFeatures.check_feature_dependencies">check_feature_dependencies() (POIFeatures method)</a>
 
       <ul>
@@ -1789,6 +1820,8 @@
         <li><a href="_autosummary/reV.config.execution.HPCConfig.html#reV.config.execution.HPCConfig.clear">(HPCConfig method)</a>
 </li>
         <li><a href="_autosummary/reV.config.output_request.OutputRequest.html#reV.config.output_request.OutputRequest.clear">(OutputRequest method)</a>
+</li>
+        <li><a href="_autosummary/reV.bespoke.pack_turbs.PackTurbines.html#reV.bespoke.pack_turbs.PackTurbines.clear">(PackTurbines method)</a>
 </li>
         <li><a href="_autosummary/reV.config.sam_config.SAMConfig.html#reV.config.sam_config.SAMConfig.clear">(SAMConfig method)</a>
 </li>
@@ -1938,6 +1971,8 @@
 </li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeWindPlants.html#reV.bespoke.bespoke.BespokeWindPlants.completed_gids">completed_gids (BespokeWindPlants property)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise.compute_noise">compute_noise() (PlantNoise method)</a>
+</li>
       <li><a href="_autosummary/reV.supply_curve.supply_curve.SupplyCurve.html#reV.supply_curve.supply_curve.SupplyCurve.compute_total_lcoe">compute_total_lcoe() (SupplyCurve method)</a>
 </li>
       <li><a href="_autosummary/reV.config.execution.HPCConfig.html#reV.config.execution.HPCConfig.conda_env">conda_env (HPCConfig property)</a>
@@ -1998,7 +2033,13 @@
 </li>
       <li><a href="_autosummary/reV.losses.utils.convert_to_full_month_names.html#reV.losses.utils.convert_to_full_month_names">convert_to_full_month_names() (in module reV.losses.utils)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.convex_hull">convex_hull (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.convex_hull_area">convex_hull_area (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.CONVEX_HULL_AREA">CONVEX_HULL_AREA (SupplyCurveField attribute)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.convex_hull_capacity_density">convex_hull_capacity_density (PlaceTurbines property)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.CONVEX_HULL_CAPACITY_DENSITY">CONVEX_HULL_CAPACITY_DENSITY (SupplyCurveField attribute)</a>
 </li>
@@ -2228,12 +2269,12 @@
 </li>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultGeothermal.html#reV.SAM.defaults.DefaultGeothermal">DefaultGeothermal (class in reV.SAM.defaults)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultLCOE.html#reV.SAM.defaults.DefaultLCOE">DefaultLCOE (class in reV.SAM.defaults)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultLinearFresnelDsgIph.html#reV.SAM.defaults.DefaultLinearFresnelDsgIph">DefaultLinearFresnelDsgIph (class in reV.SAM.defaults)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultMhkWave.html#reV.SAM.defaults.DefaultMhkWave">DefaultMhkWave (class in reV.SAM.defaults)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultPvSamv1.html#reV.SAM.defaults.DefaultPvSamv1">DefaultPvSamv1 (class in reV.SAM.defaults)</a>
@@ -2249,6 +2290,8 @@
       <li><a href="_autosummary/reV.SAM.defaults.DefaultTcsMoltenSalt.html#reV.SAM.defaults.DefaultTcsMoltenSalt">DefaultTcsMoltenSalt (class in reV.SAM.defaults)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.defaults.DefaultWindPower.html#reV.SAM.defaults.DefaultWindPower">DefaultWindPower (class in reV.SAM.defaults)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.define_exclusions">define_exclusions() (PlaceTurbines method)</a>
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrids.RatioColumns.html#reV.hybrids.hybrids.RatioColumns.denom">denom (RatioColumns attribute)</a>
 </li>
@@ -2288,6 +2331,14 @@
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.DIST_SPUR_KM">DIST_SPUR_KM (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.DocEnum.html#reV.utilities.DocEnum">DocEnum (class in reV.utilities)</a>
+</li>
+      <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.dollar_year">dollar_year (GenerationSupplyCurvePoint property)</a>
+
+      <ul>
+        <li><a href="_autosummary/reV.config.project_points.ProjectPoints.html#reV.config.project_points.ProjectPoints.dollar_year">(ProjectPoints property)</a>
+</li>
+      </ul></li>
+      <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.DOLLAR_YEAR">DOLLAR_YEAR (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.config.sam_config.SAMConfig.html#reV.config.sam_config.SAMConfig.downscale">downscale (SAMConfig property)</a>
 </li>
@@ -2692,10 +2743,16 @@
       <li><a href="_autosummary/reV.hybrids.hybrids.RatioColumns.html#reV.hybrids.hybrids.RatioColumns.fixed">fixed (RatioColumns attribute)</a>
 </li>
       <li><a href="_autosummary/reV.supply_curve.points.GenerationSupplyCurvePoint.html#reV.supply_curve.points.GenerationSupplyCurvePoint.fixed_charge_rate">fixed_charge_rate (GenerationSupplyCurvePoint property)</a>
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.fixed_charge_rate">(PlaceTurbines property)</a>
 </li>
+      </ul></li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.FIXED_CHARGE_RATE">FIXED_CHARGE_RATE (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.FIXED_EOS_MULT">FIXED_EOS_MULT (SupplyCurveField attribute)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.fixed_operating_cost">fixed_operating_cost (PlaceTurbines property)</a>
 </li>
       <li><a href="_autosummary/reV.econ.economies_of_scale.EconomiesOfScale.html#reV.econ.economies_of_scale.EconomiesOfScale.fixed_operating_cost_scalar">fixed_operating_cost_scalar (EconomiesOfScale property)</a>
 </li>
@@ -2784,6 +2841,10 @@
         <li><a href="_autosummary/reV.config.execution.SlurmConfig.html#reV.config.execution.SlurmConfig.fromkeys">(SlurmConfig class method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.full_cell_area">full_cell_area (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.full_cell_capacity_density">full_cell_capacity_density (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.FULL_CELL_CAPACITY_DENSITY">FULL_CELL_CAPACITY_DENSITY (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.losses.utils.full_month_name_from_abbr.html#reV.losses.utils.full_month_name_from_abbr">full_month_name_from_abbr() (in module reV.losses.utils)</a>
@@ -3070,6 +3131,8 @@
 </li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.get_weighted_res_ts">get_weighted_res_ts() (BespokeSinglePlant method)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.pack_turbs.get_xy.html#reV.bespoke.pack_turbs.get_xy">get_xy() (in module reV.bespoke.pack_turbs)</a>
+</li>
       <li><a href="_autosummary/reV.supply_curve.points.AbstractSupplyCurvePoint.html#reV.supply_curve.points.AbstractSupplyCurvePoint.gid">gid (AbstractSupplyCurvePoint property)</a>
 
       <ul>
@@ -3331,6 +3394,8 @@
       <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.initialize_design_variables">initialize_design_variables() (GeneticAlgorithm method)</a>
 </li>
       <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.initialize_fitness">initialize_fitness() (GeneticAlgorithm method)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.initialize_packing">initialize_packing() (PlaceTurbines method)</a>
 </li>
       <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.initialize_population">initialize_population() (GeneticAlgorithm method)</a>
 </li>
@@ -3882,7 +3947,11 @@
       </ul></li>
       <li><a href="_autosummary/reV.utilities.pytest_utils.make_fake_h5_chunks.html#reV.utilities.pytest_utils.make_fake_h5_chunks">make_fake_h5_chunks() (in module reV.utilities.pytest_utils)</a>
 </li>
-      <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.make_nonzero">make_nonzero() (GeneticAlgorithm method)</a>
+      <li><a href="_autosummary/reV.bespoke.gradient_free.make_nonzero.html#reV.bespoke.gradient_free.make_nonzero">make_nonzero() (in module reV.bespoke.gradient_free)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.make_offspring_nonzero">make_offspring_nonzero() (GeneticAlgorithm method)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.make_parent_nonzero">make_parent_nonzero() (GeneticAlgorithm method)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.DocEnum.html#reV.utilities.DocEnum.maketrans">maketrans() (DocEnum static method)</a>
 
@@ -4074,10 +4143,10 @@
       </ul></li>
       <li><a href="_autosummary/reV.nrwal.nrwal.RevNrwal.html#reV.nrwal.nrwal.RevNrwal.meta_out">meta_out (RevNrwal property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.nrwal.nrwal.RevNrwal.html#reV.nrwal.nrwal.RevNrwal.meta_source">meta_source (RevNrwal property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.hybrids.hybrids.MetaHybridizer.html#reV.hybrids.hybrids.MetaHybridizer">MetaHybridizer (class in reV.hybrids.hybrids)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.generation.MhkWave.html#reV.SAM.generation.MhkWave">MhkWave (class in reV.SAM.generation)</a>
@@ -4099,6 +4168,12 @@
         <li><a href="_autosummary/reV.bespoke.cli_bespoke.html#module-reV.bespoke.cli_bespoke">reV.bespoke.cli_bespoke</a>
 </li>
         <li><a href="_autosummary/reV.bespoke.gradient_free.html#module-reV.bespoke.gradient_free">reV.bespoke.gradient_free</a>
+</li>
+        <li><a href="_autosummary/reV.bespoke.pack_turbs.html#module-reV.bespoke.pack_turbs">reV.bespoke.pack_turbs</a>
+</li>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.html#module-reV.bespoke.place_turbines">reV.bespoke.place_turbines</a>
+</li>
+        <li><a href="_autosummary/reV.bespoke.plant_noise.html#module-reV.bespoke.plant_noise">reV.bespoke.plant_noise</a>
 </li>
         <li><a href="_autosummary/reV.cli.html#module-reV.cli">reV.cli</a>
 </li>
@@ -4359,6 +4434,8 @@
 </li>
       <li><a href="_autosummary/reV.utilities.exceptions.NearestNeighborError.html#reV.utilities.exceptions.NearestNeighborError">NearestNeighborError</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.nn_conn_dist_m">nn_conn_dist_m (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.supply_curve.exclusions.ExclusionMask.html#reV.supply_curve.exclusions.ExclusionMask.nodata_lookup">nodata_lookup (ExclusionMask property)</a>
 
       <ul>
@@ -4375,6 +4452,14 @@
         <li><a href="_autosummary/reV.config.execution.SlurmConfig.html#reV.config.execution.SlurmConfig.nodes">(SlurmConfig property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.noise_observers">noise_observers (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.noise_violations">noise_violations (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.noise_violations_pct">noise_violations_pct (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.none_until_optimized.html#reV.bespoke.place_turbines.none_until_optimized">none_until_optimized() (in module reV.bespoke.place_turbines)</a>
+</li>
       <li><a href="_autosummary/reV.SAM.econ.Economic.html#reV.SAM.econ.Economic.npv">npv() (Economic method)</a>
 
       <ul>
@@ -4383,6 +4468,8 @@
         <li><a href="_autosummary/reV.SAM.econ.SingleOwner.html#reV.SAM.econ.SingleOwner.npv">(SingleOwner method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.nturbs">nturbs (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrids.RatioColumns.html#reV.hybrids.hybrids.RatioColumns.num">num (RatioColumns attribute)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.windbos.WindBos.html#reV.SAM.windbos.WindBos.number_of_turbines">number_of_turbines (WindBos property)</a>
@@ -4393,6 +4480,10 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.objective">objective (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs.obs_tiff_fp">obs_tiff_fp (PlantNoiseInputs attribute)</a>
+</li>
       <li><a href="_autosummary/reV.supply_curve.points.AggregationSupplyCurvePoint.html#reV.supply_curve.points.AggregationSupplyCurvePoint.offshore">offshore (AggregationSupplyCurvePoint property)</a>
 
       <ul>
@@ -4417,6 +4508,10 @@
         <li><a href="_autosummary/reV.handlers.outputs.Outputs.html#reV.handlers.outputs.Outputs.open_file">(Outputs class method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.optimization_objective">optimization_objective() (PlaceTurbines method)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.optimize">optimize() (PlaceTurbines method)</a>
+</li>
       <li><a href="_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html#reV.bespoke.gradient_free.GeneticAlgorithm.optimize_ga">optimize_ga() (GeneticAlgorithm method)</a>
 </li>
       <li><a href="_autosummary/reV.config.execution.BaseExecutionConfig.html#reV.config.execution.BaseExecutionConfig.option">option (BaseExecutionConfig property)</a>
@@ -4653,12 +4748,16 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/reV.bespoke.pack_turbs.PackTurbines.html#reV.bespoke.pack_turbs.PackTurbines.pack_turbines_poly">pack_turbines_poly() (PackTurbines method)</a>
+</li>
       <li><a href="_autosummary/reV.handlers.multi_year.MultiYear.html#reV.handlers.multi_year.MultiYear.package">package (MultiYear property)</a>
 
       <ul>
         <li><a href="_autosummary/reV.handlers.outputs.Outputs.html#reV.handlers.outputs.Outputs.package">(Outputs property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.pack_turbs.PackTurbines.html#reV.bespoke.pack_turbs.PackTurbines">PackTurbines (class in reV.bespoke.pack_turbs)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.exceptions.ParallelExecutionWarning.html#reV.utilities.exceptions.ParallelExecutionWarning">ParallelExecutionWarning</a>
 </li>
       <li><a href="_autosummary/reV.utilities.cli_functions.parse_from_pipeline.html#reV.utilities.cli_functions.parse_from_pipeline">parse_from_pipeline() (in module reV.utilities.cli_functions)</a>
@@ -4699,7 +4798,23 @@
         <li><a href="_autosummary/reV.supply_curve.points.SupplyCurvePoint.html#reV.supply_curve.points.SupplyCurvePoint.pixel_area">(SupplyCurvePoint property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.place_turbines">place_turbines() (PlaceTurbines method)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines">PlaceTurbines (class in reV.bespoke.place_turbines)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.plant_noise">plant_noise (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.plant_noise_limit">plant_noise_limit (PlaceTurbines property)</a>
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs.plant_noise_limit">(PlantNoiseInputs attribute)</a>
+</li>
+      </ul></li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.plant_optimizer">plant_optimizer (BespokeSinglePlant property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise">PlantNoise (class in reV.bespoke.plant_noise)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs">PlantNoiseInputs (class in reV.bespoke.plant_noise)</a>
 </li>
       <li><a href="_autosummary/reV.qa_qc.summary.ExclusionsMask.html#reV.qa_qc.summary.ExclusionsMask.plot">plot() (ExclusionsMask class method)</a>
 
@@ -4811,14 +4926,14 @@
 </li>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurve.html#reV.losses.power_curve.PowerCurve">PowerCurve (class in reV.losses.power_curve)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLosses.html#reV.losses.power_curve.PowerCurveLosses">PowerCurveLosses (class in reV.losses.power_curve)</a>
 </li>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLossesInput.html#reV.losses.power_curve.PowerCurveLossesInput">PowerCurveLossesInput (class in reV.losses.power_curve)</a>
 </li>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLossesMixin.html#reV.losses.power_curve.PowerCurveLossesMixin">PowerCurveLossesMixin (class in reV.losses.power_curve)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveWindResource.html#reV.losses.power_curve.PowerCurveWindResource">PowerCurveWindResource (class in reV.losses.power_curve)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.econ.Economic.html#reV.SAM.econ.Economic.ppa_price">ppa_price() (Economic method)</a>
@@ -4843,6 +4958,8 @@
 </li>
       <li><a href="_autosummary/reV.handlers.exclusions.ExclusionLayers.html#reV.handlers.exclusions.ExclusionLayers.profile">profile (ExclusionLayers property)</a>
 </li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.ProfileSearch.html#reV.hybrids.hybrids.ProfileSearch.profile_dset">profile_dset (ProfileSearch property)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrids.Hybridization.html#reV.hybrids.hybrids.Hybridization.profiles">profiles (Hybridization property)</a>
 
       <ul>
@@ -4851,6 +4968,8 @@
         <li><a href="_autosummary/reV.rep_profiles.rep_profiles.RepProfilesBase.html#reV.rep_profiles.rep_profiles.RepProfilesBase.profiles">(RepProfilesBase property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.ProfileSearch.html#reV.hybrids.hybrids.ProfileSearch">ProfileSearch (class in reV.hybrids.hybrids)</a>
+</li>
       <li><a href="_autosummary/reV.generation.base.BaseGen.html#reV.generation.base.BaseGen.project_points">project_points (BaseGen property)</a>
 
       <ul>
@@ -5469,6 +5588,27 @@
 </li>
       </ul></li>
       <li>
+    reV.bespoke.pack_turbs
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.pack_turbs.html#module-reV.bespoke.pack_turbs">module</a>
+</li>
+      </ul></li>
+      <li>
+    reV.bespoke.place_turbines
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.place_turbines.html#module-reV.bespoke.place_turbines">module</a>
+</li>
+      </ul></li>
+      <li>
+    reV.bespoke.plant_noise
+
+      <ul>
+        <li><a href="_autosummary/reV.bespoke.plant_noise.html#module-reV.bespoke.plant_noise">module</a>
+</li>
+      </ul></li>
+      <li>
     reV.cli
 
       <ul>
@@ -5629,6 +5769,8 @@
         <li><a href="_autosummary/reV.handlers.exclusions.html#module-reV.handlers.exclusions">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     reV.handlers.multi_year
 
@@ -5636,8 +5778,6 @@
         <li><a href="_autosummary/reV.handlers.multi_year.html#module-reV.handlers.multi_year">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     reV.handlers.outputs
 
@@ -6324,7 +6464,7 @@
       </ul></li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.sam_sys_inputs">sam_sys_inputs (BespokeSinglePlant property)</a>
 </li>
-      <li><a href="_autosummary/reV.bespoke.bespoke.BespokeWindPlants.html#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_data">sam_sys_inputs_with_site_data() (BespokeWindPlants method)</a>
+      <li><a href="_autosummary/reV.bespoke.bespoke.BespokeWindPlants.html#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_specific_data">sam_sys_inputs_with_site_specific_data() (BespokeWindPlants method)</a>
 </li>
       <li><a href="_autosummary/reV.config.sam_config.SAMConfig.html#reV.config.sam_config.SAMConfig">SAMConfig (class in reV.config.sam_config)</a>
 </li>
@@ -6634,14 +6774,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_autosummary/reV.generation.base.BaseGen.html#reV.generation.base.BaseGen.site_data">site_data (BaseGen property)</a>
-
-      <ul>
-        <li><a href="_autosummary/reV.econ.econ.Econ.html#reV.econ.econ.Econ.site_data">(Econ property)</a>
-</li>
-        <li><a href="_autosummary/reV.generation.generation.Gen.html#reV.generation.generation.Gen.site_data">(Gen property)</a>
-</li>
-      </ul></li>
       <li><a href="_autosummary/reV.generation.base.BaseGen.html#reV.generation.base.BaseGen.site_index">site_index() (BaseGen method)</a>
 
       <ul>
@@ -6700,7 +6832,11 @@
         <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.solar_meta">(HybridsData property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.solar_profile_dset">solar_profile_dset (HybridsData property)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrids.MetaHybridizer.html#reV.hybrids.hybrids.MetaHybridizer.solar_profile_indices_map">solar_profile_indices_map (MetaHybridizer property)</a>
+</li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.solar_ti_dset">solar_ti_dset (HybridsData property)</a>
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrids.Hybridization.html#reV.hybrids.hybrids.Hybridization.solar_time_index">solar_time_index (Hybridization property)</a>
 
@@ -6725,6 +6861,10 @@
       <li><a href="_autosummary/reV.handlers.multi_year.MultiYearGroup.html#reV.handlers.multi_year.MultiYearGroup.source_files">source_files (MultiYearGroup property)</a>
 </li>
       <li><a href="_autosummary/reV.rep_profiles.rep_profiles.RegionRepProfile.html#reV.rep_profiles.rep_profiles.RegionRepProfile.source_profiles">source_profiles (RegionRepProfile property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs.spl_path">spl_path (PlantNoiseInputs attribute)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html#reV.bespoke.plant_noise.PlantNoiseInputs.spl_type">spl_type (PlantNoiseInputs attribute)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.DocEnum.html#reV.utilities.DocEnum.split">split() (DocEnum method)</a>
 
@@ -6942,6 +7082,8 @@
 </li>
       <li><a href="_autosummary/reV.config.curtailment.Curtailment.html#reV.config.curtailment.Curtailment.temperature">temperature (Curtailment property)</a>
 </li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.ProfileSearch.html#reV.hybrids.hybrids.ProfileSearch.ti_dset">ti_dset (ProfileSearch property)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TIE_LINE_COST_PER_MW">TIE_LINE_COST_PER_MW (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.generation.base.BaseGen.html#reV.generation.base.BaseGen.time_index">time_index (BaseGen property)</a>
@@ -6994,14 +7136,16 @@
 </li>
       <li><a href="_autosummary/reV.losses.scheduled.OutageScheduler.html#reV.losses.scheduled.OutageScheduler.total_losses">total_losses (OutageScheduler attribute)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise.total_noise_penalty">total_noise_penalty() (PlantNoise method)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TOTAL_TRANS_CAP_COST_PER_MW">TOTAL_TRANS_CAP_COST_PER_MW (SupplyCurveField attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TRANS_GID">TRANS_GID (SupplyCurveField attribute)</a>
 </li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TRANS_TYPE">TRANS_TYPE (SupplyCurveField attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.handlers.exclusions.ExclusionLayers.html#reV.handlers.exclusions.ExclusionLayers.transform">transform (ExclusionLayers property)</a>
 </li>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLossesInput.html#reV.losses.power_curve.PowerCurveLossesInput.transformation">transformation (PowerCurveLossesInput property)</a>
@@ -7030,9 +7174,19 @@
 </li>
       <li><a href="_autosummary/reV.SAM.windbos.WindBos.html#reV.SAM.windbos.WindBos.turbine_cost">turbine_cost (WindBos property)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise.turbine_interp">turbine_interp (PlantNoise property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.turbine_upper_limit">turbine_upper_limit (PlaceTurbines property)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.turbine_x">turbine_x (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TURBINE_X_COORDS">TURBINE_X_COORDS (SupplyCurveField attribute)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.turbine_y">turbine_y (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.TURBINE_Y_COORDS">TURBINE_Y_COORDS (SupplyCurveField attribute)</a>
+</li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise.turbines_power">turbines_power (PlantNoise property)</a>
 </li>
       <li><a href="_autosummary/reV.SAM.generation.AbstractSamGeneration.html#reV.SAM.generation.AbstractSamGeneration.tz_elev_check">tz_elev_check() (AbstractSamGeneration static method)</a>
 
@@ -7152,6 +7306,8 @@
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.validate">validate() (HybridsData method)</a>
 </li>
+      <li><a href="_autosummary/reV.handlers.multi_year.MultiYear.html#reV.handlers.multi_year.MultiYear.validate_dollar_years">validate_dollar_years() (MultiYear class method)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrids.MetaHybridizer.html#reV.hybrids.hybrids.MetaHybridizer.validate_input">validate_input() (MetaHybridizer method)</a>
 </li>
       <li><a href="_autosummary/reV.config.base_analysis_config.AnalysisConfig.html#reV.config.base_analysis_config.AnalysisConfig.values">values() (AnalysisConfig method)</a>
@@ -7176,6 +7332,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.utilities.SupplyCurveField.html#reV.utilities.SupplyCurveField.VAR_EOS_MULT">VAR_EOS_MULT (SupplyCurveField attribute)</a>
 </li>
+      <li><a href="_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html#reV.bespoke.place_turbines.PlaceTurbines.variable_operating_cost">variable_operating_cost (PlaceTurbines property)</a>
+</li>
       <li><a href="_autosummary/reV.econ.economies_of_scale.EconomiesOfScale.html#reV.econ.economies_of_scale.EconomiesOfScale.variable_operating_cost_scalar">variable_operating_cost_scalar (EconomiesOfScale property)</a>
 </li>
       <li><a href="_autosummary/reV.econ.economies_of_scale.EconomiesOfScale.html#reV.econ.economies_of_scale.EconomiesOfScale.vars">vars (EconomiesOfScale property)</a>
@@ -7186,6 +7344,8 @@
         <li><a href="_autosummary/reV.handlers.outputs.Outputs.html#reV.handlers.outputs.Outputs.version">(Outputs property)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/reV.bespoke.plant_noise.PlantNoise.html#reV.bespoke.plant_noise.PlantNoise.violation_stats">violation_stats() (PlantNoise method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -7216,6 +7376,8 @@
 </li>
       <li><a href="_autosummary/reV.bespoke.bespoke.BespokeSinglePlant.html#reV.bespoke.bespoke.BespokeSinglePlant.wind_plant_ts">wind_plant_ts (BespokeSinglePlant property)</a>
 </li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.wind_profile_dset">wind_profile_dset (HybridsData property)</a>
+</li>
       <li><a href="_autosummary/reV.hybrids.hybrids.MetaHybridizer.html#reV.hybrids.hybrids.MetaHybridizer.wind_profile_indices_map">wind_profile_indices_map (MetaHybridizer property)</a>
 </li>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveLosses.html#reV.losses.power_curve.PowerCurveLosses.wind_resource">wind_resource (PowerCurveLosses attribute)</a>
@@ -7241,6 +7403,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/reV.losses.power_curve.PowerCurveWindResource.html#reV.losses.power_curve.PowerCurveWindResource.wind_speeds">wind_speeds (PowerCurveWindResource property)</a>
+</li>
+      <li><a href="_autosummary/reV.hybrids.hybrids.HybridsData.html#reV.hybrids.hybrids.HybridsData.wind_ti_dset">wind_ti_dset (HybridsData property)</a>
 </li>
       <li><a href="_autosummary/reV.hybrids.hybrids.Hybridization.html#reV.hybrids.hybrids.Hybridization.wind_time_index">wind_time_index (Hybridization property)</a>
 

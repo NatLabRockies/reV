@@ -41,6 +41,7 @@ reV.handlers.multi\_year.MultiYear
       ~MultiYear.set_version_attr
       ~MultiYear.stdev
       ~MultiYear.update_dset
+      ~MultiYear.validate_dollar_years
       ~MultiYear.write_dataset
       ~MultiYear.write_means
       ~MultiYear.write_profiles

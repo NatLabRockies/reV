@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -670,14 +681,33 @@ be a list or tuple of filepaths pointing to the files
 containing the layers. Note that each data layer must be
 uniquely defined (i.e.only appear once and in a single
 input file).</p></li>
-<li><p><strong>res_fpath</strong> (<em>str</em>) – Unix shell style path to wind resource HDF5 file in NLR WTK
+<li><p><strong>res_fpath</strong> (<em>str | list</em>) – Unix shell style path to wind resource HDF5 file in NLR WTK
 format. Can also be a path including a wildcard input like
 <code class="docutils literal notranslate"><span class="pre">/h5_dir/prefix*suffix</span></code> to run bespoke on multiple years
-of resource data. Can also be an explicit list of resource
-HDF5 file paths, which themselves can contain wildcards. If
-multiple files are specified in this way, they must have the
-same coordinates but can have different time indices (i.e.
-different years). This input must be readable by
+of resource data. Bespoke determines each analysis year from
+the resource files’ <code class="docutils literal notranslate"><span class="pre">time_index</span></code> datasets, so it does not
+use an <code class="docutils literal notranslate"><span class="pre">analysis_years</span></code> input. Foe example, files that
+share a directory and naming convention can be specified
+using a single wildcard:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"res_fpath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/path/to/wtk/wtk_conus_*.h5"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To combine separate datasets or directories, provide a list
+of paths, which themselves can contain wildcards. For
+example, a WTK and BC-HRRR run can use:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"res_fpath"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/conus/v1.0.0/wtk_conus_*.h5"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"/datasets/WIND/HRRR/bchrrr_conus_*.h5"</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If multiple files are specified in this way, they must have
+the same coordinates but can have different time indices
+(i.e. different years). This input must be readable by
 <a class="reference external" href="https://natlabrockies.github.io/rex/_autosummary/rex.multi_year_resource.MultiYearWindResource.html#rex.multi_year_resource.MultiYearWindResource" title="(in rex v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">rex.multi_year_resource.MultiYearWindResource</span></code></a>
 (i.e. the resource data conform to the
 <a class="reference external" href="https://tinyurl.com/3fy7v5kx">rex data format</a>). This
@@ -687,7 +717,8 @@ dataset indicating the UTC time of observation, a 1D
 site-specific columns, and 2D resource datasets that match
 the dimensions of (time_index, meta). The time index must
 start at 00:00 of January 1st of the year under
-consideration, and its shape must be a multiple of 8760.</p></li>
+consideration, and its shape must be a multiple of 8760.</p>
+</li>
 <li><p><strong>tm_dset</strong> (<em>str</em>) – Dataset name in the <cite>excl_fpath</cite> file containing the
 techmap (exclusions-to-resource mapping data). This data
 layer links the supply curve GID’s to the generation GID’s
@@ -1129,7 +1160,7 @@ number of nodes. By default, <code class="docutils literal notranslate"><span cl
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.bespoke.bespoke.BespokeWindPlants.run_serial" title="reV.bespoke.bespoke.BespokeWindPlants.run_serial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_serial</span></code></a>(excl_fpath, res_fpath, tm_dset, ...)</p></td>
 <td><p>Standalone serial method to run bespoke optimization.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_data" title="reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_sys_inputs_with_site_data</span></code></a>(gid)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_specific_data" title="reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_specific_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_sys_inputs_with_site_specific_data</span></code></a>(gid)</p></td>
 <td><p>Update the sam_sys_inputs with site data for the given GID.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.bespoke.bespoke.BespokeWindPlants.save_outputs" title="reV.bespoke.bespoke.BespokeWindPlants.save_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_outputs</span></code></a>(out_fpath[, config_file])</p></td>
@@ -1207,11 +1238,11 @@ dictionaries.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_data">
-<span class="sig-name descname"><span class="pre">sam_sys_inputs_with_site_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/bespoke/bespoke.html#BespokeWindPlants.sam_sys_inputs_with_site_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_specific_data">
+<span class="sig-name descname"><span class="pre">sam_sys_inputs_with_site_specific_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/reV/bespoke/bespoke.html#BespokeWindPlants.sam_sys_inputs_with_site_specific_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#reV.bespoke.bespoke.BespokeWindPlants.sam_sys_inputs_with_site_specific_data" title="Link to this definition"></a></dt>
 <dd><p>Update the sam_sys_inputs with site data for the given GID.</p>
-<p>Site data is extracted from the project points DataFrame. Every
-column in the project DataFrame becomes a key in the site_data
+<p>Location data is extracted from the project points DataFrame.
+Every column in the project DataFrame becomes a key in the
 output dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

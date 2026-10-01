@@ -56,13 +56,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -242,7 +235,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -344,6 +353,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -353,6 +363,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../_autosummary/reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -877,7 +888,7 @@ outputs look reasonable). By default, <code class="docutils literal notranslate"
 which submits all node jobs.</p>
 </dd>
 </dl>
-<p>Only the <cite>option</cite> key is required for local execution. For execution on the HPC, the <cite>allocation</cite> and <cite>walltime</cite> keys are also required. All other options are populated with default values, as seen above.</p>
+<p>Only the <cite>option</cite> key is required for local execution. For execution on the HPC, the <cite>allocation</cite> and <cite>walltime</cite> keys are also required. All other options are populated with default values, as seen above. For HPC runs, configured execution parameters are also exported to the job environment. Variable names are uppercase and prefixed with the CLI name; non-alphanumeric characters are replaced by underscores. For example, the <code class="docutils literal notranslate"><span class="pre">walltime</span></code> parameter for a CLI named <code class="docutils literal notranslate"><span class="pre">reV</span></code> is available as <code class="docutils literal notranslate"><span class="pre">REV_WALLTIME</span></code>. These variables can be used by <code class="docutils literal notranslate"><span class="pre">sh_script</span></code> or by the command running on the node. The submitted job name is also available as <code class="docutils literal notranslate"><span class="pre">REV_JOB_NAME</span></code>.</p>
 </dd>
 <dt>log_directory<span class="classifier">str</span></dt><dd><p>Path to directory where logs should be written. Path can be relative and does not have to exist on disk (it will be created if missing). By default, <code class="docutils literal notranslate"><span class="pre">&quot;./logs&quot;</span></code>.</p>
 </dd>
@@ -947,6 +958,10 @@ the <cite>econ_fpath</cite> input will have to be specified manually.</p>
     <span class="s2">"slope"</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">"include_range"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
     <span class="p">},</span>
+    <span class="s2">"roads"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"exclude_values"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"exclude_from_area_filter"</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">},</span>
     <span class="s2">"developable_land"</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">"force_include_values"</span><span class="p">:</span> <span class="mi">42</span>
     <span class="p">},</span>
@@ -973,7 +988,15 @@ the <cite>econ_fpath</cite> input will have to be specified manually.</p>
  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>     <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>These filters define how neighboring pixels are “connected”. Once pixels in the final exclusion layer are connected, the area of each resulting cluster is computed and compared against the <cite>min_area</cite> input. Any cluster with an area less than <cite>min_area</cite> is excluded from the final mask. This argument has no effect if <cite>min_area</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. By default, <code class="docutils literal notranslate"><span class="pre">&quot;queen&quot;</span></code>.</p>
+<p>These filters define how neighboring pixels are “connected”. Once pixels in the composite exclusion layer are connected, the area of each resulting cluster is computed and compared against the <cite>min_area</cite> input. Any cluster with an area less than <cite>min_area</cite> is excluded from the final mask. Layers with <code class="docutils literal notranslate"><span class="pre">exclude_from_area_filter=True</span></code> are combined with the mask after this filter is applied.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Force-inclusion layers are always applied
+after the area filter. Therefore,
+<code class="docutils literal notranslate"><span class="pre">exclude_from_area_filter</span></code> has no effect on
+force-inclusion layers.</p>
+</div>
+<p>This argument has no effect if <cite>min_area</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code>. By default, <code class="docutils literal notranslate"><span class="pre">&quot;queen&quot;</span></code>.</p>
 </dd>
 <dt>min_area<span class="classifier">float, optional</span></dt><dd><p>Minimum area (in km<sup>2</sup>) required to keep an isolated cluster of (included) land within the resulting exclusions mask. Any clusters of land with areas less than this value will be marked as exclusions. See the documentation for <cite>area_filter_kernel</cite> for an explanation of how the area of each land cluster is computed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no area filtering is performed. By default, <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
@@ -1007,7 +1030,7 @@ the <cite>econ_fpath</cite> input will have to be specified manually.</p>
 </dd>
 <dt>lcoe_dset<span class="classifier">str, optional</span></dt><dd><p>Dataset name from the <code class="docutils literal notranslate"><span class="pre">reV</span></code> generation HDF5 output file containing a 1D dataset of mean LCOE values. This dataset will be mapped onto the high-resolution grid and used to compute the mean LCOE for non-excluded area, but only if the LCOE is not re-computed during processing (see the <cite>recalc_lcoe</cite> input for more info). By default, <code class="docutils literal notranslate"><span class="pre">&quot;lcoe_fcr-means&quot;</span></code>.</p>
 </dd>
-<dt>h5_dsets<span class="classifier">list, optional</span></dt><dd><p>Optional list of additional datasets from the <code class="docutils literal notranslate"><span class="pre">reV</span></code> generation/econ HDF5 output file to aggregate. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no extra datasets are aggregated.</p>
+<dt>h5_dsets<span class="classifier">list, optional</span></dt><dd><p>Optional list of additional datasets from the <code class="docutils literal notranslate"><span class="pre">reV</span></code> generation/econ HDF5 output file to aggregate. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no extra datasets are aggregated. Each requested 1D dataset is mapped to the high-resolution exclusion grid using <cite>tm_dset</cite> and output as <code class="docutils literal notranslate"><span class="pre">mean_&lt;dataset&gt;</span></code>. The output value is the included-area-weighted arithmetic mean over the contributing exclusion pixels: <code class="docutils literal notranslate"><span class="pre">sum(value</span> <span class="pre">*</span> <span class="pre">inclusion)</span> <span class="pre">/</span> <span class="pre">sum(inclusion)</span></code>, where <code class="docutils literal notranslate"><span class="pre">inclusion</span></code> is the final inclusion mask value from 0 to 1. Thus, generation sites mapped to more included land area receive more weight, and partial inclusions are weighted proportionally.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This input is meant for passing through 1D

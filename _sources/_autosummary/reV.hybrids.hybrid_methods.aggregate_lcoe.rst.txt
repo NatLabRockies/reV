@@ -1,0 +1,6 @@
+reV.hybrids.hybrid\_methods.aggregate\_lcoe
+===========================================
+
+.. currentmodule:: reV.hybrids.hybrid_methods
+
+.. autofunction:: aggregate_lcoe

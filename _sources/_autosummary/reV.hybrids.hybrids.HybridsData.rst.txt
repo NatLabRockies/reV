@@ -28,8 +28,12 @@ reV.hybrids.hybrids.HybridsData
    
       ~HybridsData.hybrid_time_index
       ~HybridsData.solar_meta
+      ~HybridsData.solar_profile_dset
+      ~HybridsData.solar_ti_dset
       ~HybridsData.solar_time_index
       ~HybridsData.wind_meta
+      ~HybridsData.wind_profile_dset
+      ~HybridsData.wind_ti_dset
       ~HybridsData.wind_time_index
    
    

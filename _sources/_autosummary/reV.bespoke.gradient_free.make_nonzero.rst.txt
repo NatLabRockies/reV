@@ -1,0 +1,6 @@
+reV.bespoke.gradient\_free.make\_nonzero
+========================================
+
+.. currentmodule:: reV.bespoke.gradient_free
+
+.. autofunction:: make_nonzero

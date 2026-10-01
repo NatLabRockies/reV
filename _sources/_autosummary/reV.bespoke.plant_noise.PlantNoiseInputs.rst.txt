@@ -1,0 +1,33 @@
+reV.bespoke.plant\_noise.PlantNoiseInputs
+=========================================
+
+.. currentmodule:: reV.bespoke.plant_noise
+
+.. autoclass:: PlantNoiseInputs
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members: __call__, __add__, __mul__
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PlantNoiseInputs.build_for_sc_point
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PlantNoiseInputs.obs_tiff_fp
+      ~PlantNoiseInputs.plant_noise_limit
+      ~PlantNoiseInputs.spl_path
+      ~PlantNoiseInputs.spl_type
+   
+   

@@ -54,13 +54,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#option-2-clone-repo-recommended-for-developers">Option 2: Clone repo (recommended for developers)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-ecosystem">reV Ecosystem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#rev-command-line-tools">reV command line tools</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#launching-a-run">Launching a run</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../misc/installation.html#general-run-times-and-node-configuration-on-eagle">General Run times and Node configuration on Eagle</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#recommended-citation">Recommended Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc/installation.html#command-line-tools">Command Line Tools</a></li>
 </ul>
 </li>
@@ -240,7 +233,23 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.cli_bespoke.html">reV.bespoke.cli_bespoke</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reV.bespoke.gradient_free.html">reV.bespoke.gradient_free</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.make_nonzero.html">reV.bespoke.gradient_free.make_nonzero</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.bespoke.gradient_free.GeneticAlgorithm.html">reV.bespoke.gradient_free.GeneticAlgorithm</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.pack_turbs.html">reV.bespoke.pack_turbs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.get_xy.html">reV.bespoke.pack_turbs.get_xy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.pack_turbs.PackTurbines.html">reV.bespoke.pack_turbs.PackTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.place_turbines.html">reV.bespoke.place_turbines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.none_until_optimized.html">reV.bespoke.place_turbines.none_until_optimized</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.place_turbines.PlaceTurbines.html">reV.bespoke.place_turbines.PlaceTurbines</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reV.bespoke.plant_noise.html">reV.bespoke.plant_noise</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoise.html">reV.bespoke.plant_noise.PlantNoise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.bespoke.plant_noise.PlantNoiseInputs.html">reV.bespoke.plant_noise.PlantNoiseInputs</a></li>
 </ul>
 </li>
 </ul>
@@ -342,6 +351,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reV.hybrids.hybrid_methods.html">reV.hybrids.hybrid_methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity.html">reV.hybrids.hybrid_methods.aggregate_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_capacity_factor.html">reV.hybrids.hybrid_methods.aggregate_capacity_factor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_lcoe.html">reV.hybrids.hybrid_methods.aggregate_lcoe</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_solar_capacity.html">reV.hybrids.hybrid_methods.aggregate_solar_capacity</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrid_methods.aggregate_wind_capacity.html">reV.hybrids.hybrid_methods.aggregate_wind_capacity</a></li>
 </ul>
@@ -351,6 +361,7 @@
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.Hybridization.html">reV.hybrids.hybrids.Hybridization</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.HybridsData.html">reV.hybrids.hybrids.HybridsData</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.MetaHybridizer.html">reV.hybrids.hybrids.MetaHybridizer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.ProfileSearch.html">reV.hybrids.hybrids.ProfileSearch</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reV.hybrids.hybrids.RatioColumns.html">reV.hybrids.hybrids.RatioColumns</a></li>
 </ul>
 </li>
@@ -741,16 +752,6 @@ parsing, meaning the <cite>cf_file</cite> input will have to be
 specified manually.</p>
 </div>
 </li>
-<li><p><strong>site_data</strong> (<em>str | pd.DataFrame, optional</em>) – Site-specific input data for SAM calculation. If this input
-is a string, it should be a path that points to a CSV file.
-Otherwise, this input should be a DataFrame with
-pre-extracted site data. Rows in this table should match
-the input sites via a <code class="docutils literal notranslate"><span class="pre">gid</span></code> column. The rest of the
-columns should match configuration input keys that will take
-site-specific values. Note that some or all site-specific
-inputs can be specified via the <cite>project_points</cite> input
-table instead. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no site-specific data is
-considered. By default, <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>output_request</strong> (<em>list | tuple, optional</em>) – List of output variables requested from SAM. Can be any
 of the parameters in the “Outputs” group of the PySAM module
 (e.g. <a class="reference external" href="https://nrel-pysam.readthedocs.io/en/latest/modules/Windpower.html#PySAM.Windpower.Windpower.Outputs" title="(in NLR-PySAM)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PySAM.Windpower.Windpower.Outputs</span></code></a>,
@@ -777,31 +778,28 @@ By default, <code class="docutils literal notranslate"><span class="pre">False</
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.add_site_data_to_pp" title="reV.econ.econ.Econ.add_site_data_to_pp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_site_data_to_pp</span></code></a>(site_data)</p></td>
-<td><p>Add the site df (site-specific inputs) to project points dataframe.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.flush" title="reV.econ.econ.Econ.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.flush" title="reV.econ.econ.Econ.flush"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flush</span></code></a>()</p></td>
 <td><p>Flush the output data in self.out attribute to disk in .h5 format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.get_pc" title="reV.econ.econ.Econ.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.get_pc" title="reV.econ.econ.Econ.get_pc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pc</span></code></a>(points, points_range, sam_configs, ...)</p></td>
 <td><p>Get a PointsControl instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.get_sites_per_worker" title="reV.econ.econ.Econ.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.get_sites_per_worker" title="reV.econ.econ.Econ.get_sites_per_worker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sites_per_worker</span></code></a>(res_file[, default])</p></td>
 <td><p>Get the nominal sites per worker (x-chunk size) for a given file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.handle_leap_ti" title="reV.econ.econ.Econ.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.handle_leap_ti" title="reV.econ.econ.Econ.handle_leap_ti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_leap_ti</span></code></a>(ti[, drop_leap])</p></td>
 <td><p>Handle a time index for a leap year by dropping a day.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.run" title="reV.econ.econ.Econ.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([out_fpath, max_workers, timeout, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.run" title="reV.econ.econ.Econ.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([out_fpath, max_workers, timeout, ...])</p></td>
 <td><p>Execute a parallel reV econ run with smart data flushing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_index" title="reV.econ.econ.Econ.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_index" title="reV.econ.econ.Econ.site_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_index</span></code></a>(site_gid[, out_index])</p></td>
 <td><p>Get the index corresponding to the site gid.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.unpack_futures" title="reV.econ.econ.Econ.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.unpack_futures" title="reV.econ.econ.Econ.unpack_futures"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_futures</span></code></a>(futures)</p></td>
 <td><p>Combine list of futures results into their native dict format/type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.unpack_output" title="reV.econ.econ.Econ.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.unpack_output" title="reV.econ.econ.Econ.unpack_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unpack_output</span></code></a>(site_gid, site_output)</p></td>
 <td><p>Unpack a SAM SiteOutput object to the output attribute.</p></td>
 </tr>
 </tbody>
@@ -854,22 +852,19 @@ By default, <code class="docutils literal notranslate"><span class="pre">False</
 <tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.sam_module" title="reV.econ.econ.Econ.sam_module"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sam_module</span></code></a></p></td>
 <td><p>Get the SAM module class to be used for SAM simulations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_data" title="reV.econ.econ.Econ.site_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_data</span></code></a></p></td>
-<td><p>Get the site-specific inputs in dataframe format.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_limit" title="reV.econ.econ.Econ.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_limit" title="reV.econ.econ.Econ.site_limit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_limit</span></code></a></p></td>
 <td><p>Get the number of sites results that can be stored in memory at once</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_mem" title="reV.econ.econ.Econ.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.site_mem" title="reV.econ.econ.Econ.site_mem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">site_mem</span></code></a></p></td>
 <td><p>Get the memory (MB) required to store all results for a single site.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.tech" title="reV.econ.econ.Econ.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.tech" title="reV.econ.econ.Econ.tech"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tech</span></code></a></p></td>
 <td><p>Get the reV technology string.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.time_index" title="reV.econ.econ.Econ.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.time_index" title="reV.econ.econ.Econ.time_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_index</span></code></a></p></td>
 <td><p>Get the generation resource time index data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.year" title="reV.econ.econ.Econ.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#reV.econ.econ.Econ.year" title="reV.econ.econ.Econ.year"><code class="xref py py-obj docutils literal notranslate"><span class="pre">year</span></code></a></p></td>
 <td><p>Get the resource year.</p></td>
 </tr>
 </tbody>
@@ -934,20 +929,6 @@ over the out_fpath input.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>pc</strong> (<em>reV.config.project_points.PointsControl</em>) – PointsControl object instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="reV.econ.econ.Econ.add_site_data_to_pp">
-<span class="sig-name descname"><span class="pre">add_site_data_to_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reV.econ.econ.Econ.add_site_data_to_pp" title="Link to this definition"></a></dt>
-<dd><p>Add the site df (site-specific inputs) to project points dataframe.</p>
-<p>This ensures that only the relevant site’s data will be passed through
-to parallel workers when points_control is iterated and split.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>site_data</strong> (<em>pd.DataFrame</em>) – Site-specific data for econ calculation. Rows correspond to sites,
-columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1134,18 +1115,6 @@ at runtime</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>sam_module</strong> (<em>object</em>) – SAM object like PySAM.Pvwattsv7 or PySAM.Lcoefcr</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="reV.econ.econ.Econ.site_data">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">site_data</span></span><a class="headerlink" href="#reV.econ.econ.Econ.site_data" title="Link to this definition"></a></dt>
-<dd><p>Get the site-specific inputs in dataframe format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>_site_data</strong> (<em>pd.DataFrame</em>) – Site-specific input data for gen or econ calculation. Rows match
-sites, columns are variables.</p>
 </dd>
 </dl>
 </dd></dl>

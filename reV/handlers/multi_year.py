@@ -23,7 +23,7 @@ from rex.utilities.utilities import (
 from reV.generation.base import LCOE_REQUIRED_OUTPUTS
 from reV.config.output_request import SAMOutputRequest
 from reV.handlers.outputs import Outputs
-from reV.utilities import ModuleName, log_versions
+from reV.utilities import ModuleName, SupplyCurveField, log_versions
 from reV.utilities.exceptions import ConfigError, HandlerRuntimeError
 from reV.utilities.cli_functions import add_to_run_attrs
 
@@ -416,6 +416,35 @@ class MultiYear(Outputs):
 
         return source_files
 
+    @classmethod
+    def validate_dollar_years(cls, source_files):
+        """Validate matching dollar-year metadata across source files."""
+        source_files = cls.parse_source_files_pattern(source_files)
+        expected = None
+        expected_has_year = None
+        for source_file in source_files:
+            with Outputs(source_file, mode="r") as source:
+                meta = source.meta
+
+            dollar_year = SupplyCurveField.DOLLAR_YEAR
+            has_year = dollar_year in meta
+            observed = (meta[dollar_year].to_numpy(dtype=float)
+                        if has_year else None)
+            if expected_has_year is None:
+                expected_has_year = has_year
+                expected = observed
+                continue
+
+            matches = expected_has_year == has_year
+            if matches and has_year:
+                matches = np.array_equal(expected, observed, equal_nan=True)
+
+            if not matches:
+                msg = ("Dollar-year metadata does not match between "
+                       "multi-year collection files.")
+                logger.error(msg)
+                raise HandlerRuntimeError(msg)
+
     def collect(self, source_files, dset, profiles=False, pass_through=False,
                 config_file=None):
         """
@@ -443,6 +472,7 @@ class MultiYear(Outputs):
             run in the output file attrs. By default, ``None``.
         """
         source_files = self.parse_source_files_pattern(source_files)
+        self.validate_dollar_years(source_files)
         with Outputs(source_files[0], mode='r') as f_in:
             global_attrs = f_in.get_attrs()
             meta_attrs = f_in.get_attrs("meta")

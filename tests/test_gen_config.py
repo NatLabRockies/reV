@@ -23,9 +23,11 @@ from reV import TESTDATADIR
 from reV.cli import main
 from reV.config.project_points import ProjectPoints
 from reV.generation.base import LCOE_REQUIRED_OUTPUTS
+from reV.generation.cli_gen import _preprocessor
 from reV.generation.generation import Gen
 from reV.handlers.outputs import Outputs
 from reV.utilities import SiteDataField
+from reV.utilities.exceptions import SAMInputWarning
 
 RTOL = 0.0
 ATOL = 0.04
@@ -397,6 +399,18 @@ def test_year_in_path(runner, clear_loggers):
                     if "generation" in fn and ".h5" in fn]
         assert len(h5_files) == 2
         clear_loggers()
+
+
+def test_dollar_year_warning_at_submission(tmp_path):
+    """Test that missing dollar-year warnings occur during preprocessing."""
+    config = {"technology": "pvwattsv8", "project_points": [0],
+              "sam_files": {"default": {"capital_cost": 0}},
+              "resource_file": str(Path(TESTDATADIR)
+                                   / "nsrdb/ri_100_nsrdb_2012.h5"),
+              "execution_control": {}}
+    with pytest.warns(SAMInputWarning, match="documentation purposes"):
+        _preprocessor(config, "dollar-year-test", tmp_path, False,
+                      analysis_years=[2012])
 
 
 def execute_pytest(capture='all', flags='-rapP'):

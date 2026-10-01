@@ -22,10 +22,12 @@ from pandas.testing import assert_frame_equal
 
 from reV import TESTDATADIR
 from reV.cli import main
+from reV.econ.cli_econ import _preprocessor
 from reV.econ.econ import Econ
 from reV.generation.base import LCOE_REQUIRED_OUTPUTS
 from reV.handlers.outputs import Outputs
 from reV.utilities import ModuleName
+from reV.utilities.exceptions import SAMInputWarning
 
 RTOL = 0.01
 ATOL = 0.001
@@ -95,6 +97,48 @@ def test_fout(year):
         result = np.allclose(lcoe, r1_lcoe, rtol=RTOL, atol=ATOL)
 
         assert result
+
+
+@pytest.mark.parametrize("econ_year, expected", [(None, 2020), (2022, 2022)])
+def test_econ_dollar_year_meta(tmp_path, econ_year, expected):
+    """Test inherited and explicit econ dollar-year metadata."""
+    source = os.path.join(TESTDATADIR, "gen_out/gen_ri_pv_2012_x000.h5")
+    cf_file = tmp_path / "generation_2012.h5"
+    shutil.copy(source, cf_file)
+    with Outputs(cf_file, mode="a") as out:
+        meta = out.meta
+        meta["dollar_year"] = 2020.0
+        del out.h5["meta"]
+        out.meta = meta
+
+    out_fpath = tmp_path / "econ.h5"
+    sam_file = os.path.join(TESTDATADIR,
+                            "SAM/i_lcoe_naris_pv_1axis_inv13.json")
+    if econ_year is not None:
+        with open(sam_file, encoding="utf-8") as file:
+            sam_file = {"default": json.load(file)}
+        sam_file["default"]["dollar_year"] = econ_year
+
+    econ = Econ([0, 1], sam_file, str(cf_file), output_request="lcoe_fcr")
+    econ.run(max_workers=1, out_fpath=str(out_fpath))
+
+    econ_fpath = next(
+        path for path in tmp_path.glob("*.h5") if path != cf_file
+    )
+    with Outputs(econ_fpath, mode="r") as out:
+        assert out.meta["dollar_year"].to_list() == [expected, expected]
+
+
+def test_econ_dollar_year_warning_at_submission(tmp_path):
+    """Test econ missing-year warnings during preprocessing."""
+    cf_file = os.path.join(
+        TESTDATADIR, "gen_out/gen_ri_pv_2012_x000.h5"
+    )
+    config = {"cf_file": cf_file, "project_points": [0],
+              "sam_files": {"default": {"capital_cost": 1000}}}
+    with pytest.warns(SAMInputWarning, match="documentation purposes"):
+        _preprocessor(config, tmp_path, "dollar-year-test", tmp_path, False,
+                      analysis_years=[2012])
 
 
 @pytest.mark.parametrize('year', ('2012', '2013'))

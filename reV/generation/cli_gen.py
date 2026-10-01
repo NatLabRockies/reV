@@ -7,6 +7,7 @@ import logging
 
 from gaps.cli import as_click_command, CLICommandFromClass
 
+from reV.config.project_points import ProjectPoints
 from reV.generation.generation import Gen
 from reV.utilities import ModuleName
 from reV.utilities.cli_functions import format_analysis_years, init_cli_logging
@@ -57,6 +58,12 @@ def _preprocessor(config, job_name, log_directory, verbose,
 
     config['technology'] = (config['technology'].lower()
                             .replace(' ', '').replace('_', ''))
+
+    ProjectPoints(config["project_points"], config["sam_files"],
+                  tech=config["technology"],
+                  res_file=config["resource_file"][0],
+                  curtailment=config.get("curtailment")).check_dollar_year()
+
     _log_generation_cli_inputs(config)
     return config
 

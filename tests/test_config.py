@@ -24,7 +24,7 @@ from reV.config.project_points import PointsControl, ProjectPoints
 from reV.generation.generation import Gen
 from reV.SAM.SAM import RevPySam
 from reV.utilities import ResourceMetaField
-from reV.utilities.exceptions import ConfigError
+from reV.utilities.exceptions import ConfigError, SAMInputWarning
 
 
 def test_config_entries():
@@ -412,6 +412,42 @@ def test_project_points_d():
     pp.df["resource_depth"] = depths_in_data
 
     assert pp.d == depths_in_data
+
+
+def test_project_points_dollar_year():
+    """Test dollar-year validation and site-specific resolution."""
+    points = pd.DataFrame(
+        {
+            "gid": [0, 1],
+            "config": ["default", "default"],
+            "capital_cost": [np.nan, 0],
+            "dollar_year": [np.nan, 2021],
+        }
+    )
+    sam_configs = {
+        "default": {"capital_cost": 1000, "dollar_year": 2020}
+    }
+    project_points = ProjectPoints(points, sam_configs, "pvwattsv8")
+    assert project_points.dollar_year.to_list() == [2020, 2021]
+
+    del sam_configs["default"]["dollar_year"]
+    project_points = ProjectPoints([0], sam_configs, "pvwattsv8")
+    with pytest.warns(SAMInputWarning, match="documentation purposes"):
+        project_points.check_dollar_year()
+
+    assert project_points.dollar_year.isna().all()
+
+    points = pd.DataFrame({"gid": [0], "capital_cost": [0]})
+    with pytest.warns(SAMInputWarning, match="documentation purposes"):
+        ProjectPoints(points, {"default": {}}, "pvwattsv8").check_dollar_year()
+
+
+@pytest.mark.parametrize("dollar_year", [True, 2020.5, "not-a-year"])
+def test_project_points_invalid_dollar_year(dollar_year):
+    """Test that dollar years must be integer-like values."""
+    sam_configs = {"default": {"dollar_year": dollar_year}}
+    with pytest.raises(ConfigError, match="must be an integer year"):
+        ProjectPoints([0], sam_configs, "pvwattsv8").check_dollar_year()
 
 
 def execute_pytest(capture="all", flags="-rapP"):

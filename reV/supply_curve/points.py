@@ -2300,6 +2300,33 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
         return self.exclusion_weighted_mean(self.gen["fixed_charge_rate"])
 
     @property
+    def dollar_year(self):
+        """Common dollar year for included generation sites."""
+        if SupplyCurveField.DOLLAR_YEAR not in self.gen.meta:
+            return None
+
+        gen_gids = self._gen_gids[self.bool_mask]
+        years = self.gen.meta[SupplyCurveField.DOLLAR_YEAR]
+        years = years.to_numpy()[gen_gids]
+        missing = pd.isna(years)
+        unique_years = np.unique(years[~missing]).astype(int)
+        if not unique_years.size:
+            return None
+
+        if missing.any() or unique_years.size > 1:
+            observed = unique_years.tolist()
+            if missing.any():
+                observed.append(None)
+            msg = (f"Supply curve point {self.sc_point_gid} includes "
+                   "generation sites with inconsistent dollar years: "
+                   f"{observed}. Costs from different or unknown dollar "
+                   "years cannot be aggregated.")
+            logger.error(msg)
+            raise SupplyCurveInputError(msg)
+
+        return int(unique_years[0])
+
+    @property
     def _sam_system_capacity_kw(self):
         """float: Mean SAM generation system capacity input, defaults to 0. """
         if self._ssc is not None:
@@ -2493,6 +2520,7 @@ class GenerationSupplyCurvePoint(AggregationSupplyCurvePoint):
                 self._compute_voc_per_ac_mwh("base_variable_operating_cost")
             ),
             SupplyCurveField.FIXED_CHARGE_RATE: self.fixed_charge_rate,
+            SupplyCurveField.DOLLAR_YEAR: self.dollar_year,
         }
 
         if self._friction_layer is not None:

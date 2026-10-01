@@ -12,6 +12,7 @@ from gaps.cli import as_click_command, CLICommandFromClass
 
 from reV.econ.econ import Econ
 from reV.utilities import ModuleName
+from reV.config.project_points import ProjectPoints
 from reV.utilities.cli_functions import format_analysis_years, init_cli_logging
 from reV.utilities.exceptions import ConfigError
 
@@ -51,6 +52,10 @@ def _preprocessor(config, out_dir, job_name, log_directory, verbose,
     analysis_years = format_analysis_years(analysis_years)
     config["cf_file"] = _parse_cf_files(config["cf_file"], analysis_years,
                                         out_dir)
+
+    ProjectPoints(config["project_points"], config["sam_files"],
+                  tech=ModuleName.ECON,
+                  res_file=config["cf_file"][0]).check_dollar_year()
 
     _log_econ_cli_inputs(config)
     return config

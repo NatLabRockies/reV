@@ -245,6 +245,12 @@ class Gen(BaseGen):
             :class:`reV.SAM.generation.PvWattsv8`,
             :class:`reV.SAM.generation.Geothermal`, etc.) for
             info on the allowed and/or required SAM config file inputs.
+
+            SAM configurations may include an optional integer
+            ``dollar_year`` for monetary input provenance. If standard reV
+            cost inputs are present without it, reV emits a warning. This
+            value is tracked in generation and supply-curve outputs but does
+            not cause reV to inflate or otherwise adjust costs.
         resource_file : str
             Filepath to resource data. This input can be path to a
             single resource HDF5 file or a path including a wildcard
@@ -539,6 +545,9 @@ class Gen(BaseGen):
             self._meta.index = self.project_points.sites
             self._meta.index.name = ResourceMetaField.GID
             self._meta.loc[:, "reV_tech"] = self.project_points.tech
+            self._meta.loc[:, "dollar_year"] = (
+                self.project_points.dollar_year.to_numpy(dtype=float)
+            )
 
         return self._meta
 

@@ -159,6 +159,22 @@ def test_integrated_sc_simple(i, trans_costs, drop_ac_cap):
         baseline_verify(sc_simple, fpath_baseline)
 
 
+def test_dollar_year_preserved_in_supply_curve_csv(tmp_path):
+    """Test dollar-year propagation through final supply-curve output."""
+    sc_points = SC_POINTS.copy()
+    sc_points[SupplyCurveField.DOLLAR_YEAR] = 2020
+    sc = SupplyCurve(sc_points, TRANS_TABLE, sc_features=MULTIPLIERS)
+    transmission_costs = TRANS_COSTS_1.copy()
+    avail_cap_frac = transmission_costs.pop("available_capacity")
+    out_fpath = sc.run(str(tmp_path / "supply_curve.csv"),
+                       fixed_charge_rate=0.1, simple=True,
+                       transmission_costs=transmission_costs,
+                       avail_cap_frac=avail_cap_frac, max_workers=1)
+
+    output = pd.read_csv(out_fpath)
+    assert (output[SupplyCurveField.DOLLAR_YEAR] == 2020).all()
+
+
 def test_integrated_sc_full_friction():
     """Run the full SC algorithm with friction"""
     tcosts = TRANS_COSTS_1.copy()

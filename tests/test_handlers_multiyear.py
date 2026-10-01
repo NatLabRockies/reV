@@ -22,6 +22,8 @@ from reV.generation.base import LCOE_REQUIRED_OUTPUTS
 from reV.handlers.multi_year import MultiYear, MultiYearGroup
 from reV.handlers.outputs import Outputs
 from reV.utilities import ModuleName
+from reV.utilities.exceptions import HandlerRuntimeError
+
 
 H5_DIR = os.path.join(TESTDATADIR, 'gen_out')
 YEARS = [2012, 2013]
@@ -141,6 +143,34 @@ def test_my_collection(source, dset, group):
 
         msg = "Missing datasets after collection"
         assert np.isin(my_dsets, out_dsets).all(), msg
+
+
+def test_dollar_year_meta_collection(tmp_path):
+    """Test that multi-year collection preserves dollar-year metadata."""
+    source_files = []
+    for year, source in zip(YEARS, H5_FILES):
+        destination = tmp_path / f"generation_{year}.h5"
+        shutil.copy(source, destination)
+        with Outputs(destination, mode="a") as out:
+            meta = out.meta
+            meta["dollar_year"] = 2020.0
+            del out.h5["meta"]
+            out.meta = meta
+        source_files.append(str(destination))
+
+    out_fpath = tmp_path / "multi_year.h5"
+    MultiYear.collect_means(str(out_fpath), source_files, "cf_mean")
+    with Outputs(out_fpath, mode="r") as out:
+        assert (out.meta["dollar_year"] == 2020).all()
+
+    with Outputs(source_files[-1], mode="a") as out:
+        meta = out.meta
+        meta.loc[0, "dollar_year"] = 2021
+        out.meta = meta
+
+    mismatch_fpath = tmp_path / "mismatch.h5"
+    with pytest.raises(HandlerRuntimeError, match="Dollar-year metadata"):
+        MultiYear.collect_means(str(mismatch_fpath), source_files, "cf_mean")
 
 
 # pylint: disable=no-member

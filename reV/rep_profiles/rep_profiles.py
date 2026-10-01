@@ -1318,6 +1318,40 @@ class RepProfiles(RepProfilesBase):
                         self._meta.at[i, "rep_gen_gid"] = str(ggids)
                         self._meta.at[i, "rep_res_gid"] = str(rgids)
 
+    def _scale_profiles(self):
+        """Match each profile mean to its region's supply curve target."""
+        for index, row in self.meta.iterrows():
+            region_dict = {col: row[col] for col in self._reg_cols}
+            summary = self._rev_summary[self._get_mask(region_dict)]
+            targets = summary[self._scale_profiles_col].to_numpy(dtype=float)
+            weights = None
+
+            if self._weight is not None:
+                weights = np.array([
+                    np.sum(RegionRepProfile._get_region_attr(
+                        summary.iloc[[position]], self._weight))
+                    for position in range(len(summary))
+                ], dtype=float)
+
+                if (not np.all(np.isfinite(weights) & (weights >= 0))
+                        or weights.sum() <= 0):
+                    raise ValueError("Profile scaling requires finite, "
+                                     "nonnegative weights with a positive sum")
+
+            target = np.average(targets, weights=weights)
+            for profiles in self._profiles.values():
+                profile = profiles[:, index]
+                mean = profile.mean(dtype=np.float64)
+                if target == 0:
+                    profile[:] = 0
+                elif not np.isfinite(mean) or mean <= 0:
+                    raise ValueError("Cannot scale a nonpositive or nonfinite "
+                                     "mean profile to a positive capacity "
+                                     "factor for region: {}"
+                                     .format(region_dict))
+                else:
+                    profile *= target / mean
+
     def run(self, fout=None, save_rev_summary=True, scaled_precision=False,
             max_workers=None, config_file=None):
         """
@@ -1348,6 +1382,9 @@ class RepProfiles(RepProfilesBase):
             self._run_serial()
         else:
             self._run_parallel(max_workers=max_workers)
+
+        if self._scale_profiles_col is not None:
+            self._scale_profiles()
 
         if fout is not None:
             if self._aggregate_profiles:

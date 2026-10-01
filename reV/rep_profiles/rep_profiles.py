@@ -957,7 +957,7 @@ class RepProfiles(RepProfilesBase):
                  cf_dset='cf_profile',
                  rep_method='meanoid', err_method='rmse',
                  weight=str(SupplyCurveField.GID_COUNTS),  # str() to fix docs
-                 n_profiles=1, aggregate_profiles=False):
+                 n_profiles=1, aggregate_profiles=False, scale_profiles=None):
         """ReV rep profiles class.
 
         ``reV`` rep profiles compute representative generation profiles
@@ -1060,6 +1060,21 @@ class RepProfiles(RepProfilesBase):
             meanoid. If you set this flag to ``True``, the `rep_method`,
             `err_method`, and `n_profiles` inputs will be forcibly set
             to the default values. By default, ``False``.
+        scale_profiles : str, optional
+            Column in `rev_summary` containing the target capacity
+            factor for each supply curve point, for example
+            ``"capacity_factor_ac"`` or ``"capacity_factor_dc"``. Each
+            output profile is multiplied by the target capacity factor
+            divided by its temporal mean. This preserves profile shape
+            while matching capacity factors adjusted after supply curve
+            aggregation (e.g. by NRWAL or manual post-processing).
+            For regions containing multiple supply curve points, targets
+            are averaged using the sum of each point's `weight` values,
+            or equally if `weight` is ``None``. Targets must be finite
+            and nonnegative. A zero target produces a zero profile;
+            a zero-mean profile cannot be scaled to a positive target.
+            Profiles are not clipped, so scaled values may exceed one.
+            By default, ``None`` (no scaling).
         """
 
         log_versions(logger)
@@ -1103,8 +1118,24 @@ class RepProfiles(RepProfilesBase):
             n_profiles=n_profiles,
         )
 
+        self._scale_profiles_col = self._validated_scale_col(scale_profiles)
         self._set_meta()
         self._init_profiles()
+
+    def _validated_scale_col(self, scale_profiles):
+        """Validate the scale_profiles column"""
+        if scale_profiles is None:
+            return None
+
+        if not isinstance(scale_profiles, str):
+            raise TypeError("scale_profiles must be a column name or None")
+
+        self._check_req_cols(self._rev_summary, scale_profiles)
+        targets = self._rev_summary[scale_profiles].to_numpy(dtype=float)
+        if not np.all(np.isfinite(targets) & (targets >= 0)):
+            raise ValueError("scale_profiles targets must be finite and "
+                             "nonnegative")
+        return scale_profiles
 
     def _set_meta(self):
         """Set the rep profile meta data with each row being a unique

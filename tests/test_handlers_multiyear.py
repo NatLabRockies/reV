@@ -155,9 +155,6 @@ def test_dollar_year_meta_collection(tmp_path):
         with Outputs(destination, mode="a") as out:
             meta = out.meta
             meta["dollar_year"] = 2020.0
-            for column, dtype in meta.dtypes.items():
-                if isinstance(dtype, pd.StringDtype):
-                    meta[column] = meta[column].astype(object)
             del out.h5["meta"]
             out.meta = meta
         source_files.append(str(destination))
@@ -170,9 +167,6 @@ def test_dollar_year_meta_collection(tmp_path):
     with Outputs(source_files[-1], mode="a") as out:
         meta = out.meta
         meta.loc[0, "dollar_year"] = 2021
-        for column, dtype in meta.dtypes.items():
-            if isinstance(dtype, pd.StringDtype):
-                meta[column] = meta[column].astype(object)
         out.meta = meta
 
     mismatch_fpath = tmp_path / "mismatch.h5"

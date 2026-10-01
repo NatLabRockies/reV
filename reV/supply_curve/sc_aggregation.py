@@ -29,6 +29,7 @@ from reV.supply_curve.extent import SupplyCurveExtent
 from reV.supply_curve.points import GenerationSupplyCurvePoint
 from reV.utilities import ResourceMetaField, SupplyCurveField, log_versions
 from reV.utilities.exceptions import (
+    ConfigWarning,
     EmptySupplyCurvePointError,
     FileInputError,
     InputWarning,
@@ -112,7 +113,7 @@ class SupplyCurveAggFileHandler(AbstractAggFileHandler):
 
         self._gen = self._open_gen_econ_resource(gen_fpath, econ_fpath)
         # pre-initialize the resource meta data
-        _ = self._gen.meta
+        _warn_about_mixed_dollar_years(self._gen.meta)
 
         self._data_layers = data_layers
         self._power_density = power_density
@@ -1598,6 +1599,9 @@ class SupplyCurveAggregation(BaseAggregation):
         summary : list
             List of dictionaries, each being an SC point summary.
         """
+        if args is not None and SupplyCurveField.DOLLAR_YEAR not in args:
+            args = [*args, SupplyCurveField.DOLLAR_YEAR]
+
         if max_workers is None:
             max_workers = os.cpu_count()
 
@@ -1750,3 +1754,21 @@ def _warn_about_large_datasets(gen, dset):
         )
         logger.warning(msg)
         warn(msg, UserWarning)
+
+
+def _warn_about_mixed_dollar_years(meta):
+    """Warn during compute when generation dollar years may conflict."""
+    if SupplyCurveField.DOLLAR_YEAR not in meta:
+        return
+
+    years = meta[SupplyCurveField.DOLLAR_YEAR]
+    unique_years = years.dropna().unique()
+    has_mixed_years = len(unique_years) > 1
+    has_known_and_missing = bool(len(unique_years)) and years.isna().any()
+    if has_mixed_years or has_known_and_missing:
+        msg = ("Generation metadata contains multiple or partially missing "
+               "dollar years. Supply curve points that combine these sites "
+               "will fail aggregation. Review dollar_year inputs."
+        )
+        logger.warning(msg)
+        warn(msg, ConfigWarning)

@@ -11,6 +11,7 @@ import os
 import shutil
 import tempfile
 import traceback
+import warnings
 
 import h5py
 import numpy as np
@@ -26,9 +27,11 @@ from reV.supply_curve.sc_aggregation import (
     SupplyCurveAggregation,
     _warn_about_large_datasets,
 )
-from reV.supply_curve.cli_sc_aggregation import _validate_res_fpath
+from reV.supply_curve.cli_sc_aggregation import (_preprocessor,
+                                                 _validate_res_fpath)
 from reV.handlers.exclusions import LATITUDE
 from reV.utilities import ModuleName, SupplyCurveField
+from reV.utilities.exceptions import ConfigWarning, SupplyCurveInputError
 from reV.supply_curve.extent import SupplyCurveExtent
 
 
@@ -77,6 +80,72 @@ def test_agg_extent(resolution=64):
     assert SupplyCurveField.SC_ROW_IND in summary
     assert SupplyCurveField.GEN_GIDS in summary
     assert len(set(all_res_gids)) == 177
+
+
+def test_aggregation_dollar_year(tmp_path):
+    """Test stable dollar-year output and mixed-year validation."""
+    sca = SupplyCurveAggregation(EXCL, TM_DSET, excl_dict=EXCL_DICT,
+                                 res_class_dset=None, res_class_bins=None,
+                                 resolution=64)
+    legacy = sca.summarize(GEN, args=[SupplyCurveField.SC_POINT_GID],
+                           max_workers=1)
+    assert SupplyCurveField.DOLLAR_YEAR in legacy
+    assert legacy[SupplyCurveField.DOLLAR_YEAR].isna().all()
+
+    gen_fpath = tmp_path / "gen.h5"
+    shutil.copy(GEN, gen_fpath)
+    with Outputs(gen_fpath, mode="a") as out:
+        meta = out.meta
+        meta[SupplyCurveField.DOLLAR_YEAR] = 2020.0
+        del out.h5["meta"]
+        out.meta = meta
+
+    summary = sca.summarize(str(gen_fpath),
+                            args=[SupplyCurveField.SC_POINT_GID],
+                            max_workers=1)
+    assert (summary[SupplyCurveField.DOLLAR_YEAR] == 2020).all()
+
+    gids = [int(legacy.iloc[0][SupplyCurveField.SC_POINT_GID])]
+    csv_sca = SupplyCurveAggregation(EXCL, TM_DSET, excl_dict=EXCL_DICT,
+                                     res_class_dset=None, res_class_bins=None,
+                                     resolution=64, gids=gids)
+    csv_fpath = csv_sca.run(str(tmp_path / "supply_curve_aggregation.csv"),
+                            gen_fpath=str(gen_fpath),
+                            args=[SupplyCurveField.SC_POINT_GID],
+                            max_workers=1)
+    csv = pd.read_csv(csv_fpath)
+    assert csv[SupplyCurveField.DOLLAR_YEAR].to_list() == [2020]
+
+    point_summary = sca.summarize(GEN, max_workers=1)
+    point = next(row for _, row in point_summary.iterrows()
+                 if len(row[SupplyCurveField.GEN_GIDS]) > 1)
+    first_gids = int(point[SupplyCurveField.SC_POINT_GID])
+    gen_gids = point[SupplyCurveField.GEN_GIDS]
+
+    with Outputs(gen_fpath, mode="a") as out:
+        meta = out.meta
+        meta.loc[gen_gids[0], SupplyCurveField.DOLLAR_YEAR] = 2021
+        del out.h5["meta"]
+        out.meta = meta
+
+    with (
+        pytest.warns(ConfigWarning, match="multiple or partially missing"),
+        pytest.raises(SupplyCurveInputError, match="inconsistent dollar"),
+    ):
+        SupplyCurveAggregation(EXCL, TM_DSET, excl_dict=EXCL_DICT,
+                               res_class_dset=None, res_class_bins=None,
+                               resolution=64, gids=[first_gids],).summarize(
+                                   str(gen_fpath), max_workers=1)
+
+    config = {"excl_fpath": EXCL, "tm_dset": TM_DSET, "res_fpath": RES,
+              "gen_fpath": str(gen_fpath), "econ_fpath": None}
+
+    with warnings.catch_warnings(record=True) as kickoff_warnings:
+        warnings.simplefilter("always")
+        _preprocessor(config, str(tmp_path))
+
+    assert not any("dollar years" in str(warning.message)
+                   for warning in kickoff_warnings)
 
 
 def test_parallel_agg(resolution=64):

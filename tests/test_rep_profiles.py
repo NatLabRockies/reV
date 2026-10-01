@@ -6,6 +6,7 @@ import os
 import tempfile
 from pathlib import Path
 
+import h5py
 import numpy as np
 import pandas as pd
 import pytest
@@ -174,6 +175,108 @@ def test_sc_points():
         truth = res["cf_profile", :, slice(0, 10)]
 
     assert np.allclose(rp.profiles[0], truth)
+
+
+@pytest.mark.parametrize("aggregate_profiles", [False, True])
+def test_scale_profiles(tmp_path, aggregate_profiles):
+    """Scaled profiles match adjusted SC capacity factors on disk."""
+    targets = np.array([0.12, 0.3, 0.0])
+    summary = pd.DataFrame({
+        SupplyCurveField.SC_GID: np.arange(3),
+        SupplyCurveField.GEN_GIDS: np.arange(3),
+        SupplyCurveField.RES_GIDS: np.arange(3),
+        SupplyCurveField.TIMEZONE: [-5] * 3,
+        "adjusted_cf": targets,
+    })
+    summary_path = tmp_path / "supply_curve.csv"
+    summary.to_csv(summary_path, index=False)
+    output_path = str(tmp_path / "profiles.h5")
+    rep = RepProfiles(
+        GEN_FPATH, str(summary_path), SupplyCurveField.SC_GID,
+        weight=None, aggregate_profiles=aggregate_profiles,
+        scale_profiles="adjusted_cf",
+    )
+    rep.run(fout=output_path, max_workers=1)
+
+    with Resource(GEN_FPATH) as source:
+        original = source["cf_profile", :, :3]
+    expected = original * (targets / original.mean(axis=0))
+    assert np.allclose(rep.profiles[0], expected)
+    with Resource(output_path) as output:
+        assert np.allclose(output["rep_profiles_0"].mean(axis=0), targets)
+
+
+@pytest.mark.parametrize("max_workers", [1, 2])
+@pytest.mark.parametrize("weight", [None, "weights"])
+def test_scale_profiles_regions(max_workers, weight):
+    """All regional profiles match the weighted SC target in either mode."""
+    summary = pd.DataFrame({
+        SupplyCurveField.GEN_GIDS: ["[0, 1]", "[2, 3]", "[4, 5]"],
+        SupplyCurveField.RES_GIDS: ["[0, 1]", "[2, 3]", "[4, 5]"],
+        SupplyCurveField.TIMEZONE: [-5] * 3,
+        "region": ["a", "a", "b"],
+        "weights": ["[1, 2]", "[3, 6]", "[2, 2]"],
+        "adjusted_cf": [0.1, 0.3, 0.2],
+    })
+    baseline = RepProfiles(GEN_FPATH, summary.copy(), "region",
+                           weight=weight, n_profiles=2)
+    baseline.run(max_workers=1)
+    rep = RepProfiles(GEN_FPATH, summary.copy(), "region", weight=weight,
+                      n_profiles=2, scale_profiles="adjusted_cf")
+    rep.run(max_workers=max_workers)
+    targets = [0.2 if weight is None else 0.25, 0.2]
+    for number, profiles in rep.profiles.items():
+        original = baseline.profiles[number]
+        assert np.allclose(profiles.mean(axis=0), targets)
+        assert np.allclose(profiles,
+                           original * (targets / original.mean(axis=0)))
+    assert_frame_equal(rep.meta, baseline.meta)
+    rep.run(max_workers=1)
+    for profiles in rep.profiles.values():
+        assert np.allclose(profiles.mean(axis=0), targets)
+
+
+@pytest.mark.parametrize("target", [-0.1, np.nan, np.inf])
+def test_scale_profiles_invalid_target(target):
+    """Invalid target CFs are rejected when scaling is requested."""
+    summary = pd.DataFrame({
+        SupplyCurveField.SC_GID: [0],
+        SupplyCurveField.GEN_GIDS: [0],
+        SupplyCurveField.RES_GIDS: [0],
+        SupplyCurveField.TIMEZONE: [-5],
+        "adjusted_cf": [target],
+    })
+    with pytest.raises(ValueError, match="finite and nonnegative"):
+        RepProfiles(GEN_FPATH, summary, SupplyCurveField.SC_GID,
+                    weight=None, scale_profiles="adjusted_cf")
+    with pytest.raises(KeyError, match="missing_cf"):
+        RepProfiles(GEN_FPATH, summary, SupplyCurveField.SC_GID,
+                    weight=None, scale_profiles="missing_cf")
+
+
+@pytest.mark.parametrize("target", [0, 0.2])
+def test_scale_profiles_zero_source(tmp_path, target):
+    """Zero-generation profiles can only match a zero target CF."""
+    gen_path = tmp_path / "zero_generation.h5"
+    with h5py.File(GEN_FPATH) as source, h5py.File(gen_path, "w") as output:
+        for name in ["meta", "time_index", "cf_profile"]:
+            source.copy(name, output)
+        output["cf_profile"][:, 0] = 0
+    summary = pd.DataFrame({
+        SupplyCurveField.SC_GID: [0],
+        SupplyCurveField.GEN_GIDS: [0],
+        SupplyCurveField.RES_GIDS: [0],
+        SupplyCurveField.TIMEZONE: [-5],
+        "adjusted_cf": [target],
+    })
+    rep = RepProfiles(str(gen_path), summary, SupplyCurveField.SC_GID,
+                      weight=None, scale_profiles="adjusted_cf")
+    if target:
+        with pytest.raises(ValueError, match="Cannot scale"):
+            rep.run(max_workers=1)
+    else:
+        rep.run(max_workers=1)
+        assert np.all(rep.profiles[0] == 0)
 
 
 def test_agg_profile():
@@ -360,7 +463,8 @@ def test_file_options():
         assert "rev_summary" not in disk_dsets
 
 
-def test_rep_profiles_cli(runner, clear_loggers):
+@pytest.mark.parametrize("scale_profiles", [None, "adjusted_cf"])
+def test_rep_profiles_cli(runner, clear_loggers, scale_profiles):
     """Test rep profiles CLI"""
     with tempfile.TemporaryDirectory() as td:
         sites = np.arange(100)
@@ -373,6 +477,7 @@ def test_rep_profiles_cli(runner, clear_loggers):
                                     'region': regions,
                                     SupplyCurveField.TIMEZONE: timezone})
         summary_fp = os.path.join(td, 'rev_summary.csv')
+        rev_summary["adjusted_cf"] = 0.2
         rev_summary.to_csv(summary_fp, index=False)
 
         config = {
@@ -387,6 +492,8 @@ def test_rep_profiles_cli(runner, clear_loggers):
             "scaled_precision": True,
             "save_rev_summary": False,
         }
+        if scale_profiles is not None:
+            config["scale_profiles"] = scale_profiles
 
         config_path = os.path.join(td, "config.json")
         with open(config_path, "w") as f:
@@ -412,6 +519,11 @@ def test_rep_profiles_cli(runner, clear_loggers):
             dtype = res.get_dset_properties("rep_profiles_0")[1]
             attrs = res.get_attrs("rep_profiles_0")
             disk_dsets = res.datasets
+
+            if scale_profiles is not None:
+                for number in range(3):
+                    profiles = res["rep_profiles_{}".format(number)]
+                    assert np.allclose(profiles.mean(axis=0), 0.2, atol=0.001)
 
             assert "gen_fpath" in res.h5.attrs
             assert "rep-profiles_config_fp" in res.h5.attrs
